@@ -1,0 +1,113 @@
+
+state 0
+	$accept: .translation_unit $end 
+
+	CONTRACT  shift 3
+	.  error
+
+	contract_declaration  goto 2
+	translation_unit  goto 1
+
+state 1
+	$accept:  translation_unit.$end 
+
+	$end  accept
+	.  error
+
+
+state 2
+	translation_unit:  contract_declaration.    (7)
+
+	.  reduce 7 (src line 66)
+
+
+state 3
+	contract_declaration:  CONTRACT.IDENT LBRACE contract_body RBRACE 
+
+	IDENT  shift 4
+	.  error
+
+
+state 4
+	contract_declaration:  CONTRACT IDENT.LBRACE contract_body RBRACE 
+
+	LBRACE  shift 5
+	.  error
+
+
+state 5
+	contract_declaration:  CONTRACT IDENT LBRACE.contract_body RBRACE 
+	contract_data: .    (3)
+
+	DATA  shift 8
+	.  reduce 3 (src line 50)
+
+	contract_data  goto 7
+	contract_body  goto 6
+
+state 6
+	contract_declaration:  CONTRACT IDENT LBRACE contract_body.RBRACE 
+
+	RBRACE  shift 9
+	.  error
+
+
+state 7
+	contract_body:  contract_data.func_body 
+	func_body: .    (1)
+
+	INT  shift 11
+	.  reduce 1 (src line 45)
+
+	func_body  goto 10
+
+state 8
+	contract_data:  DATA.LBRACE RBRACE 
+
+	LBRACE  shift 12
+	.  error
+
+
+state 9
+	contract_declaration:  CONTRACT IDENT LBRACE contract_body RBRACE.    (6)
+
+	.  reduce 6 (src line 59)
+
+
+state 10
+	contract_body:  contract_data func_body.    (5)
+
+	.  reduce 5 (src line 55)
+
+
+state 11
+	func_body:  INT.    (2)
+
+	.  reduce 2 (src line 47)
+
+
+state 12
+	contract_data:  DATA LBRACE.RBRACE 
+
+	RBRACE  shift 13
+	.  error
+
+
+state 13
+	contract_data:  DATA LBRACE RBRACE.    (4)
+
+	.  reduce 4 (src line 52)
+
+
+19 terminals, 6 nonterminals
+8 grammar rules, 14/8000 states
+0 shift/reduce, 0 reduce/reduce conflicts reported
+55 working sets used
+memory: parser 4/120000
+0 extra closures
+8 shift entries, 1 exceptions
+5 goto entries
+0 entries saved by goto default
+Optimizer space used: output 13/120000
+13 table entries, 0 zero
+maximum spread: 17, maximum offset: 17
