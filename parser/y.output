@@ -1,113 +1,174 @@
 
 state 0
-	$accept: .translation_unit $end 
+	$accept: .contract_declaration $end 
 
-	CONTRACT  shift 3
+	CONTRACT  shift 2
 	.  error
 
-	contract_declaration  goto 2
-	translation_unit  goto 1
+	contract_declaration  goto 1
 
 state 1
-	$accept:  translation_unit.$end 
+	$accept:  contract_declaration.$end 
 
 	$end  accept
 	.  error
 
 
 state 2
-	translation_unit:  contract_declaration.    (7)
+	contract_declaration:  CONTRACT.IDENT LBRACE contract_body RBRACE 
 
-	.  reduce 7 (src line 66)
+	IDENT  shift 3
+	.  error
 
 
 state 3
-	contract_declaration:  CONTRACT.IDENT LBRACE contract_body RBRACE 
+	contract_declaration:  CONTRACT IDENT.LBRACE contract_body RBRACE 
 
-	IDENT  shift 4
+	LBRACE  shift 4
 	.  error
 
 
 state 4
-	contract_declaration:  CONTRACT IDENT.LBRACE contract_body RBRACE 
+	contract_declaration:  CONTRACT IDENT LBRACE.contract_body RBRACE 
+	contract_data: .    (10)
 
-	LBRACE  shift 5
-	.  error
+	DATA  shift 7
+	.  reduce 10 (src line 95)
 
+	contract_data  goto 6
+	contract_body  goto 5
 
 state 5
-	contract_declaration:  CONTRACT IDENT LBRACE.contract_body RBRACE 
-	contract_data: .    (3)
-
-	DATA  shift 8
-	.  reduce 3 (src line 50)
-
-	contract_data  goto 7
-	contract_body  goto 6
-
-state 6
 	contract_declaration:  CONTRACT IDENT LBRACE contract_body.RBRACE 
 
-	RBRACE  shift 9
+	RBRACE  shift 8
 	.  error
 
+
+state 6
+	contract_body:  contract_data.func_body 
+	func_body: .    (8)
+
+	INT  shift 10
+	.  reduce 8 (src line 88)
+
+	func_body  goto 9
 
 state 7
-	contract_body:  contract_data.func_body 
-	func_body: .    (1)
+	contract_data:  DATA.LBRACE var_declarations RBRACE 
 
-	INT  shift 11
-	.  reduce 1 (src line 45)
+	LBRACE  shift 11
+	.  error
 
-	func_body  goto 10
 
 state 8
-	contract_data:  DATA.LBRACE RBRACE 
+	contract_declaration:  CONTRACT IDENT LBRACE contract_body RBRACE.    (13)
 
-	LBRACE  shift 12
-	.  error
+	.  reduce 13 (src line 107)
 
 
 state 9
-	contract_declaration:  CONTRACT IDENT LBRACE contract_body RBRACE.    (6)
+	contract_body:  contract_data func_body.    (12)
 
-	.  reduce 6 (src line 59)
+	.  reduce 12 (src line 100)
 
 
 state 10
-	contract_body:  contract_data func_body.    (5)
+	func_body:  INT.    (9)
 
-	.  reduce 5 (src line 55)
+	.  reduce 9 (src line 90)
 
 
 state 11
-	func_body:  INT.    (2)
+	contract_data:  DATA LBRACE.var_declarations RBRACE 
 
-	.  reduce 2 (src line 47)
-
-
-state 12
-	contract_data:  DATA LBRACE.RBRACE 
-
-	RBRACE  shift 13
+	T_BOOL  shift 15
+	T_INT  shift 16
 	.  error
 
+	type  goto 14
+	var_declaration  goto 13
+	var_declarations  goto 12
+
+state 12
+	var_declarations:  var_declarations.var_declaration 
+	contract_data:  DATA LBRACE var_declarations.RBRACE 
+
+	RBRACE  shift 18
+	T_BOOL  shift 15
+	T_INT  shift 16
+	.  error
+
+	type  goto 14
+	var_declaration  goto 17
 
 state 13
-	contract_data:  DATA LBRACE RBRACE.    (4)
+	var_declarations:  var_declaration.    (6)
 
-	.  reduce 4 (src line 52)
+	.  reduce 6 (src line 83)
 
 
-19 terminals, 6 nonterminals
-8 grammar rules, 14/8000 states
+state 14
+	var_declaration:  type.ident_list 
+
+	IDENT  shift 20
+	.  error
+
+	ident_list  goto 19
+
+state 15
+	type:  T_BOOL.    (1)
+
+	.  reduce 1 (src line 60)
+
+
+state 16
+	type:  T_INT.    (2)
+
+	.  reduce 2 (src line 62)
+
+
+state 17
+	var_declarations:  var_declarations var_declaration.    (7)
+
+	.  reduce 7 (src line 85)
+
+
+state 18
+	contract_data:  DATA LBRACE var_declarations RBRACE.    (11)
+
+	.  reduce 11 (src line 97)
+
+
+state 19
+	ident_list:  ident_list.IDENT 
+	var_declaration:  type ident_list.    (5)
+
+	IDENT  shift 21
+	.  reduce 5 (src line 70)
+
+
+state 20
+	ident_list:  IDENT.    (3)
+
+	.  reduce 3 (src line 65)
+
+
+state 21
+	ident_list:  ident_list IDENT.    (4)
+
+	.  reduce 4 (src line 67)
+
+
+20 terminals, 9 nonterminals
+14 grammar rules, 22/8000 states
 0 shift/reduce, 0 reduce/reduce conflicts reported
-55 working sets used
-memory: parser 4/120000
+58 working sets used
+memory: parser 10/120000
 0 extra closures
-8 shift entries, 1 exceptions
-5 goto entries
-0 entries saved by goto default
-Optimizer space used: output 13/120000
-13 table entries, 0 zero
-maximum spread: 17, maximum offset: 17
+14 shift entries, 1 exceptions
+9 goto entries
+1 entries saved by goto default
+Optimizer space used: output 24/120000
+24 table entries, 1 zero
+maximum spread: 20, maximum offset: 19

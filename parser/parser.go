@@ -9,31 +9,40 @@ import __yyfmt__ "fmt"
 
 import "fmt"
 
-//line parser.y:8
+func setResult(l yyLexer, v *Node) {
+	l.(*lexer).result = v
+}
+
+//line parser.y:12
 type yySymType struct {
 	yys int
+	n   *Node
 	b   bool
 	i   int
 	f   float64
 	s   string
+	sa  []string
+	va  []NVar
+	nb  *NBlock
 }
 
 const IDENT = 57346
 const INT = 57347
 const TRUE = 57348
 const FALSE = 57349
-const COMMA = 57350
-const COLON = 57351
-const LPAREN = 57352
-const RPAREN = 57353
-const LBRACE = 57354
-const RBRACE = 57355
-const LBRAKET = 57356
-const RBRAKET = 57357
-const DATA = 57358
-const CONTRACT = 57359
-const T_BOOL = 57360
-const T_INT = 57361
+const NEWLINE = 57350
+const COMMA = 57351
+const COLON = 57352
+const LPAREN = 57353
+const RPAREN = 57354
+const LBRACE = 57355
+const RBRACE = 57356
+const LBRAKET = 57357
+const RBRAKET = 57358
+const DATA = 57359
+const CONTRACT = 57360
+const T_BOOL = 57361
+const T_INT = 57362
 
 var yyToknames = [...]string{
 	"$end",
@@ -43,6 +52,7 @@ var yyToknames = [...]string{
 	"INT",
 	"TRUE",
 	"FALSE",
+	"NEWLINE",
 	"COMMA",
 	"COLON",
 	"LPAREN",
@@ -71,39 +81,45 @@ var yyExca = [...]int{
 
 const yyPrivate = 57344
 
-const yyLast = 13
+const yyLast = 24
 
 var yyAct = [...]int{
 
-	3, 8, 13, 9, 12, 5, 11, 4, 6, 7,
-	10, 1, 2,
+	18, 15, 16, 2, 7, 15, 16, 8, 11, 4,
+	13, 10, 21, 20, 3, 9, 1, 5, 6, 12,
+	19, 14, 0, 17,
 }
 var yyPact = [...]int{
 
-	-17, -1000, -1000, 3, -7, -15, -10, 1, -8, -1000,
-	-1000, -1000, -11, -1000,
+	-15, -1000, 10, -4, -13, -7, 6, -5, -1000, -1000,
+	-1000, -18, -14, -1000, 9, -1000, -1000, -1000, -1000, 8,
+	-1000, -1000,
 }
 var yyPgo = [...]int{
 
-	0, 12, 11, 10, 9, 8,
+	0, 21, 20, 10, 19, 18, 17, 16, 15,
 }
 var yyR1 = [...]int{
 
-	0, 3, 3, 4, 4, 5, 1, 2,
+	0, 1, 1, 2, 2, 3, 4, 4, 8, 8,
+	5, 5, 6, 7,
 }
 var yyR2 = [...]int{
 
-	0, 0, 1, 0, 3, 2, 5, 1,
+	0, 1, 1, 1, 2, 2, 1, 2, 0, 1,
+	0, 4, 2, 5,
 }
 var yyChk = [...]int{
 
-	-1000, -2, -1, 17, 4, 12, -5, -4, 16, 13,
-	-3, 5, 12, 13,
+	-1000, -7, 18, 4, 13, -6, -5, 17, 14, -8,
+	5, 13, -4, -3, -1, 19, 20, -3, 14, -2,
+	4, 4,
 }
 var yyDef = [...]int{
 
-	0, -2, 7, 0, 0, 3, 0, 1, 0, 6,
-	5, 2, 0, 4,
+	0, -2, 0, 0, 10, 0, 8, 0, 13, 12,
+	9, 0, 0, 6, 0, 1, 2, 7, 11, 5,
+	3, 4,
 }
 var yyTok1 = [...]int{
 
@@ -112,7 +128,7 @@ var yyTok1 = [...]int{
 var yyTok2 = [...]int{
 
 	2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
-	12, 13, 14, 15, 16, 17, 18, 19,
+	12, 13, 14, 15, 16, 17, 18, 19, 20,
 }
 var yyTok3 = [...]int{
 	0,
@@ -455,12 +471,86 @@ yydefault:
 	// dummy call; replaced with literal code
 	switch yynt {
 
-	case 6:
-		yyDollar = yyS[yypt-5 : yypt+1]
-//line parser.y:60
+	case 1:
+		yyDollar = yyS[yypt-1 : yypt+1]
+//line parser.y:61
 		{
-			yyVAL.s = "OOOOPS"
-			fmt.Println("OOOPS", yyVAL.s, yyDollar[2].s)
+			yyVAL.i = 1
+		}
+	case 2:
+		yyDollar = yyS[yypt-1 : yypt+1]
+//line parser.y:62
+		{
+			yyVAL.i = 2
+		}
+	case 3:
+		yyDollar = yyS[yypt-1 : yypt+1]
+//line parser.y:66
+		{
+			yyVAL.sa = []string{yyDollar[1].s}
+		}
+	case 4:
+		yyDollar = yyS[yypt-2 : yypt+1]
+//line parser.y:67
+		{
+			yyVAL.sa = append(yyDollar[1].sa, yyDollar[2].s)
+		}
+	case 5:
+		yyDollar = yyS[yypt-2 : yypt+1]
+//line parser.y:71
+		{
+			va := make([]NVar, len(yyDollar[2].sa))
+			for i, name := range yyDollar[2].sa {
+				va[i] = NVar{
+					Type: yyDollar[1].i,
+					Name: name,
+				}
+			}
+			yyVAL.va = va
+		}
+	case 6:
+		yyDollar = yyS[yypt-1 : yypt+1]
+//line parser.y:84
+		{
+			yyVAL.va = yyDollar[1].va
+		}
+	case 7:
+		yyDollar = yyS[yypt-2 : yypt+1]
+//line parser.y:85
+		{
+			yyVAL.va = append(yyDollar[1].va, yyDollar[2].va...)
+		}
+	case 9:
+		yyDollar = yyS[yypt-1 : yypt+1]
+//line parser.y:90
+		{
+			fmt.Println("FUNC")
+		}
+	case 10:
+		yyDollar = yyS[yypt-0 : yypt+1]
+//line parser.y:96
+		{
+			yyVAL.va = nil
+		}
+	case 11:
+		yyDollar = yyS[yypt-4 : yypt+1]
+//line parser.y:97
+		{
+			yyVAL.va = yyDollar[3].va
+		}
+	case 12:
+		yyDollar = yyS[yypt-2 : yypt+1]
+//line parser.y:101
+		{
+			yyVAL.nb = newBlock(yyDollar[1].va)
+			fmt.Println("BODY", yyDollar[1].va)
+		}
+	case 13:
+		yyDollar = yyS[yypt-5 : yypt+1]
+//line parser.y:108
+		{
+			yyVAL.n = newContract(yyDollar[2].s, yyDollar[4].nb)
+			setResult(yylex, yyVAL.n)
 		}
 	}
 	goto yystack /* stack new state and value */
