@@ -15,160 +15,396 @@ state 1
 
 
 state 2
-	contract_declaration:  CONTRACT.IDENT LBRACE contract_body RBRACE 
+	contract_declaration:  CONTRACT.IDENT LBRACE NEWLINE contract_body RBRACE 
 
 	IDENT  shift 3
 	.  error
 
 
 state 3
-	contract_declaration:  CONTRACT IDENT.LBRACE contract_body RBRACE 
+	contract_declaration:  CONTRACT IDENT.LBRACE NEWLINE contract_body RBRACE 
 
 	LBRACE  shift 4
 	.  error
 
 
 state 4
-	contract_declaration:  CONTRACT IDENT LBRACE.contract_body RBRACE 
-	contract_data: .    (10)
+	contract_declaration:  CONTRACT IDENT LBRACE.NEWLINE contract_body RBRACE 
 
-	DATA  shift 7
-	.  reduce 10 (src line 95)
-
-	contract_data  goto 6
-	contract_body  goto 5
-
-state 5
-	contract_declaration:  CONTRACT IDENT LBRACE contract_body.RBRACE 
-
-	RBRACE  shift 8
+	NEWLINE  shift 5
 	.  error
 
 
+state 5
+	contract_declaration:  CONTRACT IDENT LBRACE NEWLINE.contract_body RBRACE 
+	contract_data: .    (20)
+
+	DATA  shift 8
+	.  reduce 20 (src line 112)
+
+	contract_data  goto 7
+	contract_body  goto 6
+
 state 6
-	contract_body:  contract_data.func_body 
-	func_body: .    (8)
+	contract_declaration:  CONTRACT IDENT LBRACE NEWLINE contract_body.RBRACE 
 
-	INT  shift 10
-	.  reduce 8 (src line 88)
+	RBRACE  shift 9
+	.  error
 
-	func_body  goto 9
 
 state 7
-	contract_data:  DATA.LBRACE var_declarations RBRACE 
+	contract_body:  contract_data.statements 
+	statements: .    (3)
+
+	.  reduce 3 (src line 77)
+
+	statements  goto 10
+
+state 8
+	contract_data:  DATA.LBRACE NEWLINE var_declarations NEWLINE RBRACE NEWLINE 
 
 	LBRACE  shift 11
 	.  error
 
 
-state 8
-	contract_declaration:  CONTRACT IDENT LBRACE contract_body RBRACE.    (13)
-
-	.  reduce 13 (src line 107)
-
-
 state 9
-	contract_body:  contract_data func_body.    (12)
+	contract_declaration:  CONTRACT IDENT LBRACE NEWLINE contract_body RBRACE.    (23)
 
-	.  reduce 12 (src line 100)
+	.  reduce 23 (src line 124)
 
 
 state 10
-	func_body:  INT.    (9)
+	statements:  statements.NEWLINE 
+	statements:  statements.statement NEWLINE 
+	contract_body:  contract_data statements.    (22)
+
+	INT  shift 16
+	NEWLINE  shift 12
+	LPAREN  shift 15
+	SUB  shift 17
+	.  reduce 22 (src line 117)
+
+	expr  goto 14
+	statement  goto 13
+
+state 11
+	contract_data:  DATA LBRACE.NEWLINE var_declarations NEWLINE RBRACE NEWLINE 
+
+	NEWLINE  shift 18
+	.  error
+
+
+state 12
+	statements:  statements NEWLINE.    (4)
+
+	.  reduce 4 (src line 79)
+
+
+state 13
+	statements:  statements statement.NEWLINE 
+
+	NEWLINE  shift 19
+	.  error
+
+
+state 14
+	statement:  expr.    (6)
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+
+	ADD  shift 22
+	SUB  shift 23
+	MUL  shift 20
+	DIV  shift 21
+	MOD  shift 24
+	.  reduce 6 (src line 83)
+
+
+state 15
+	expr:  LPAREN.expr RPAREN 
+
+	INT  shift 16
+	LPAREN  shift 15
+	SUB  shift 17
+	.  error
+
+	expr  goto 25
+
+state 16
+	expr:  INT.    (8)
+
+	.  reduce 8 (src line 89)
+
+
+state 17
+	expr:  SUB.expr 
+
+	INT  shift 16
+	LPAREN  shift 15
+	SUB  shift 17
+	.  error
+
+	expr  goto 26
+
+state 18
+	contract_data:  DATA LBRACE NEWLINE.var_declarations NEWLINE RBRACE NEWLINE 
+
+	T_BOOL  shift 30
+	T_INT  shift 31
+	.  error
+
+	type  goto 29
+	var_declaration  goto 28
+	var_declarations  goto 27
+
+state 19
+	statements:  statements statement NEWLINE.    (5)
+
+	.  reduce 5 (src line 80)
+
+
+state 20
+	expr:  expr MUL.expr 
+
+	INT  shift 16
+	LPAREN  shift 15
+	SUB  shift 17
+	.  error
+
+	expr  goto 32
+
+state 21
+	expr:  expr DIV.expr 
+
+	INT  shift 16
+	LPAREN  shift 15
+	SUB  shift 17
+	.  error
+
+	expr  goto 33
+
+state 22
+	expr:  expr ADD.expr 
+
+	INT  shift 16
+	LPAREN  shift 15
+	SUB  shift 17
+	.  error
+
+	expr  goto 34
+
+state 23
+	expr:  expr SUB.expr 
+
+	INT  shift 16
+	LPAREN  shift 15
+	SUB  shift 17
+	.  error
+
+	expr  goto 35
+
+state 24
+	expr:  expr MOD.expr 
+
+	INT  shift 16
+	LPAREN  shift 15
+	SUB  shift 17
+	.  error
+
+	expr  goto 36
+
+state 25
+	expr:  LPAREN expr.RPAREN 
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+
+	RPAREN  shift 37
+	ADD  shift 22
+	SUB  shift 23
+	MUL  shift 20
+	DIV  shift 21
+	MOD  shift 24
+	.  error
+
+
+state 26
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  SUB expr.    (14)
+
+	.  reduce 14 (src line 95)
+
+
+state 27
+	var_declarations:  var_declarations.NEWLINE var_declaration 
+	contract_data:  DATA LBRACE NEWLINE var_declarations.NEWLINE RBRACE NEWLINE 
+
+	NEWLINE  shift 38
+	.  error
+
+
+state 28
+	var_declarations:  var_declaration.    (18)
+
+	.  reduce 18 (src line 107)
+
+
+state 29
+	var_declaration:  type.ident_list 
+
+	IDENT  shift 40
+	.  error
+
+	ident_list  goto 39
+
+state 30
+	type:  T_BOOL.    (1)
+
+	.  reduce 1 (src line 72)
+
+
+state 31
+	type:  T_INT.    (2)
+
+	.  reduce 2 (src line 74)
+
+
+state 32
+	expr:  expr.MUL expr 
+	expr:  expr MUL expr.    (9)
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
 
 	.  reduce 9 (src line 90)
 
 
-state 11
-	contract_data:  DATA LBRACE.var_declarations RBRACE 
+state 33
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr DIV expr.    (10)
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
 
-	T_BOOL  shift 15
-	T_INT  shift 16
+	.  reduce 10 (src line 91)
+
+
+state 34
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr ADD expr.    (11)
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+
+	MUL  shift 20
+	DIV  shift 21
+	MOD  shift 24
+	.  reduce 11 (src line 92)
+
+
+state 35
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr SUB expr.    (12)
+	expr:  expr.MOD expr 
+
+	MUL  shift 20
+	DIV  shift 21
+	MOD  shift 24
+	.  reduce 12 (src line 93)
+
+
+state 36
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr MOD expr.    (13)
+
+	.  reduce 13 (src line 94)
+
+
+state 37
+	expr:  LPAREN expr RPAREN.    (7)
+
+	.  reduce 7 (src line 87)
+
+
+state 38
+	var_declarations:  var_declarations NEWLINE.var_declaration 
+	contract_data:  DATA LBRACE NEWLINE var_declarations NEWLINE.RBRACE NEWLINE 
+
+	RBRACE  shift 42
+	T_BOOL  shift 30
+	T_INT  shift 31
 	.  error
 
-	type  goto 14
-	var_declaration  goto 13
-	var_declarations  goto 12
+	type  goto 29
+	var_declaration  goto 41
 
-state 12
-	var_declarations:  var_declarations.var_declaration 
-	contract_data:  DATA LBRACE var_declarations.RBRACE 
-
-	RBRACE  shift 18
-	T_BOOL  shift 15
-	T_INT  shift 16
-	.  error
-
-	type  goto 14
-	var_declaration  goto 17
-
-state 13
-	var_declarations:  var_declaration.    (6)
-
-	.  reduce 6 (src line 83)
-
-
-state 14
-	var_declaration:  type.ident_list 
-
-	IDENT  shift 20
-	.  error
-
-	ident_list  goto 19
-
-state 15
-	type:  T_BOOL.    (1)
-
-	.  reduce 1 (src line 60)
-
-
-state 16
-	type:  T_INT.    (2)
-
-	.  reduce 2 (src line 62)
-
-
-state 17
-	var_declarations:  var_declarations var_declaration.    (7)
-
-	.  reduce 7 (src line 85)
-
-
-state 18
-	contract_data:  DATA LBRACE var_declarations RBRACE.    (11)
-
-	.  reduce 11 (src line 97)
-
-
-state 19
+state 39
 	ident_list:  ident_list.IDENT 
-	var_declaration:  type ident_list.    (5)
+	var_declaration:  type ident_list.    (17)
 
-	IDENT  shift 21
-	.  reduce 5 (src line 70)
-
-
-state 20
-	ident_list:  IDENT.    (3)
-
-	.  reduce 3 (src line 65)
+	IDENT  shift 43
+	.  reduce 17 (src line 103)
 
 
-state 21
-	ident_list:  ident_list IDENT.    (4)
+state 40
+	ident_list:  IDENT.    (15)
 
-	.  reduce 4 (src line 67)
+	.  reduce 15 (src line 98)
 
 
-20 terminals, 9 nonterminals
-14 grammar rules, 22/8000 states
+state 41
+	var_declarations:  var_declarations NEWLINE var_declaration.    (19)
+
+	.  reduce 19 (src line 109)
+
+
+state 42
+	contract_data:  DATA LBRACE NEWLINE var_declarations NEWLINE RBRACE.NEWLINE 
+
+	NEWLINE  shift 44
+	.  error
+
+
+state 43
+	ident_list:  ident_list IDENT.    (16)
+
+	.  reduce 16 (src line 100)
+
+
+state 44
+	contract_data:  DATA LBRACE NEWLINE var_declarations NEWLINE RBRACE NEWLINE.    (21)
+
+	.  reduce 21 (src line 114)
+
+
+26 terminals, 11 nonterminals
+24 grammar rules, 45/8000 states
 0 shift/reduce, 0 reduce/reduce conflicts reported
-58 working sets used
-memory: parser 10/120000
-0 extra closures
-14 shift entries, 1 exceptions
-9 goto entries
+60 working sets used
+memory: parser 19/120000
+13 extra closures
+60 shift entries, 1 exceptions
+18 goto entries
 1 entries saved by goto default
-Optimizer space used: output 24/120000
-24 table entries, 1 zero
-maximum spread: 20, maximum offset: 19
+Optimizer space used: output 57/120000
+57 table entries, 0 zero
+maximum spread: 25, maximum offset: 38

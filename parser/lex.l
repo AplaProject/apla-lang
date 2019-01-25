@@ -28,7 +28,7 @@ unicodeLetter	\x80
 
 	c = l.Rule0()
 
-[ \t\r\n ]+		// ignore all whitespace
+[ \t\r ]+		// ignore all whitespace
 
 ,				return l.char(COMMA)
 :				return l.char(COLON)
@@ -38,6 +38,16 @@ unicodeLetter	\x80
 \}				return l.char(RBRACE)
 \[				return l.char(LBRAKET)
 \]				return l.char(RBRAKET)
+\n				return l.char(NEWLINE)
+;				return l.char(NEWLINE)
+
+\+\n			return l.char(ADD)
+\+				return l.char(ADD)
+-				return l.char(SUB)
+\*				return l.char(MUL)
+\/				return l.char(DIV)
+%				return l.char(MOD)
+
 
 data    		return l.char(DATA)
 contract		return l.char(CONTRACT)

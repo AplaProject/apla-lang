@@ -24,28 +24,35 @@ func TestGrammar(t *testing.T) {
 		},
 		{
 			`contract Test {
-				data { int my
+				data { 
+					int my
 				}
 						}`,
 			nil,
 		},
 		{
-			`contract Тест { data { int My My2
-						bool Is
+			`contract Тест {
+						data {
+							int My My2
+							bool Is
 					  }
-							}`,
-			nil,
-		},
-		{
-			`contract Тест { data { int my1 int my2}
-									    1
-									}`,
+					}`,
 			nil,
 		},
 		{
 			`contract Тест {
-								    7
-								}`,
+						data {
+							int my1
+							int my2
+						}
+						-1
+					}`,
+			nil,
+		},
+		{
+			`contract Тест {;
+				7 +
+				-3 * 4 *(1 + 2) ;}`,
 			nil,
 		},
 	}
