@@ -7,6 +7,7 @@ const (
 	TContract = iota + 1 // contract
 	TData                // Data info
 	TBlock
+	TStatements
 )
 
 // NVar contains type and name of variable or parameter
@@ -15,10 +16,15 @@ type NVar struct {
 	Name string
 }
 
-// NBlock contains statements
+// NBlock contains body of contract
 type NBlock struct {
-	Params []NVar
-	List   []*Node
+	Params     []NVar
+	Statements *Node
+}
+
+// NStatements contains statements
+type NStatements struct {
+	List []*Node
 }
 
 // NContract is a root node
@@ -52,11 +58,12 @@ func newContract(name string, block *Node, l yyLexer) *Node {
 	}, l)
 }
 
-func newBlock(vars []NVar, l yyLexer) *Node {
+func newBlock(vars []NVar, statements *Node, l yyLexer) *Node {
 	return setPos(&Node{
 		Type: TBlock,
 		Value: &NBlock{
-			Params: vars,
+			Params:     vars,
+			Statements: statements,
 		},
 	}, l)
 }
@@ -70,4 +77,26 @@ func newVars(vtype int, vars []string) []NVar {
 		}
 	}
 	return va
+}
+
+func newStatement(statements *Node, l yyLexer) *Node {
+	return setPos(&Node{
+		Type: TStatements,
+		Value: &NStatements{
+			List: make([]*Node, 0, 10),
+		},
+	}, l)
+}
+
+func addStatement(statements *Node, statement *Node, l yyLexer) *Node {
+	if statements == nil {
+		statements = setPos(&Node{
+			Type: TStatements,
+			Value: &NStatements{
+				List: make([]*Node, 0, 10),
+			},
+		}, l)
+	} else {
+		statements.Value.(*NStatements).List = append(statements.Value.(*NStatements).List, statement)
+	}
 }

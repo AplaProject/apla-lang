@@ -44,6 +44,13 @@ func setResult(l yyLexer, v *Node) {
 %token DIV // /
 %token MOD // %
 
+%token ADD_ASSIGN // +=
+%token SUB_ASSIGN // -=
+%token MUL_ASSIGN // *=
+%token DIV_ASSIGN // /=
+%token MOD_ASSIGN // %=
+%token ASSIGN // =
+
 // Keywords
 %token DATA       // data
 %token CONTRACT   // contract
@@ -57,7 +64,10 @@ func setResult(l yyLexer, v *Node) {
 %type <va> var_declaration
 %type <va> var_declarations
 %type <va> contract_data
+%type <s> var
 %type <i> expr
+%type <n> statement
+%type <n> statements
 %type <n> contract_body
 %type <n> contract_declaration
 
@@ -75,13 +85,23 @@ type
     ;
 
 statements
-    : /*empty*/
-    | statements NEWLINE
-    | statements statement NEWLINE 
+    : /*empty*/ { $$ = nil }
+    | statements NEWLINE { $$ = $1 }
+    | statements statement NEWLINE { $$ = addStatement($1, $2, yylex)}
     ;
 
+var 
+    : IDENT { $$ = $1; }
+
 statement 
-    : expr
+    : var ASSIGN expr { $$ = $3; }
+    | var ADD_ASSIGN expr { $$ = $3; }
+    | var SUB_ASSIGN expr { $$ = $3; }
+    | var MUL_ASSIGN expr { $$ = $3; }
+    | var DIV_ASSIGN expr { $$ = $3; }
+    | var MOD_ASSIGN expr { $$ = $3; }
+    | type IDENT ASSIGN expr
+    | type ident_list
     ;
 
 expr
@@ -116,7 +136,7 @@ contract_data
 
 contract_body 
     : contract_data statements {
-        $$ = newBlock($1, yylex)
+        $$ = newBlock($1, $2, yylex)
         fmt.Println("BODY", $$)
     }
     ;

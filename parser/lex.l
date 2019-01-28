@@ -30,6 +30,13 @@ unicodeLetter	\x80
 
 [ \t\r ]+		// ignore all whitespace
 
+\+=				return l.char(ADD_ASSIGN)
+-=				return l.char(SUB_ASSIGN)
+\*=				return l.char(MUL_ASSIGN)
+\/=				return l.char(DIV_ASSIGN)
+%=				return l.char(MOD_ASSIGN)
+=				return l.char(ASSIGN)
+
 ,[ \t]*\n?		return l.char(COMMA)
 :				return l.char(COLON)
 \([ \t]*\n?     return l.char(LPAREN)
