@@ -30,23 +30,23 @@ unicodeLetter	\x80
 
 [ \t\r ]+		// ignore all whitespace
 
-,				return l.char(COMMA)
+,[ \t]*\n?		return l.char(COMMA)
 :				return l.char(COLON)
-\(				return l.char(LPAREN)
+\([ \t]*\n?     return l.char(LPAREN)
+\n[ \t]*\)		return l.char(RPAREN)
 \)				return l.char(RPAREN)
-\{				return l.char(LBRACE)
+\{[ \t]*\n?  	return l.char(LBRACE)
 \}				return l.char(RBRACE)
-\[				return l.char(LBRAKET)
+\[[ \t]*\n?		return l.char(LBRAKET)
 \]				return l.char(RBRAKET)
 \n				return l.char(NEWLINE)
 ;				return l.char(NEWLINE)
 
-\+\n			return l.char(ADD)
-\+				return l.char(ADD)
--				return l.char(SUB)
-\*				return l.char(MUL)
-\/				return l.char(DIV)
-%				return l.char(MOD)
+\+[ \t]*\n?		return l.char(ADD)
+-[ \t]*\n?		return l.char(SUB)
+\*[ \t]*\n?		return l.char(MUL)
+\/[ \t]*\n?		return l.char(DIV)
+%[ \t]*\n?		return l.char(MOD)
 
 
 data    		return l.char(DATA)

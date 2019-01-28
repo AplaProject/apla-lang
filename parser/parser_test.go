@@ -51,7 +51,7 @@ func TestGrammar(t *testing.T) {
 		},
 		{
 			`contract Тест {;
-				7 +
+				7 + 	
 				-3 * 4 *(1 + 2) ;}`,
 			nil,
 		},
