@@ -51,6 +51,18 @@ func setResult(l yyLexer, v *Node) {
 %token MOD_ASSIGN // %=
 %token ASSIGN // =
 
+%token AND // &&
+%token OR  // ||
+
+%token EQ     // ==
+%token NOT_EQ // !=
+%token NOT    // !
+
+%token LT     // <
+%token GT     // >
+%token LTE    // <=
+%token GTE    // >=
+
 // Keywords
 %token DATA       // data
 %token CONTRACT   // contract
@@ -64,16 +76,19 @@ func setResult(l yyLexer, v *Node) {
 %type <va> var_declaration
 %type <va> var_declarations
 %type <va> contract_data
-%type <s> var
-%type <i> expr
+%type <n> var
+%type <n> expr
 %type <n> statement
 %type <n> statements
 %type <n> contract_body
 %type <n> contract_declaration
 
+%left AND 
+%left OR
+%left LTE GTE LT GT EQ NOT_EQ
 %left ADD SUB
 %left MUL DIV MOD
-%right UNARYMINUS 
+%right UNARYMINUS UNARYNOT
 
 %start contract_declaration
 
@@ -91,28 +106,38 @@ statements
     ;
 
 var 
-    : IDENT { $$ = $1; }
+    : IDENT { $$ = newVarValue($1, yylex); }
 
 statement 
-    : var ASSIGN expr { $$ = $3; }
-    | var ADD_ASSIGN expr { $$ = $3; }
-    | var SUB_ASSIGN expr { $$ = $3; }
-    | var MUL_ASSIGN expr { $$ = $3; }
-    | var DIV_ASSIGN expr { $$ = $3; }
-    | var MOD_ASSIGN expr { $$ = $3; }
-    | type IDENT ASSIGN expr
-    | type ident_list
+    : var ASSIGN expr { $$ = newBinary($1, $3, ASSIGN, yylex) }
+    | var ADD_ASSIGN expr { $$ = newBinary($1, $3, ADD_ASSIGN, yylex); }
+    | var SUB_ASSIGN expr { $$ = newBinary($1, $3, SUB_ASSIGN, yylex); }
+    | var MUL_ASSIGN expr { $$ = newBinary($1, $3, MUL_ASSIGN, yylex); }
+    | var DIV_ASSIGN expr { $$ = newBinary($1, $3, DIV_ASSIGN, yylex); }
+    | var MOD_ASSIGN expr { $$ = newBinary($1, $3, MOD_ASSIGN, yylex); } 
+    | type IDENT ASSIGN expr { $$ = newBinary( newVarDecl( $1, []string{$2}, yylex ), $4, ASSIGN, yylex) }
+    | type ident_list { $$ = newVarDecl( $1, $2, yylex )}
     ;
 
 expr
-    : LPAREN expr RPAREN { $$ = $2; fmt.Println(`PAR`,$2) }
-    | INT { $$ = $1; fmt.Println(`INT`,$1)}
-    | expr MUL expr { $$ = $1*$3; fmt.Println(`MUL`,$1, $3) }
-    | expr DIV expr { /*$$ = $1/$3; */ }
-    | expr ADD expr { $$ = $1+$3; fmt.Println(`ADD`,$1, $3) }
-    | expr SUB expr { /*$$ = $1-$3; */}
-    | expr MOD expr { /*$$ = $1-$3; */}
-    | SUB expr %prec UNARYMINUS { $$ = -$2; fmt.Println(`NEG`,$2)}
+    : LPAREN expr RPAREN { $$ = $2; }
+    | INT { $$ = newValue($1, yylex);}
+    | expr MUL expr { $$ = newBinary($1, $3, MUL, yylex); }
+    | expr DIV expr { $$ = newBinary($1, $3, DIV, yylex);  }
+    | expr ADD expr { $$ = newBinary($1, $3, ADD, yylex); }
+    | expr SUB expr { $$ = newBinary($1, $3, SUB, yylex);}
+    | expr MOD expr { $$ = newBinary($1, $3, MOD, yylex); } 
+    | expr AND expr { $$ = newBinary($1, $3, AND, yylex); }
+    | expr OR expr { $$ = newBinary($1, $3, OR, yylex);  }
+    | expr EQ expr { $$ = newBinary($1, $3, EQ, yylex); }
+    | expr NOT_EQ expr { $$ = newBinary($1, $3, NOT_EQ, yylex);}
+    | expr LTE expr { $$ = newBinary($1, $3, LTE, yylex); }
+    | expr GTE expr { $$ = newBinary($1, $3, GTE, yylex);  }
+    | expr LT expr { $$ = newBinary($1, $3, LT, yylex); }
+    | expr GT expr { $$ = newBinary($1, $3, GT, yylex);}
+
+    | SUB expr %prec UNARYMINUS { $$ = newUnary($2, SUB, yylex)}
+    | NOT expr %prec UNARYNOT { $$ = newUnary($2, NOT, yylex)}
     ;
 
 ident_list

@@ -49,12 +49,23 @@ unicodeLetter	\x80
 \n				return l.char(NEWLINE)
 ;				return l.char(NEWLINE)
 
+&&				return l.char(AND)
+\|\|			return l.char(OR)
+
 \+[ \t]*\n?		return l.char(ADD)
 -[ \t]*\n?		return l.char(SUB)
 \*[ \t]*\n?		return l.char(MUL)
 \/[ \t]*\n?		return l.char(DIV)
 %[ \t]*\n?		return l.char(MOD)
 
+==				return l.char(EQ)
+!=				return l.char(NOT_EQ)
+!				return l.char(NOT)
+
+\<=				return l.char(LTE)
+>=				return l.char(GTE)
+\<				return l.char(LT)
+>				return l.char(GT)
 
 data    		return l.char(DATA)
 contract		return l.char(CONTRACT)

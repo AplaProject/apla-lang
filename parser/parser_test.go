@@ -39,20 +39,21 @@ func TestGrammar(t *testing.T) {
 		},
 		{
 			`contract Тест {
-								data {
-									int my1
-									int my2
-								}
-								int b c
-								int a = -1
-								b += 20
-							}`,
+										data {
+											int my1
+											int my2
+										}
+										int b c
+										int a = -1
+										b += 20
+				}`,
 			nil,
 		},
+
 		{
 			`contract Тест {
-					int a = 7 +
-					-3 * 4 *(1 + 2) ;}`,
+							int a = 7 +
+							-3 * 4 *(1 + 2) ;}`,
 			nil,
 		},
 	}
