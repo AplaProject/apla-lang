@@ -13,6 +13,8 @@ const (
 	TBinary
 	TUnary
 	TVarValue
+	TIf
+	TElif
 )
 
 // NVar contains type and name of variable or parameter
@@ -24,6 +26,24 @@ type NVar struct {
 // NVarValue contains the name of variable
 type NVarValue struct {
 	Name string
+}
+
+// NIf - if statement
+type NIf struct {
+	Cond     *Node
+	IfBody   *Node
+	ElifBody *Node
+	ElseBody *Node
+}
+
+type NElifBody struct {
+	Cond *Node
+	Body *Node
+}
+
+// NElif - elif statement
+type NElif struct {
+	List []*NElifBody
 }
 
 // NBlock contains body of contract
@@ -181,4 +201,33 @@ func newUnary(operand *Node, oper int, l yyLexer) *Node {
 			Operand: operand,
 		},
 	}, l)
+}
+
+func newIf(cond *Node, ifbody *Node, elif *Node, elsebody *Node, l yyLexer) *Node {
+	return setPos(&Node{
+		Type: TIf,
+		Value: &NIf{
+			Cond:     cond,
+			IfBody:   ifbody,
+			ElifBody: elif,
+			ElseBody: elsebody,
+		},
+	}, l)
+}
+
+func newElif(statements *Node, cond *Node, statement *Node, l yyLexer) *Node {
+	if statements == nil {
+		statements = setPos(&Node{
+			Type: TElif,
+			Value: &NElif{
+				List: make([]*NElifBody, 0, 10),
+			},
+		}, l)
+	} else {
+		statements.Value.(*NElif).List = append(statements.Value.(*NElif).List, &NElifBody{
+			Cond: cond,
+			Body: statement,
+		})
+	}
+	return statements
 }

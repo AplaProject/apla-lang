@@ -66,6 +66,10 @@ func setResult(l yyLexer, v *Node) {
 // Keywords
 %token DATA       // data
 %token CONTRACT   // contract
+%token IF     // if
+%token ELIF   // elif
+%token ELSE   // else
+
 
 // Types
 %token T_BOOL   // bool
@@ -78,6 +82,8 @@ func setResult(l yyLexer, v *Node) {
 %type <va> contract_data
 %type <n> var
 %type <n> expr
+%type <n> elif
+%type <n> else
 %type <n> statement
 %type <n> statements
 %type <n> contract_body
@@ -108,6 +114,16 @@ statements
 var 
     : IDENT { $$ = newVarValue($1, yylex); }
 
+else 
+   : /*empty*/ {$$ = nil}
+   | ELSE LBRACE statements RBRACE { $$ = $3 }
+   ;
+
+elif
+   : /*empty*/ {$$ = nil}
+   | elif ELIF expr LBRACE statements RBRACE { $$ = newElif($1, $3, $5, yylex) }
+   ;
+
 statement 
     : var ASSIGN expr { $$ = newBinary($1, $3, ASSIGN, yylex) }
     | var ADD_ASSIGN expr { $$ = newBinary($1, $3, ADD_ASSIGN, yylex); }
@@ -117,11 +133,14 @@ statement
     | var MOD_ASSIGN expr { $$ = newBinary($1, $3, MOD_ASSIGN, yylex); } 
     | type IDENT ASSIGN expr { $$ = newBinary( newVarDecl( $1, []string{$2}, yylex ), $4, ASSIGN, yylex) }
     | type ident_list { $$ = newVarDecl( $1, $2, yylex )}
+    | IF expr LBRACE statements RBRACE elif else { $$ = newIf( $2, $4, $6, $7, yylex )}
     ;
 
 expr
     : LPAREN expr RPAREN { $$ = $2; }
     | INT { $$ = newValue($1, yylex);}
+    | TRUE { $$ = newValue(true, yylex);}
+    | FALSE { $$ = newValue(false, yylex);}
     | expr MUL expr { $$ = newBinary($1, $3, MUL, yylex); }
     | expr DIV expr { $$ = newBinary($1, $3, DIV, yylex);  }
     | expr ADD expr { $$ = newBinary($1, $3, ADD, yylex); }

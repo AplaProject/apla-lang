@@ -56,6 +56,25 @@ func TestGrammar(t *testing.T) {
 							-3 * 4 *(1 + 2) ;}`,
 			nil,
 		},
+		{
+			`contract Тест {
+				if true { a = 10 
+				}
+				if false {
+					q = 10
+				} else {
+					q = 20
+				}
+				if true && true {
+					
+				} elif false || false {
+
+				} elif true || false {
+
+				}
+			}`,
+			nil,
+		},
 	}
 
 	yyErrorVerbose = true

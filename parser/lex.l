@@ -43,7 +43,7 @@ unicodeLetter	\x80
 \n[ \t]*\)		return l.char(RPAREN)
 \)				return l.char(RPAREN)
 \{[ \t]*\n?  	return l.char(LBRACE)
-\}				return l.char(RBRACE)
+\}		return l.char(RBRACE)
 \[[ \t]*\n?		return l.char(LBRAKET)
 \]				return l.char(RBRAKET)
 \n				return l.char(NEWLINE)
@@ -69,6 +69,11 @@ unicodeLetter	\x80
 
 data    		return l.char(DATA)
 contract		return l.char(CONTRACT)
+if				return l.char(IF)
+elif			return l.char(ELIF)
+else			return l.char(ELSE)
+true			return l.char(TRUE)
+false			return l.char(FALSE)
 
 bool			return l.char(T_BOOL)
 int				return l.char(T_INT)
