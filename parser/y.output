@@ -33,7 +33,7 @@ state 4
 	contract_data: .    (44)
 
 	DATA  shift 7
-	.  reduce 44 (src line 176)
+	.  reduce 44 (src line 174)
 
 	contract_data  goto 6
 	contract_body  goto 5
@@ -49,7 +49,7 @@ state 6
 	contract_body:  contract_data.statements 
 	statements: .    (3)
 
-	.  reduce 3 (src line 108)
+	.  reduce 3 (src line 106)
 
 	statements  goto 9
 
@@ -63,7 +63,7 @@ state 7
 state 8
 	contract_declaration:  CONTRACT IDENT LBRACE contract_body RBRACE.    (47)
 
-	.  reduce 47 (src line 188)
+	.  reduce 47 (src line 185)
 
 
 state 9
@@ -76,7 +76,7 @@ state 9
 	IF  shift 15
 	T_BOOL  shift 17
 	T_INT  shift 18
-	.  reduce 46 (src line 181)
+	.  reduce 46 (src line 179)
 
 	type  goto 14
 	var  goto 13
@@ -96,7 +96,7 @@ state 10
 state 11
 	statements:  statements NEWLINE.    (4)
 
-	.  reduce 4 (src line 110)
+	.  reduce 4 (src line 108)
 
 
 state 12
@@ -148,19 +148,19 @@ state 15
 state 16
 	var:  IDENT.    (6)
 
-	.  reduce 6 (src line 114)
+	.  reduce 6 (src line 112)
 
 
 state 17
 	type:  T_BOOL.    (1)
 
-	.  reduce 1 (src line 103)
+	.  reduce 1 (src line 101)
 
 
 state 18
 	type:  T_INT.    (2)
 
-	.  reduce 2 (src line 105)
+	.  reduce 2 (src line 103)
 
 
 state 19
@@ -174,7 +174,7 @@ state 19
 state 20
 	var_declarations:  var_declaration.    (42)
 
-	.  reduce 42 (src line 171)
+	.  reduce 42 (src line 169)
 
 
 state 21
@@ -188,7 +188,7 @@ state 21
 state 22
 	statements:  statements statement NEWLINE.    (5)
 
-	.  reduce 5 (src line 111)
+	.  reduce 5 (src line 109)
 
 
 state 23
@@ -274,7 +274,7 @@ state 29
 	ident_list:  IDENT.    (39)
 
 	ASSIGN  shift 47
-	.  reduce 39 (src line 162)
+	.  reduce 39 (src line 160)
 
 
 state 30
@@ -282,7 +282,7 @@ state 30
 	ident_list:  ident_list.IDENT 
 
 	IDENT  shift 48
-	.  reduce 18 (src line 135)
+	.  reduce 18 (src line 133)
 
 
 state 31
@@ -334,19 +334,19 @@ state 32
 state 33
 	expr:  INT.    (21)
 
-	.  reduce 21 (src line 141)
+	.  reduce 21 (src line 139)
 
 
 state 34
 	expr:  TRUE.    (22)
 
-	.  reduce 22 (src line 142)
+	.  reduce 22 (src line 140)
 
 
 state 35
 	expr:  FALSE.    (23)
 
-	.  reduce 23 (src line 143)
+	.  reduce 23 (src line 141)
 
 
 state 36
@@ -392,13 +392,13 @@ state 39
 	var_declaration:  type ident_list.    (41)
 
 	IDENT  shift 48
-	.  reduce 41 (src line 167)
+	.  reduce 41 (src line 165)
 
 
 state 40
 	ident_list:  IDENT.    (39)
 
-	.  reduce 39 (src line 162)
+	.  reduce 39 (src line 160)
 
 
 state 41
@@ -430,7 +430,7 @@ state 41
 	GT  shift 62
 	LTE  shift 59
 	GTE  shift 60
-	.  reduce 11 (src line 127)
+	.  reduce 11 (src line 125)
 
 
 state 42
@@ -462,7 +462,7 @@ state 42
 	GT  shift 62
 	LTE  shift 59
 	GTE  shift 60
-	.  reduce 12 (src line 129)
+	.  reduce 12 (src line 127)
 
 
 state 43
@@ -494,7 +494,7 @@ state 43
 	GT  shift 62
 	LTE  shift 59
 	GTE  shift 60
-	.  reduce 13 (src line 130)
+	.  reduce 13 (src line 128)
 
 
 state 44
@@ -526,7 +526,7 @@ state 44
 	GT  shift 62
 	LTE  shift 59
 	GTE  shift 60
-	.  reduce 14 (src line 131)
+	.  reduce 14 (src line 129)
 
 
 state 45
@@ -558,7 +558,7 @@ state 45
 	GT  shift 62
 	LTE  shift 59
 	GTE  shift 60
-	.  reduce 15 (src line 132)
+	.  reduce 15 (src line 130)
 
 
 state 46
@@ -590,7 +590,7 @@ state 46
 	GT  shift 62
 	LTE  shift 59
 	GTE  shift 60
-	.  reduce 16 (src line 133)
+	.  reduce 16 (src line 131)
 
 
 state 47
@@ -609,14 +609,14 @@ state 47
 state 48
 	ident_list:  ident_list IDENT.    (40)
 
-	.  reduce 40 (src line 164)
+	.  reduce 40 (src line 162)
 
 
 state 49
 	statement:  IF expr LBRACE.statements RBRACE elif else 
 	statements: .    (3)
 
-	.  reduce 3 (src line 108)
+	.  reduce 3 (src line 106)
 
 	statements  goto 69
 
@@ -838,7 +838,7 @@ state 64
 	expr:  expr.GT expr 
 	expr:  SUB expr.    (37)
 
-	.  reduce 37 (src line 158)
+	.  reduce 37 (src line 156)
 
 
 state 65
@@ -857,13 +857,13 @@ state 65
 	expr:  expr.GT expr 
 	expr:  NOT expr.    (38)
 
-	.  reduce 38 (src line 159)
+	.  reduce 38 (src line 157)
 
 
 state 66
 	var_declarations:  var_declarations NEWLINE var_declaration.    (43)
 
-	.  reduce 43 (src line 173)
+	.  reduce 43 (src line 171)
 
 
 state 67
@@ -902,7 +902,7 @@ state 68
 	GT  shift 62
 	LTE  shift 59
 	GTE  shift 60
-	.  reduce 17 (src line 134)
+	.  reduce 17 (src line 132)
 
 
 state 69
@@ -938,7 +938,7 @@ state 70
 	expr:  expr.LT expr 
 	expr:  expr.GT expr 
 
-	.  reduce 24 (src line 144)
+	.  reduce 24 (src line 142)
 
 
 state 71
@@ -957,7 +957,7 @@ state 71
 	expr:  expr.LT expr 
 	expr:  expr.GT expr 
 
-	.  reduce 25 (src line 145)
+	.  reduce 25 (src line 143)
 
 
 state 72
@@ -979,7 +979,7 @@ state 72
 	MUL  shift 50
 	DIV  shift 51
 	MOD  shift 54
-	.  reduce 26 (src line 146)
+	.  reduce 26 (src line 144)
 
 
 state 73
@@ -1001,7 +1001,7 @@ state 73
 	MUL  shift 50
 	DIV  shift 51
 	MOD  shift 54
-	.  reduce 27 (src line 147)
+	.  reduce 27 (src line 145)
 
 
 state 74
@@ -1020,7 +1020,7 @@ state 74
 	expr:  expr.LT expr 
 	expr:  expr.GT expr 
 
-	.  reduce 28 (src line 148)
+	.  reduce 28 (src line 146)
 
 
 state 75
@@ -1051,7 +1051,7 @@ state 75
 	GT  shift 62
 	LTE  shift 59
 	GTE  shift 60
-	.  reduce 29 (src line 149)
+	.  reduce 29 (src line 147)
 
 
 state 76
@@ -1081,7 +1081,7 @@ state 76
 	GT  shift 62
 	LTE  shift 59
 	GTE  shift 60
-	.  reduce 30 (src line 150)
+	.  reduce 30 (src line 148)
 
 
 state 77
@@ -1105,7 +1105,7 @@ state 77
 	MUL  shift 50
 	DIV  shift 51
 	MOD  shift 54
-	.  reduce 31 (src line 151)
+	.  reduce 31 (src line 149)
 
 
 state 78
@@ -1129,7 +1129,7 @@ state 78
 	MUL  shift 50
 	DIV  shift 51
 	MOD  shift 54
-	.  reduce 32 (src line 152)
+	.  reduce 32 (src line 150)
 
 
 state 79
@@ -1153,7 +1153,7 @@ state 79
 	MUL  shift 50
 	DIV  shift 51
 	MOD  shift 54
-	.  reduce 33 (src line 153)
+	.  reduce 33 (src line 151)
 
 
 state 80
@@ -1177,7 +1177,7 @@ state 80
 	MUL  shift 50
 	DIV  shift 51
 	MOD  shift 54
-	.  reduce 34 (src line 154)
+	.  reduce 34 (src line 152)
 
 
 state 81
@@ -1201,7 +1201,7 @@ state 81
 	MUL  shift 50
 	DIV  shift 51
 	MOD  shift 54
-	.  reduce 35 (src line 155)
+	.  reduce 35 (src line 153)
 
 
 state 82
@@ -1225,26 +1225,26 @@ state 82
 	MUL  shift 50
 	DIV  shift 51
 	MOD  shift 54
-	.  reduce 36 (src line 156)
+	.  reduce 36 (src line 154)
 
 
 state 83
 	expr:  LPAREN expr RPAREN.    (20)
 
-	.  reduce 20 (src line 139)
+	.  reduce 20 (src line 137)
 
 
 state 84
 	contract_data:  DATA LBRACE var_declarations NEWLINE RBRACE NEWLINE.    (45)
 
-	.  reduce 45 (src line 178)
+	.  reduce 45 (src line 176)
 
 
 state 85
 	statement:  IF expr LBRACE statements RBRACE.elif else 
 	elif: .    (9)
 
-	.  reduce 9 (src line 122)
+	.  reduce 9 (src line 120)
 
 	elif  goto 86
 
@@ -1255,7 +1255,7 @@ state 86
 
 	ELIF  shift 87
 	ELSE  shift 89
-	.  reduce 7 (src line 117)
+	.  reduce 7 (src line 115)
 
 	else  goto 88
 
@@ -1275,7 +1275,7 @@ state 87
 state 88
 	statement:  IF expr LBRACE statements RBRACE elif else.    (19)
 
-	.  reduce 19 (src line 136)
+	.  reduce 19 (src line 134)
 
 
 state 89
@@ -1322,7 +1322,7 @@ state 91
 	else:  ELSE LBRACE.statements RBRACE 
 	statements: .    (3)
 
-	.  reduce 3 (src line 108)
+	.  reduce 3 (src line 106)
 
 	statements  goto 93
 
@@ -1330,7 +1330,7 @@ state 92
 	elif:  elif ELIF expr LBRACE.statements RBRACE 
 	statements: .    (3)
 
-	.  reduce 3 (src line 108)
+	.  reduce 3 (src line 106)
 
 	statements  goto 94
 
@@ -1371,13 +1371,13 @@ state 94
 state 95
 	else:  ELSE LBRACE statements RBRACE.    (8)
 
-	.  reduce 8 (src line 119)
+	.  reduce 8 (src line 117)
 
 
 state 96
 	elif:  elif ELIF expr LBRACE statements RBRACE.    (10)
 
-	.  reduce 10 (src line 124)
+	.  reduce 10 (src line 122)
 
 
 45 terminals, 14 nonterminals

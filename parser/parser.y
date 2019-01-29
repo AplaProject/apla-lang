@@ -1,8 +1,6 @@
 %{
 package parser
 
-import "fmt"
-
 func setResult(l yyLexer, v *Node) {
   l.(*lexer).result = v
 }
@@ -181,7 +179,6 @@ contract_data
 contract_body 
     : contract_data statements {
         $$ = newBlock($1, $2, yylex)
-        fmt.Println("BODY", $$)
     }
     ;
 
