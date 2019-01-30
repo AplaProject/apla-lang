@@ -4,9 +4,47 @@ import (
 	"errors"
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
+
+func TestRT(t *testing.T) {
+	code := []uint16{ // a b c i n
+		PUSH16, 1,
+		SETVAR, 0,
+		PUSH16, 1,
+		SETVAR, 1,
+		PUSH16, 3, // i = 3
+		SETVAR, 3,
+		PUSH32, 0x98, 0x9680, // n = 10000000
+		SETVAR, 4,
+		// 17
+		GETVAR, 3,
+		GETVAR, 4,
+		GTI32,
+		JNZ, 48,
+		GETVAR, 0,
+		GETVAR, 1,
+		ADDI32,
+		SETVAR, 2,
+		GETVAR, 1,
+		SETVAR, 0,
+		GETVAR, 2,
+		SETVAR, 1,
+		PUSH16, 1,
+		GETVAR, 3,
+		ADDI32,
+		SETVAR, 3,
+		JMP, 17,
+		// 48
+		GETVAR, 1,
+	}
+	start := time.Now()
+	i := Run(code)
+	fmt.Println(i, time.Since(start))
+	t.Error(`OK`)
+}
 
 func TestGrammar(t *testing.T) {
 	syntaxErr := func(v string) error {
