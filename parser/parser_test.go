@@ -64,7 +64,8 @@ func TestGrammar(t *testing.T) {
 			`contract Test {
 				data { 
 					int my
-				}
+				} /* wswsws
+				*/
 						}`,
 			nil,
 		},
@@ -82,8 +83,8 @@ func TestGrammar(t *testing.T) {
 											int my2
 										}
 										int b c
-										int a = -1
-										b += 20
+										int a = -1 // comment  	  
+										b += /* text */ 20
 				}`,
 			nil,
 		},

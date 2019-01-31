@@ -28,7 +28,9 @@ unicodeLetter	\x80
 
 	c = l.Rule0()
 
-[ \t\r ]+		// ignore all whitespace
+[ \t\r ]+		 // ignore all whitespace
+\/\*(.|\n)*\*\/  // ignore comments
+\/\/(.)*\n      return l.char(NEWLINE)
 
 \+=				return l.char(ADD_ASSIGN)
 -=				return l.char(SUB_ASSIGN)
