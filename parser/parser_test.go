@@ -12,9 +12,9 @@ import (
 func TestRT(t *testing.T) {
 	code := []uint16{ // a b c i n
 		PUSH16, 1,
-		SETVAR, 0,
+		SETVAR, 0, // a = 1
 		PUSH16, 1,
-		SETVAR, 1,
+		SETVAR, 1, // b = 1
 		PUSH16, 3, // i = 3
 		SETVAR, 3,
 		PUSH32, 0x98, 0x9680, // n = 10000000
@@ -22,27 +22,27 @@ func TestRT(t *testing.T) {
 		// 17
 		GETVAR, 3,
 		GETVAR, 4,
-		GTI32,
-		JNZ, 48,
+		GTI32,   // i > n
+		JNZ, 48, // break if i > n
 		GETVAR, 0,
 		GETVAR, 1,
 		ADDI32,
-		SETVAR, 2,
+		SETVAR, 2, // c = a + b
 		GETVAR, 1,
-		SETVAR, 0,
+		SETVAR, 0, // a = b
 		GETVAR, 2,
-		SETVAR, 1,
+		SETVAR, 1, // b = c
 		PUSH16, 1,
 		GETVAR, 3,
 		ADDI32,
-		SETVAR, 3,
-		JMP, 17,
+		SETVAR, 3, // i = i + 1
+		JMP, 17, // loop again
 		// 48
-		GETVAR, 1,
+		GETVAR, 1, // return b
 	}
 	start := time.Now()
-	i := Run(code)
-	fmt.Println(i, time.Since(start))
+	i, gas := Run(code)
+	fmt.Println(i, gas, time.Since(start))
 	t.Error(`OK`)
 }
 

@@ -19,8 +19,8 @@ const (
 	JMP
 )
 
-func Run(Code []uint16) int {
-	var i, top int
+func Run(Code []uint16) (int, int) {
+	var i, top, gas int
 
 	stack := make([]int, 100)
 
@@ -29,6 +29,7 @@ func Run(Code []uint16) int {
 	// top the latest value
 	for i < length {
 		//		fmt.Println(i, top, Code[i], vars[:5], stack[:top+1])
+		gas++
 		switch Code[i] {
 		case SETVAR:
 			i++
@@ -73,7 +74,7 @@ func Run(Code []uint16) int {
 		fmt.Println(`OOOPS`, vars[3])
 	}
 	if len(stack) > 0 {
-		return stack[top]
+		return stack[top], gas
 	}
-	return 0
+	return 0, gas
 }
