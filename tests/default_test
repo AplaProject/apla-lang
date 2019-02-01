@@ -1,0 +1,16 @@
+contract my {
+} 
+contract myNext {
+} 
+==== ssss
+myvar contract {
+} 
+==== ssss
+contract {
+} 
+==== ssss
+/* 
+   ==== expecting result or error text
+   ==== gas : expecting result or error text
+*/
+==== 

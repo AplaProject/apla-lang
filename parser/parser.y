@@ -15,7 +15,6 @@ func setResult(l yyLexer, v *Node) {
     s       string
     sa      []string
     va      []NVar
-    nb      *NBlock
 }
 
 // Identifiers + literals

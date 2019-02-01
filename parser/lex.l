@@ -60,14 +60,14 @@ unicodeLetter	\x80
 \/[ \t]*\n?		return l.char(DIV)
 %[ \t]*\n?		return l.char(MOD)
 
-==				return l.char(EQ)
-!=				return l.char(NOT_EQ)
+==[ \t]*\n?		return l.char(EQ)
+!=[ \t]*\n?		return l.char(NOT_EQ)
 !				return l.char(NOT)
 
-\<=				return l.char(LTE)
->=				return l.char(GTE)
-\<				return l.char(LT)
->				return l.char(GT)
+\<=[ \t]*\n?	return l.char(LTE)
+>=[ \t]*\n?		return l.char(GTE)
+\<[ \t]*\n?		return l.char(LT)
+>[ \t]*\n?  	return l.char(GT)
 
 data    		return l.char(DATA)
 contract		return l.char(CONTRACT)
