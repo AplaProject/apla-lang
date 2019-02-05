@@ -1,3 +1,19 @@
+contract myDIV {
+    return 100/(15-0xf)
+} 
+==== integer divide by zero
+contract myMULF {
+    return 2*false
+} 
+==== myMULF 2:14: Operator int*bool has not been found
+contract myMUL {
+    return 0xFF - 2*(50-16) + (20+52)/3 + (20-5 + 7)*3/0x2 + 8/3
+} 
+==== 246
+contract myAdd {
+    return 0xFF + 1 + -100 - 56 - -1000
+} 
+==== 1100
 contract myPush64 {
     return 0xFFFFFFFFFF
 } 

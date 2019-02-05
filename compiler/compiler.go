@@ -57,6 +57,20 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 				return err
 			}
 		}
+	case parser.TBinary:
+		nBinary := node.Value.(*parser.NBinary)
+		if err = nodeToCode(nBinary.Left, cmpl); err != nil {
+			return err
+		}
+		if err = nodeToCode(nBinary.Right, cmpl); err != nil {
+			return err
+		}
+		code, result := cmpl.findBinary(nBinary)
+		if code == rt.NOP {
+			return cmpl.ErrorOperator(node)
+		}
+		cmpl.Append(code)
+		node.Result = result
 	case parser.TUnary:
 		nUnary := node.Value.(*parser.NUnary)
 		if err = nodeToCode(nUnary.Operand, cmpl); err != nil {

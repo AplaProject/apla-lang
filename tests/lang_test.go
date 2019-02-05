@@ -95,12 +95,16 @@ func testFile(filename string) error {
 			}
 			continue
 		}
-		fmt.Println(`NAMES`, vm.NameSpace)
 		result, gas, err := vm.Run(vm.Contracts[len(vm.Contracts)-1])
-		if err = cnt.check(gas, result); err != nil {
+		if err != nil {
+			if err = cnt.checkError(err); err != nil {
+				return err
+			}
+		} else if err = cnt.check(gas, result); err != nil {
 			return err
 		}
 	}
+	fmt.Println(`NAMES`, vm.NameSpace)
 	return nil
 }
 

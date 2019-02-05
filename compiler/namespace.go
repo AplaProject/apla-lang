@@ -10,10 +10,22 @@ import (
 var (
 	operators = [][]uint32{
 		// BCode, Result, Operator, Type of parameters...
-		{rt.SIGNINT, parser.VInt, parser.SUB, parser.VInt}, // -int
-		{rt.NOT, parser.VBool, parser.NOT, parser.VBool},   // !bool
+		{rt.SIGNINT, parser.VInt, parser.SUB, parser.VInt},             // -int
+		{rt.NOT, parser.VBool, parser.NOT, parser.VBool},               // !bool
+		{rt.ADDINT, parser.VInt, parser.ADD, parser.VInt, parser.VInt}, // int+int
+		{rt.SUBINT, parser.VInt, parser.SUB, parser.VInt, parser.VInt}, // int-int
+		{rt.MULINT, parser.VInt, parser.MUL, parser.VInt, parser.VInt}, // int*int
+		{rt.DIVINT, parser.VInt, parser.DIV, parser.VInt, parser.VInt}, // int/int
 	}
 )
+
+func (cmpl *compiler) findBinary(binary *parser.NBinary) (rt.Bcode, uint32) {
+	key := fmt.Sprintf("#%d#%d#%d", binary.Oper, binary.Left.Result, binary.Right.Result)
+	if v, ok := (*cmpl.NameSpace)[key]; ok {
+		return rt.Bcode(v & 0xffff), v >> 24
+	}
+	return rt.NOP, 0
+}
 
 func (cmpl *compiler) findUnary(unary *parser.NUnary) (rt.Bcode, uint32) {
 	key := fmt.Sprintf("#%d#%d", unary.Oper, unary.Operand.Result)

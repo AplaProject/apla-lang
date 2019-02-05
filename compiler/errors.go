@@ -33,6 +33,12 @@ func (cmpl *compiler) ErrorOperator(node *parser.Node) error {
 	switch oper {
 	case parser.SUB:
 		name = `-`
+	case parser.ADD:
+		name = `+`
+	case parser.MUL:
+		name = `*`
+	case parser.DIV:
+		name = `/`
 	}
 	return cmpl.Error(node, fmt.Sprintf(errOperator, left+name+right))
 }

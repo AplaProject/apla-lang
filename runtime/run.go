@@ -8,6 +8,10 @@ import (
 
 type Bcode uint16
 
+const (
+	errDivZero = `integer divide by zero`
+)
+
 // Run executes a bytecode
 func (rt *Runtime) Run(code []Bcode) (string, int64, error) {
 	var (
@@ -30,11 +34,21 @@ main:
 			i += 2
 			top++
 			stack[top] = int64((uint64(code[i-1]) << 16) | uint64(code[i]&0xffff))
-		case PUSH64:
-			i += 4
-			top++
-			stack[top] = int64((uint64(code[i-3]) << 48) | (uint64(code[i-2]) << 32) |
-				(uint64(code[i-1]) << 16) | (uint64(code[i]) & 0xffff))
+		case ADDINT:
+			top--
+			stack[top] += stack[top+1]
+		case SUBINT:
+			top--
+			stack[top] -= stack[top+1]
+		case MULINT:
+			top--
+			stack[top] *= stack[top+1]
+		case DIVINT:
+			top--
+			if stack[top+1] == 0 {
+				return ``, gas, fmt.Errorf(errDivZero)
+			}
+			stack[top] /= stack[top+1]
 		case RETURN:
 			switch code[i+1] {
 			case parser.VVoid: // skip result
@@ -58,6 +72,11 @@ main:
 			} else {
 				stack[top] = 0
 			}
+		case PUSH64:
+			i += 4
+			top++
+			stack[top] = int64((uint64(code[i-3]) << 48) | (uint64(code[i-2]) << 32) |
+				(uint64(code[i-1]) << 16) | (uint64(code[i]) & 0xffff))
 		}
 		i++
 	}
