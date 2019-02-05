@@ -54,6 +54,12 @@ func TestGrammar(t *testing.T) {
 		err error
 	}{
 		{
+			`contract Test {
+				int b = 0x10bFA
+			}`,
+			nil,
+		},
+		{
 			`/* 
 			==== expecting result or error text
 			==== gas $ expecting result or error text

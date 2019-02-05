@@ -15,10 +15,11 @@ func (l *lexer) scan(lval *yySymType) lex.Char {
 	c := l.Enter()
 %}
 
+hexint	    	0[xX][0-9a-fA-F]+
 digit			[0-9]|{unicodeDigit}
-identifier		{letter}({letter}|{digit})*
 int				[0-9]+
 float			{int}\.[0-9]*
+identifier		{letter}({letter}|{digit})*
 string			\"({letter}|{digit})*\"
 letter			[_a-zA-Z]|{unicodeLetter}
 unicodeDigit	\x81
@@ -80,6 +81,13 @@ false			return l.char(FALSE)
 
 bool			return l.char(T_BOOL)
 int				return l.char(T_INT)
+hexint			return l.char(T_INT)
+
+{hexint}			{
+					val, _ := strconv.ParseInt(string(l.TokenBytes(nil)), 0, 64)
+					lval.i = int(val)
+					return l.char(INT)
+				}
 
 {int}			{
 					lval.i, _ = strconv.Atoi(string(l.TokenBytes(nil)))
