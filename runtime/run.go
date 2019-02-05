@@ -31,12 +31,24 @@ main:
 			case parser.VVoid: // skip result
 			case parser.VInt:
 				result = fmt.Sprint(stack[top])
+			case parser.VBool:
+				if stack[top] == 0 {
+					result = `false`
+				} else {
+					result = `true`
+				}
 			default:
-				fmt.Println(`OOOOPS`)
+				result = fmt.Sprint(stack[top])
 			}
 			break main
 		case SIGNINT:
 			stack[top] = -stack[top]
+		case NOT:
+			if stack[top] == 0 {
+				stack[top] = 1
+			} else {
+				stack[top] = 0
+			}
 		}
 		i++
 	}

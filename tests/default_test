@@ -1,3 +1,15 @@
+contract myNOTTR {
+    return !true
+} 
+==== false
+contract myTR {
+    return true
+} 
+==== true
+contract myE {
+    return -true
+} 
+==== myE 2:13: Operator -bool has not been found
 contract myS {
     return -100
 } 

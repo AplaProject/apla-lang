@@ -7,6 +7,11 @@ import (
 	rt "github.com/AplaProject/apla-lang/runtime"
 )
 
+type compiler struct {
+	Contract  *Contract
+	NameSpace *map[string]uint32
+}
+
 // Contract contains information about the contract
 type Contract struct {
 	ID   int64 // External id
@@ -14,62 +19,87 @@ type Contract struct {
 	Code []rt.Bcode
 }
 
-func nodeToCode(node *parser.Node, cnt *Contract) error {
+func nodeToCode(node *parser.Node, cmpl *compiler) error {
+	var err error
 	if node == nil {
 		return nil
 	}
 	switch node.Type {
 	case parser.TBlock:
-		nodeToCode(node.Value.(*parser.NBlock).Statements, cnt)
+		if err = nodeToCode(node.Value.(*parser.NBlock).Statements, cmpl); err != nil {
+			return err
+		}
 	case parser.TContract:
-		nodeToCode(node.Value.(*parser.NContract).Block, cnt)
-		cnt.Name = node.Value.(*parser.NContract).Name
-		fmt.Println(`CONT`, cnt.Name)
+		cmpl.Contract.Name = node.Value.(*parser.NContract).Name
+		if err = nodeToCode(node.Value.(*parser.NContract).Block, cmpl); err != nil {
+			return err
+		}
 	case parser.TReturn:
-		var vtype int32
+		var vtype uint32
 		expr := node.Value.(*parser.NReturn).Expr
 		if expr != nil {
-			nodeToCode(expr, cnt)
+			if err = nodeToCode(expr, cmpl); err != nil {
+				return err
+			}
 			vtype = expr.Result
 		}
-		cnt.Code = append(cnt.Code, []rt.Bcode{rt.RETURN, rt.Bcode(vtype)}...)
+		cmpl.Contract.Code = append(cmpl.Contract.Code, []rt.Bcode{rt.RETURN, rt.Bcode(vtype)}...)
 	case parser.TStatements:
 		for _, child := range node.Value.(*parser.NStatements).List {
-			nodeToCode(child, cnt)
+			if err = nodeToCode(child, cmpl); err != nil {
+				return err
+			}
 		}
 	case parser.TUnary:
 		nUnary := node.Value.(*parser.NUnary)
-		nodeToCode(nUnary.Operand, cnt)
-		switch nUnary.Oper {
-		case parser.SUB:
-			if nUnary.Operand.Result == parser.VInt {
-				cnt.Code = append(cnt.Code, rt.SIGNINT)
-				node.Result = parser.VInt
-			}
+		if err = nodeToCode(nUnary.Operand, cmpl); err != nil {
+			return err
 		}
+		code, result := cmpl.findUnary(nUnary)
+		if code == rt.NOP {
+			return cmpl.ErrorOperator(node)
+		}
+		cmpl.Contract.Code = append(cmpl.Contract.Code, code)
+		node.Result = result
 	case parser.TValue:
 		switch v := node.Value.(type) {
 		case int:
-			cnt.Code = append(cnt.Code, []rt.Bcode{rt.PUSH16, rt.Bcode(v)}...)
+			cmpl.Contract.Code = append(cmpl.Contract.Code, []rt.Bcode{rt.PUSH16, rt.Bcode(v)}...)
+			node.Result = parser.VInt
+		case bool:
+			var bcode rt.Bcode
+			if v {
+				bcode = 1
+			}
+			cmpl.Contract.Code = append(cmpl.Contract.Code, []rt.Bcode{rt.PUSH16, bcode}...)
+			node.Result = parser.VBool
 		default:
-			fmt.Printf("%v %T\n", v, node.Value)
+			return cmpl.Error(node, fmt.Sprintf(errType, node.Value))
 		}
 	}
 	return nil
 }
 
 // Compile compiles contract
-func Compile(input string) (cnt *Contract, err error) {
+func Compile(input string, nameSpace *map[string]uint32) (*Contract, error) {
 	var root *parser.Node
 
-	cnt = &Contract{
-		Code: make([]rt.Bcode, 0, 64),
+	if len(*nameSpace) == 0 {
+		initNameSpace(nameSpace)
 	}
-	root, err = parser.Parser(input)
+	cmpl := &compiler{
+		Contract: &Contract{
+			Code: make([]rt.Bcode, 0, 64),
+		},
+		NameSpace: nameSpace,
+	}
+
+	root, err := parser.Parser(input)
 	if err != nil {
-		return
+		return nil, err
 	}
-	nodeToCode(root, cnt)
-	fmt.Println(`ROOT`, cnt)
-	return
+	if err = nodeToCode(root, cmpl); err != nil {
+		return nil, err
+	}
+	return cmpl.Contract, nil
 }

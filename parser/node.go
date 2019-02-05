@@ -21,6 +21,7 @@ const (
 const (
 	VVoid = iota
 	VInt  // int
+	VBool // bool
 )
 
 // NVar contains type and name of variable or parameter
@@ -97,15 +98,15 @@ type NContract struct {
 type Node struct {
 	Type   int
 	Line   int
-	Column int32
-	Result int32
+	Column uint32
+	Result uint32
 	Value  interface{}
 }
 
 func setPos(node *Node, l yyLexer) *Node {
 	pos := l.(*lexer).FilePosition()
 	node.Line = pos.Line
-	node.Column = int32(pos.Column)
+	node.Column = uint32(pos.Column)
 	return node
 }
 
@@ -175,7 +176,7 @@ func addStatement(statements *Node, statement *Node, l yyLexer) *Node {
 }
 
 func newValue(value interface{}, l yyLexer) *Node {
-	var vtype int32
+	var vtype uint32
 	switch value.(type) {
 	case int:
 		vtype = VInt

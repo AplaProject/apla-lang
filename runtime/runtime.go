@@ -6,6 +6,7 @@ const (
 	PUSH32  // + int32
 	RETURN  // return from contract or function + int16 (type)
 	SIGNINT // unary minus int
+	NOT     // unary logical not
 )
 
 // Runtime is a runtime structure

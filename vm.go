@@ -28,7 +28,7 @@ func NewVM() *VM {
 
 // Compile compiles the contract and returns its structure
 func (vm *VM) Compile(input string) (cnt *compiler.Contract, err error) {
-	return compiler.Compile(input)
+	return compiler.Compile(input, &vm.NameSpace)
 }
 
 // GetContract returns the contract by its name
@@ -45,7 +45,6 @@ func (vm *VM) Link(cnt *compiler.Contract, reload bool) error {
 		ind uint32
 		ok  bool
 	)
-	fmt.Println(`LINK`, cnt)
 	if ind, ok = vm.NameSpace[cnt.Name]; ok && !reload {
 		return fmt.Errorf(errCntExists, cnt.Name)
 	} else if !ok && reload {
