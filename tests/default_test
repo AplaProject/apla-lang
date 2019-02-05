@@ -1,3 +1,19 @@
+contract myPushn3212 {
+    return -2147483648
+} 
+==== -2147483648
+contract myPushn321 {
+    return -1
+} 
+==== -1
+contract myPushn32 {
+    return 2147483647
+} 
+==== 2147483647
+contract myPush32 {
+    return (1000123)
+} 
+==== 1000123
 contract myNOTTR {
     return !true
 } 

@@ -2,6 +2,7 @@ package compiler
 
 import (
 	"fmt"
+	"math"
 
 	"github.com/AplaProject/apla-lang/parser"
 	rt "github.com/AplaProject/apla-lang/runtime"
@@ -17,6 +18,12 @@ type Contract struct {
 	ID   int64 // External id
 	Name string
 	Code []rt.Bcode
+}
+
+func (cmpl *compiler) Append(codes ...rt.Bcode) {
+	for _, code := range codes {
+		cmpl.Contract.Code = append(cmpl.Contract.Code, code)
+	}
 }
 
 func nodeToCode(node *parser.Node, cmpl *compiler) error {
@@ -43,7 +50,7 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 			}
 			vtype = expr.Result
 		}
-		cmpl.Contract.Code = append(cmpl.Contract.Code, []rt.Bcode{rt.RETURN, rt.Bcode(vtype)}...)
+		cmpl.Append(rt.RETURN, rt.Bcode(vtype))
 	case parser.TStatements:
 		for _, child := range node.Value.(*parser.NStatements).List {
 			if err = nodeToCode(child, cmpl); err != nil {
@@ -59,19 +66,28 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 		if code == rt.NOP {
 			return cmpl.ErrorOperator(node)
 		}
-		cmpl.Contract.Code = append(cmpl.Contract.Code, code)
+		cmpl.Append(code)
 		node.Result = result
 	case parser.TValue:
 		switch v := node.Value.(type) {
 		case int:
-			cmpl.Contract.Code = append(cmpl.Contract.Code, []rt.Bcode{rt.PUSH16, rt.Bcode(v)}...)
+			if v <= math.MaxInt16 && v >= math.MinInt16 {
+				cmpl.Append(rt.PUSH16, rt.Bcode(v))
+			} else if v <= math.MaxInt32 && v >= math.MinInt32 {
+				u32 := uint32(v)
+				cmpl.Append(rt.PUSH32, rt.Bcode(u32>>16), rt.Bcode(u32&0xffff))
+			} else {
+				u64 := uint64(v)
+				cmpl.Append(rt.PUSH64, rt.Bcode(u64>>48), rt.Bcode((u64>>32)&0xffff),
+					rt.Bcode((u64>>16)&0xffff), rt.Bcode(u64&0xffff))
+			}
 			node.Result = parser.VInt
 		case bool:
 			var bcode rt.Bcode
 			if v {
 				bcode = 1
 			}
-			cmpl.Contract.Code = append(cmpl.Contract.Code, []rt.Bcode{rt.PUSH16, bcode}...)
+			cmpl.Append(rt.PUSH16, bcode)
 			node.Result = parser.VBool
 		default:
 			return cmpl.Error(node, fmt.Sprintf(errType, node.Value))

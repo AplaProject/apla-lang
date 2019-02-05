@@ -6,7 +6,7 @@ import (
 	"github.com/AplaProject/apla-lang/parser"
 )
 
-type Bcode int16
+type Bcode uint16
 
 // Run executes a bytecode
 func (rt *Runtime) Run(code []Bcode) (string, int64, error) {
@@ -26,6 +26,15 @@ main:
 			i++
 			top++
 			stack[top] = int64(code[i])
+		case PUSH32:
+			i += 2
+			top++
+			stack[top] = int64((uint64(code[i-1]) << 16) | uint64(code[i]&0xffff))
+		case PUSH64:
+			i += 4
+			top++
+			stack[top] = int64((uint64(code[i-3]) << 48) | (uint64(code[i-2]) << 32) |
+				(uint64(code[i-1]) << 16) | (uint64(code[i]) & 0xffff))
 		case RETURN:
 			switch code[i+1] {
 			case parser.VVoid: // skip result
