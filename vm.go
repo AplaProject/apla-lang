@@ -2,6 +2,9 @@ package simvolio
 
 import (
 	"fmt"
+
+	"github.com/AplaProject/apla-lang/compiler"
+	"github.com/AplaProject/apla-lang/runtime"
 )
 
 const (
@@ -9,37 +12,27 @@ const (
 	errCntNotExists = `Contract %s doesn't exists`
 )
 
-// Contract contains information about the contract
-type Contract struct {
-	ID   int64 // External id
-	Name string
-	Code []uint32
-}
-
 // VM is a virtual machine structure
 type VM struct {
-	Contracts []*Contract
+	Contracts []*compiler.Contract
 	NameSpace map[string]uint32 // common namespace
 }
 
 // NewVM creates a new virtual machine
 func NewVM() *VM {
 	return &VM{
-		Contracts: make([]*Contract, 0, 1000),
+		Contracts: make([]*compiler.Contract, 0, 1000),
 		NameSpace: make(map[string]uint32),
 	}
 }
 
 // Compile compiles the contract and returns its structure
-func (vm *VM) Compile(input string) (cnt *Contract, err error) {
-	cnt = &Contract{
-		Code: make([]uint32, 0, 64),
-	}
-	return
+func (vm *VM) Compile(input string) (cnt *compiler.Contract, err error) {
+	return compiler.Compile(input)
 }
 
 // GetContract returns the contract by its name
-func (vm *VM) GetContract(name string) *Contract {
+func (vm *VM) GetContract(name string) *compiler.Contract {
 	if ind, ok := vm.NameSpace[name]; ok {
 		return vm.Contracts[ind]
 	}
@@ -47,11 +40,12 @@ func (vm *VM) GetContract(name string) *Contract {
 }
 
 // Link links the compiled contract to VM
-func (vm *VM) Link(cnt *Contract, reload bool) error {
+func (vm *VM) Link(cnt *compiler.Contract, reload bool) error {
 	var (
 		ind uint32
 		ok  bool
 	)
+	fmt.Println(`LINK`, cnt)
 	if ind, ok = vm.NameSpace[cnt.Name]; ok && !reload {
 		return fmt.Errorf(errCntExists, cnt.Name)
 	} else if !ok && reload {
@@ -61,7 +55,9 @@ func (vm *VM) Link(cnt *Contract, reload bool) error {
 		vm.Contracts[ind] = cnt
 	} else {
 		vm.Contracts = append(vm.Contracts, cnt)
+		ind = uint32(len(vm.Contracts) - 1)
 	}
+	vm.NameSpace[cnt.Name] = ind
 	return nil
 }
 
@@ -79,8 +75,9 @@ func (vm *VM) LoadContract(input string, id int64) error {
 }
 
 // Run executes the contract
-func (vm *VM) Run(cnt *Contract) (string, int64, error) {
-	return ``, 0, nil
+func (vm *VM) Run(cnt *compiler.Contract) (string, int64, error) {
+	rt := runtime.NewRuntime()
+	return rt.Run(cnt.Code)
 }
 
 // RunByName executes the contract

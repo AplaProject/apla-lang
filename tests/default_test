@@ -1,16 +1,39 @@
+contract myS {
+    return -100
+} 
+==== -100
+contract my777 {
+    return 777
+} 
+==== 777
+contract Empty {
+    return
+} 
+==== 
+contract my {
+    return
+} 
+==== Contract my has already been defined
+contract my {
+    10
+} 
+==== 2:5: syntax error: unexpected INT, expecting RBRACE
+contract my {
+} 
+==== 
 contract my {
 } 
 contract myNext {
 } 
-==== ssss
+==== 3:1: syntax error: unexpected CONTRACT, expecting NEWLINE
 myvar contract {
 } 
-==== ssss
+==== 1:1: syntax error: unexpected IDENT, expecting CONTRACT
 contract {
 } 
-==== ssss
+==== 1:10: syntax error: unexpected LBRACE, expecting IDENT
 /* 
    ==== expecting result or error text
-   ==== gas : expecting result or error text
+   ==== gas $ expecting result or error text
 */
-==== 
+==== 4:3: syntax error: unexpected $end, expecting CONTRACT

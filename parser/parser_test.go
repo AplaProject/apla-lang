@@ -54,6 +54,13 @@ func TestGrammar(t *testing.T) {
 		err error
 	}{
 		{
+			`/* 
+			==== expecting result or error text
+			==== gas $ expecting result or error text
+		 */`,
+			syntaxErr("file:1:10: syntax error: unexpected LBRACE, expecting IDENT"),
+		},
+		{
 			`contract {
 				}`,
 			syntaxErr("file:1:10: syntax error: unexpected LBRACE, expecting IDENT"),
@@ -117,15 +124,15 @@ func TestGrammar(t *testing.T) {
 	yyErrorVerbose = true
 
 	for _, v := range tests {
-		l, _ := NewLexer("file", v.in)
+		l, _ := NewLexer("", v.in)
 		//assert.NoError(t, err)
 		yyParse(l)
-		fmt.Println(`LEXER`, l.result)
+		fmt.Println(`LEXER`, l.result, l.err)
 		if v.err != nil {
 			//	assert.EqualError(t, l.err, v.err.Error())
 			continue
 		}
-
+		fmt.Println(`LERR`, l.err)
 		if l.err != nil {
 			t.Error(l.err)
 			break

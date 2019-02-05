@@ -48,7 +48,7 @@ func loadTest(filename string) (ret []*contract, err error) {
 
 	list := strings.Split(string(input), "\n")
 	source := make([]string, 0, 32)
-	re := regexp.MustCompile(`====\s*(\d+)\s*:(.*)`)
+	re := regexp.MustCompile(`====\s*(\d+)\s*\$(.*)`)
 
 	for i, line := range list {
 		if strings.HasPrefix(line, `====`) {
@@ -81,26 +81,33 @@ func loadTest(filename string) (ret []*contract, err error) {
 	return
 }
 
-func TestLang(t *testing.T) {
+func testFile(filename string) error {
 	vm := simvolio.NewVM()
-	contracts, err := loadTest(`default_test`)
+	contracts, err := loadTest(filename)
 	if err != nil {
-		t.Error(err)
-		return
+		return err
 	}
 	for i := int64(len(contracts)) - 1; i >= 0; i-- {
 		cnt := contracts[i]
 		if err = vm.LoadContract(cnt.Source, i); err != nil {
 			if err = cnt.checkError(err); err != nil {
-				t.Error(err)
-				return
+				return err
 			}
+			continue
 		}
+		fmt.Println(`NAMES`, vm.NameSpace)
 		result, gas, err := vm.Run(vm.Contracts[len(vm.Contracts)-1])
 		if err = cnt.check(gas, result); err != nil {
-			t.Error(err)
-			return
+			return err
 		}
 	}
-	t.Error(`OK`, vm)
+	return nil
+}
+
+func TestLang(t *testing.T) {
+	if err := testFile(`default_test`); err != nil {
+		t.Error(err)
+		return
+	}
+	t.Error(`OK`)
 }

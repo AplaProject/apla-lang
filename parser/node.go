@@ -15,6 +15,12 @@ const (
 	TVarValue
 	TIf
 	TElif
+	TReturn
+)
+
+const (
+	VVoid = iota
+	VInt  // int
 )
 
 // NVar contains type and name of variable or parameter
@@ -36,6 +42,7 @@ type NIf struct {
 	ElseBody *Node
 }
 
+// NElifBody - elif statement
 type NElifBody struct {
 	Cond *Node
 	Body *Node
@@ -75,6 +82,11 @@ type NStatements struct {
 	List []*Node
 }
 
+// NReturn is a return statement
+type NReturn struct {
+	Expr *Node
+}
+
 // NContract is a root node
 type NContract struct {
 	Name  string // the name of the contract
@@ -85,14 +97,15 @@ type NContract struct {
 type Node struct {
 	Type   int
 	Line   int
-	Column int
+	Column int32
+	Result int32
 	Value  interface{}
 }
 
 func setPos(node *Node, l yyLexer) *Node {
 	pos := l.(*lexer).FilePosition()
 	node.Line = pos.Line
-	node.Column = pos.Column
+	node.Column = int32(pos.Column)
 	return node
 }
 
@@ -112,6 +125,15 @@ func newBlock(vars []NVar, statements *Node, l yyLexer) *Node {
 		Value: &NBlock{
 			Params:     vars,
 			Statements: statements,
+		},
+	}, l)
+}
+
+func newReturn(expr *Node, l yyLexer) *Node {
+	return setPos(&Node{
+		Type: TReturn,
+		Value: &NReturn{
+			Expr: expr,
 		},
 	}, l)
 }
@@ -138,11 +160,13 @@ func newStatement(statements *Node, l yyLexer) *Node {
 
 func addStatement(statements *Node, statement *Node, l yyLexer) *Node {
 	if statements == nil {
+		list := &NStatements{
+			List: make([]*Node, 1, 10),
+		}
+		list.List[0] = statement
 		statements = setPos(&Node{
-			Type: TStatements,
-			Value: &NStatements{
-				List: make([]*Node, 0, 10),
-			},
+			Type:  TStatements,
+			Value: list,
 		}, l)
 	} else {
 		statements.Value.(*NStatements).List = append(statements.Value.(*NStatements).List, statement)
@@ -151,9 +175,15 @@ func addStatement(statements *Node, statement *Node, l yyLexer) *Node {
 }
 
 func newValue(value interface{}, l yyLexer) *Node {
+	var vtype int32
+	switch value.(type) {
+	case int:
+		vtype = VInt
+	}
 	return setPos(&Node{
-		Type:  TValue,
-		Value: value,
+		Type:   TValue,
+		Value:  value,
+		Result: vtype,
 	}, l)
 }
 
@@ -230,4 +260,19 @@ func newElif(statements *Node, cond *Node, statement *Node, l yyLexer) *Node {
 		})
 	}
 	return statements
+}
+
+// Parser creates AST
+func Parser(input string) (*Node, error) {
+	yyErrorVerbose = true
+
+	l, err := NewLexer(``, input)
+	if err != nil {
+		return nil, err
+	}
+	yyParse(l)
+	if l.err != nil {
+		return nil, l.err
+	}
+	return l.result.(*Node), nil
 }

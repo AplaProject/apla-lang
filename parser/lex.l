@@ -74,6 +74,7 @@ contract		return l.char(CONTRACT)
 if				return l.char(IF)
 elif			return l.char(ELIF)
 else			return l.char(ELSE)
+return			return l.char(RETURN)
 true			return l.char(TRUE)
 false			return l.char(FALSE)
 

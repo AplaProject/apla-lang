@@ -63,9 +63,10 @@ func setResult(l yyLexer, v *Node) {
 // Keywords
 %token DATA       // data
 %token CONTRACT   // contract
-%token IF     // if
-%token ELIF   // elif
-%token ELSE   // else
+%token IF       // if
+%token ELIF     // elif
+%token ELSE     // else
+%token RETURN   // return
 
 
 // Types
@@ -131,6 +132,8 @@ statement
     | type IDENT ASSIGN expr { $$ = newBinary( newVarDecl( $1, []string{$2}, yylex ), $4, ASSIGN, yylex) }
     | type ident_list { $$ = newVarDecl( $1, $2, yylex )}
     | IF expr LBRACE statements RBRACE elif else { $$ = newIf( $2, $4, $6, $7, yylex )}
+    | RETURN { $$ = newReturn(nil, yylex); }
+    | RETURN expr { $$ = newReturn($2, yylex); }
     ;
 
 expr
@@ -186,4 +189,5 @@ contract_declaration
         $$ = newContract($2, $4, yylex)
         setResult(yylex, $$)
         }
+    | contract_declaration NEWLINE
     ;  
