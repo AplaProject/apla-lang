@@ -1,3 +1,42 @@
+contract myVarSetAB {
+    int a = 10
+    int b = 15
+    b = b + 1
+    return a + b
+} 
+==== 26
+contract myVarSet {
+    int a
+    a = 23
+    return (a - 3)/4 + a
+} 
+==== 28
+contract myVar {
+    int a
+    {
+        return 20
+    }
+    return a
+} 
+==== 3:5: syntax error: unexpected LBRACE, expecting RBRACE
+contract myVar {
+    int a
+    return (a + 3)*2
+} 
+==== 6
+contract myNoVar {
+    return 1 + b
+} 
+==== myNoVar 2:16: Variable b hasn't been defined
+contract myVarE1 {
+    int abc 
+    int abc
+} 
+==== myVarE1 3:13: Variable abc has already been defined
+contract myVarE {
+    int abc abc
+} 
+==== myVarE 2:17: Variable abc has already been defined
 contract myDIV {
     return 100/(15-0xf)
 } 

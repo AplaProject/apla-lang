@@ -70,8 +70,8 @@ func setResult(l yyLexer, v *Node) {
 
 
 // Types
-%token T_BOOL   // bool
 %token T_INT    // int
+%token T_BOOL   // bool
 
 %type <i> type
 %type <sa> ident_list
@@ -99,8 +99,8 @@ func setResult(l yyLexer, v *Node) {
 %%
 
 type
-    : T_BOOL {$$ = 1}
-    | T_INT {$$ = 2}
+    : T_BOOL {$$ = VBool}
+    | T_INT {$$ = VInt}
     ;
 
 statements
@@ -141,6 +141,7 @@ expr
     | INT { $$ = newValue($1, yylex);}
     | TRUE { $$ = newValue(true, yylex);}
     | FALSE { $$ = newValue(false, yylex);}
+    | IDENT { $$ = newGetVar($1, yylex);}
     | expr MUL expr { $$ = newBinary($1, $3, MUL, yylex); }
     | expr DIV expr { $$ = newBinary($1, $3, DIV, yylex);  }
     | expr ADD expr { $$ = newBinary($1, $3, ADD, yylex); }

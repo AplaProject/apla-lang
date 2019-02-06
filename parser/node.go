@@ -7,15 +7,15 @@ const (
 	TContract = iota + 1 // contract
 	TData                // Data info
 	TBlock
-	TStatements
 	TValue
 	TVars
 	TBinary
 	TUnary
-	TVarValue
+	TSetVar
 	TIf
 	TElif
 	TReturn
+	TGetVar
 )
 
 const (
@@ -57,7 +57,7 @@ type NElif struct {
 // NBlock contains body of contract
 type NBlock struct {
 	Params     []NVar
-	Statements *Node
+	Statements []*Node
 }
 
 // NBinary contains binary operator
@@ -76,11 +76,6 @@ type NUnary struct {
 // NVars contains type and name of variable or parameter
 type NVars struct {
 	Vars []NVar
-}
-
-// NStatements contains statements
-type NStatements struct {
-	List []*Node
 }
 
 // NReturn is a return statement
@@ -120,14 +115,17 @@ func newContract(name string, block *Node, l yyLexer) *Node {
 	}, l)
 }
 
-func newBlock(vars []NVar, statements *Node, l yyLexer) *Node {
-	return setPos(&Node{
-		Type: TBlock,
-		Value: &NBlock{
-			Params:     vars,
-			Statements: statements,
-		},
-	}, l)
+func newBlock(vars []NVar, block *Node, l yyLexer) *Node {
+	if block == nil {
+		block = setPos(&Node{
+			Type:  TBlock,
+			Value: &NBlock{},
+		}, l)
+	}
+	if len(vars) > 0 {
+		block.Value.(*NBlock).Params = append(vars, block.Value.(*NBlock).Params...)
+	}
+	return block
 }
 
 func newReturn(expr *Node, l yyLexer) *Node {
@@ -150,27 +148,18 @@ func newVars(vtype int, vars []string) []NVar {
 	return va
 }
 
-func newStatement(statements *Node, l yyLexer) *Node {
-	return setPos(&Node{
-		Type: TStatements,
-		Value: &NStatements{
-			List: make([]*Node, 0, 10),
-		},
-	}, l)
-}
-
 func addStatement(statements *Node, statement *Node, l yyLexer) *Node {
 	if statements == nil {
-		list := &NStatements{
-			List: make([]*Node, 1, 10),
+		list := &NBlock{
+			Statements: make([]*Node, 1, 10),
 		}
-		list.List[0] = statement
+		list.Statements[0] = statement
 		statements = setPos(&Node{
-			Type:  TStatements,
+			Type:  TBlock,
 			Value: list,
 		}, l)
 	} else {
-		statements.Value.(*NStatements).List = append(statements.Value.(*NStatements).List, statement)
+		statements.Value.(*NBlock).Statements = append(statements.Value.(*NBlock).Statements, statement)
 	}
 	return statements
 }
@@ -217,7 +206,16 @@ func newBinary(left *Node, right *Node, oper int, l yyLexer) *Node {
 
 func newVarValue(name string, l yyLexer) *Node {
 	return setPos(&Node{
-		Type: TVarValue,
+		Type: TSetVar,
+		Value: &NVarValue{
+			Name: name,
+		},
+	}, l)
+}
+
+func newGetVar(name string, l yyLexer) *Node {
+	return setPos(&Node{
+		Type: TGetVar,
 		Value: &NVarValue{
 			Name: name,
 		},

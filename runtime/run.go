@@ -2,6 +2,7 @@ package runtime
 
 import (
 	"fmt"
+	"unsafe"
 
 	"github.com/AplaProject/apla-lang/parser"
 )
@@ -34,6 +35,16 @@ main:
 			i += 2
 			top++
 			stack[top] = int64((uint64(code[i-1]) << 16) | uint64(code[i]&0xffff))
+		case INITVARS:
+			count := int64(code[i+1])
+			for iVar := int64(0); iVar < count; iVar++ {
+				rt.Vars = append(rt.Vars, 0)
+			}
+			i += count + 1
+		case DELVARS:
+			i++
+			count := int64(code[i])
+			rt.Vars = rt.Vars[:count]
 		case ADDINT:
 			top--
 			stack[top] += stack[top+1]
@@ -49,6 +60,19 @@ main:
 				return ``, gas, fmt.Errorf(errDivZero)
 			}
 			stack[top] /= stack[top+1]
+		case GETVAR:
+			i++
+			top++
+			stack[top] = rt.Vars[code[i]]
+			fmt.Println(`GETVAR`, code[i], rt.Vars)
+		case SETVAR:
+			i++
+			top++
+			stack[top] = int64(uintptr(unsafe.Pointer(&rt.Vars[code[i]])))
+		case ASSIGNINT:
+			fmt.Println(`STACK`, stack[:top+1])
+			*(*int64)(unsafe.Pointer(uintptr(stack[top-1]))) = stack[top]
+			top -= 2
 		case RETURN:
 			switch code[i+1] {
 			case parser.VVoid: // skip result

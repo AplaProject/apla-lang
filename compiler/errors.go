@@ -7,12 +7,19 @@ import (
 )
 
 const (
-	errOperator = `Operator %s has not been found`
-	errType     = `Unknown type %T`
+	errOperator   = `Operator %s has not been found`
+	errType       = `Unknown type %T`
+	errNodeType   = `Unknown node type`
+	errVarExists  = `Variable %s has already been defined`
+	errVarUnknown = `Variable %s hasn't been defined`
 )
 
 func (cmpl *compiler) Error(node *parser.Node, text string) error {
 	return fmt.Errorf("%s %d:%d: %s", cmpl.Contract.Name, node.Line, node.Column, text)
+}
+
+func (cmpl *compiler) ErrorParam(node *parser.Node, text string, value interface{}) error {
+	return cmpl.Error(node, fmt.Sprintf(text, value))
 }
 
 func (cmpl *compiler) ErrorOperator(node *parser.Node) error {
@@ -39,6 +46,8 @@ func (cmpl *compiler) ErrorOperator(node *parser.Node) error {
 		name = `*`
 	case parser.DIV:
 		name = `/`
+	case parser.ASSIGN:
+		name = `=`
 	}
 	return cmpl.Error(node, fmt.Sprintf(errOperator, left+name+right))
 }

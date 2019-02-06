@@ -10,7 +10,14 @@ import (
 
 type compiler struct {
 	Contract  *Contract
+	Blocks    []*parser.Node
 	NameSpace *map[string]uint32
+}
+
+// VarInfo describes a variable
+type VarInfo struct {
+	Index uint16
+	Type  uint16
 }
 
 // Contract contains information about the contract
@@ -18,6 +25,7 @@ type Contract struct {
 	ID   int64 // External id
 	Name string
 	Code []rt.Bcode
+	Vars map[string]VarInfo
 }
 
 func (cmpl *compiler) Append(codes ...rt.Bcode) {
@@ -33,8 +41,23 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 	}
 	switch node.Type {
 	case parser.TBlock:
-		if err = nodeToCode(node.Value.(*parser.NBlock).Statements, cmpl); err != nil {
-			return err
+		//		startSize := len(cmpl.Contract.Code)
+		varsCount := uint16(len(cmpl.Contract.Vars))
+		cmpl.Blocks = append(cmpl.Blocks, node)
+		for _, child := range node.Value.(*parser.NBlock).Statements {
+			if err = nodeToCode(child, cmpl); err != nil {
+				return err
+			}
+		}
+		cmpl.Blocks = cmpl.Blocks[:len(cmpl.Blocks)-1]
+		if uint16(len(cmpl.Contract.Vars)) != varsCount {
+			cmpl.Append(rt.DELVARS, rt.Bcode(varsCount))
+		}
+		// Remove vars
+		for key, vinfo := range cmpl.Contract.Vars {
+			if vinfo.Index >= varsCount {
+				delete(cmpl.Contract.Vars, key)
+			}
 		}
 	case parser.TContract:
 		cmpl.Contract.Name = node.Value.(*parser.NContract).Name
@@ -51,16 +74,21 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 			vtype = expr.Result
 		}
 		cmpl.Append(rt.RETURN, rt.Bcode(vtype))
-	case parser.TStatements:
-		for _, child := range node.Value.(*parser.NStatements).List {
-			if err = nodeToCode(child, cmpl); err != nil {
-				return err
-			}
-		}
 	case parser.TBinary:
 		nBinary := node.Value.(*parser.NBinary)
 		if err = nodeToCode(nBinary.Left, cmpl); err != nil {
 			return err
+		}
+		if nBinary.Left.Type == parser.TVars { // type varName =
+			nBinary.Left = &parser.Node{
+				Type: parser.TSetVar,
+				Value: &parser.NVarValue{
+					Name: nBinary.Left.Value.(*parser.NVars).Vars[0].Name,
+				},
+			}
+			if err = nodeToCode(nBinary.Left, cmpl); err != nil {
+				return err
+			}
 		}
 		if err = nodeToCode(nBinary.Right, cmpl); err != nil {
 			return err
@@ -104,8 +132,41 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 			cmpl.Append(rt.PUSH16, bcode)
 			node.Result = parser.VBool
 		default:
-			return cmpl.Error(node, fmt.Sprintf(errType, node.Value))
+			return cmpl.ErrorParam(node, errType, node.Value)
 		}
+	case parser.TVars:
+		types := make([]rt.Bcode, len(node.Value.(*parser.NVars).Vars))
+		for i, v := range node.Value.(*parser.NVars).Vars {
+			if _, ok := cmpl.Contract.Vars[v.Name]; ok {
+				return cmpl.ErrorParam(node, errVarExists, v.Name)
+			}
+			types[i] = rt.Bcode(v.Type)
+			cmpl.Contract.Vars[v.Name] = VarInfo{
+				Index: uint16(len(cmpl.Contract.Vars)),
+				Type:  uint16(v.Type),
+			}
+		}
+		cmpl.Append(rt.INITVARS, rt.Bcode(len(types)))
+		cmpl.Append(types...)
+	case parser.TGetVar:
+		name := node.Value.(*parser.NVarValue).Name
+		if vinfo, ok := cmpl.Contract.Vars[name]; !ok {
+			return cmpl.ErrorParam(node, errVarUnknown, name)
+		} else {
+			cmpl.Append(rt.GETVAR, rt.Bcode(vinfo.Index))
+			node.Result = uint32(vinfo.Type)
+		}
+		fmt.Println(`TGETVAR`, node.Value.(*parser.NVarValue))
+	case parser.TSetVar:
+		name := node.Value.(*parser.NVarValue).Name
+		if vinfo, ok := cmpl.Contract.Vars[name]; !ok {
+			return cmpl.ErrorParam(node, errVarUnknown, name)
+		} else {
+			cmpl.Append(rt.SETVAR, rt.Bcode(vinfo.Index))
+			node.Result = uint32(vinfo.Type)
+		}
+	default:
+		return cmpl.Error(node, errNodeType)
 	}
 	return nil
 }
@@ -120,6 +181,7 @@ func Compile(input string, nameSpace *map[string]uint32) (*Contract, error) {
 	cmpl := &compiler{
 		Contract: &Contract{
 			Code: make([]rt.Bcode, 0, 64),
+			Vars: make(map[string]VarInfo),
 		},
 		NameSpace: nameSpace,
 	}
