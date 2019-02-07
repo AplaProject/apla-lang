@@ -11,6 +11,7 @@ type Bcode uint16
 
 const (
 	errDivZero = `integer divide by zero`
+	errCommand = `unknown command %d`
 )
 
 // Run executes a bytecode
@@ -113,13 +114,22 @@ main:
 			i++
 			top++
 			stack[top] = rt.Vars[code[i]]
-			fmt.Println(`GETVAR`, code[i], rt.Vars)
 		case SETVAR:
 			i++
 			top++
 			stack[top] = int64(uintptr(unsafe.Pointer(&rt.Vars[code[i]])))
+		case JMP:
+			i += int64(int16(code[i+1]))
+			continue
+		case JZE:
+			top--
+			if stack[top+1] == 0 {
+				i += int64(int16(code[i+1]))
+				continue
+			}
+			i++
 		case ASSIGNINT:
-			fmt.Println(`STACK`, stack[:top+1])
+			//			fmt.Println(`STACK`, stack[:top+1])
 			*(*int64)(unsafe.Pointer(uintptr(stack[top-1]))) = stack[top]
 			top -= 2
 		case ASSIGNADDINT:
@@ -171,6 +181,8 @@ main:
 			top++
 			stack[top] = int64((uint64(code[i-3]) << 48) | (uint64(code[i-2]) << 32) |
 				(uint64(code[i-1]) << 16) | (uint64(code[i]) & 0xffff))
+		default:
+			return ``, gas, fmt.Errorf(errCommand, code[i])
 		}
 		i++
 	}

@@ -19,6 +19,8 @@ const (
 	GEINT        // int >= int
 	GETVAR       // + uint16
 	SETVAR       // + uint16
+	JMP          // + int16   jump with the offset
+	JZE          // + int16   jump if top is equal zero with the offset
 	ASSIGNINT    // vars = int
 	ASSIGNADDINT // vars += int
 	ASSIGNSUBINT // vars -= int

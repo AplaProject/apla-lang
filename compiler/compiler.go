@@ -34,6 +34,13 @@ func (cmpl *compiler) Append(codes ...rt.Bcode) {
 	}
 }
 
+func (cmpl *compiler) JumpOff(node *parser.Node, off int) (rt.Bcode, error) {
+	if off < math.MinInt16 || off > math.MaxInt16 {
+		return rt.NOP, cmpl.Error(node, errJump)
+	}
+	return rt.Bcode(off), nil
+}
+
 func nodeToCode(node *parser.Node, cmpl *compiler) error {
 	var err error
 	if node == nil {
@@ -156,7 +163,6 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 			cmpl.Append(rt.GETVAR, rt.Bcode(vinfo.Index))
 			node.Result = uint32(vinfo.Type)
 		}
-		fmt.Println(`TGETVAR`, node.Value.(*parser.NVarValue))
 	case parser.TSetVar:
 		name := node.Value.(*parser.NVarValue).Name
 		if vinfo, ok := cmpl.Contract.Vars[name]; !ok {
@@ -165,6 +171,33 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 			cmpl.Append(rt.SETVAR, rt.Bcode(vinfo.Index))
 			node.Result = uint32(vinfo.Type)
 		}
+	case parser.TWhile:
+		nWhile := node.Value.(*parser.NWhile)
+		sizeCode := len(cmpl.Contract.Code)
+		if err = nodeToCode(nWhile.Cond, cmpl); err != nil {
+			return err
+		}
+		if nWhile.Cond.Result != parser.VBool {
+			return cmpl.ErrorParam(node, errCond, Type2Str(nWhile.Cond.Result))
+		}
+		sizeCond := len(cmpl.Contract.Code)
+		cmpl.Append(rt.JZE, 0)
+		if err = nodeToCode(nWhile.Body, cmpl); err != nil {
+			return err
+		}
+		var off rt.Bcode
+		if off, err = cmpl.JumpOff(node, sizeCode-len(cmpl.Contract.Code)); err != nil {
+			return err
+		}
+		cmpl.Append(rt.JMP, off)
+
+		if off, err = cmpl.JumpOff(node, len(cmpl.Contract.Code)-sizeCond); err != nil {
+			return err
+		}
+		cmpl.Contract.Code[sizeCond+1] = off
+
+		fmt.Println(`TWhile`, sizeCode, sizeCond)
+
 	default:
 		return cmpl.Error(node, errNodeType)
 	}

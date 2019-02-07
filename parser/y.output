@@ -24,9 +24,9 @@ state 2
 
 
 state 3
-	contract_declaration:  contract_declaration NEWLINE.    (51)
+	contract_declaration:  contract_declaration NEWLINE.    (52)
 
-	.  reduce 51 (src line 193)
+	.  reduce 52 (src line 194)
 
 
 state 4
@@ -38,10 +38,10 @@ state 4
 
 state 5
 	contract_declaration:  CONTRACT IDENT LBRACE.contract_body RBRACE 
-	contract_data: .    (47)
+	contract_data: .    (48)
 
 	DATA  shift 8
-	.  reduce 47 (src line 177)
+	.  reduce 48 (src line 178)
 
 	contract_data  goto 7
 	contract_body  goto 6
@@ -69,23 +69,24 @@ state 8
 
 
 state 9
-	contract_declaration:  CONTRACT IDENT LBRACE contract_body RBRACE.    (50)
+	contract_declaration:  CONTRACT IDENT LBRACE contract_body RBRACE.    (51)
 
-	.  reduce 50 (src line 188)
+	.  reduce 51 (src line 189)
 
 
 state 10
 	statements:  statements.NEWLINE 
 	statements:  statements.statement NEWLINE 
-	contract_body:  contract_data statements.    (49)
+	contract_body:  contract_data statements.    (50)
 
-	IDENT  shift 18
+	IDENT  shift 19
 	NEWLINE  shift 12
 	IF  shift 16
 	RETURN  shift 17
-	T_INT  shift 20
-	T_BOOL  shift 19
-	.  reduce 49 (src line 182)
+	WHILE  shift 18
+	T_INT  shift 21
+	T_BOOL  shift 20
+	.  reduce 50 (src line 183)
 
 	type  goto 15
 	var  goto 14
@@ -94,13 +95,13 @@ state 10
 state 11
 	contract_data:  DATA LBRACE.var_declarations NEWLINE RBRACE NEWLINE 
 
-	T_INT  shift 20
-	T_BOOL  shift 19
+	T_INT  shift 21
+	T_BOOL  shift 20
 	.  error
 
-	type  goto 23
-	var_declaration  goto 22
-	var_declarations  goto 21
+	type  goto 24
+	var_declaration  goto 23
+	var_declarations  goto 22
 
 state 12
 	statements:  statements NEWLINE.    (4)
@@ -111,7 +112,7 @@ state 12
 state 13
 	statements:  statements statement.NEWLINE 
 
-	NEWLINE  shift 24
+	NEWLINE  shift 25
 	.  error
 
 
@@ -123,12 +124,12 @@ state 14
 	statement:  var.DIV_ASSIGN expr 
 	statement:  var.MOD_ASSIGN expr 
 
-	ADD_ASSIGN  shift 26
-	SUB_ASSIGN  shift 27
-	MUL_ASSIGN  shift 28
-	DIV_ASSIGN  shift 29
-	MOD_ASSIGN  shift 30
-	ASSIGN  shift 25
+	ADD_ASSIGN  shift 27
+	SUB_ASSIGN  shift 28
+	MUL_ASSIGN  shift 29
+	DIV_ASSIGN  shift 30
+	MOD_ASSIGN  shift 31
+	ASSIGN  shift 26
 	.  error
 
 
@@ -136,187 +137,201 @@ state 15
 	statement:  type.IDENT ASSIGN expr 
 	statement:  type.ident_list 
 
-	IDENT  shift 31
+	IDENT  shift 32
 	.  error
 
-	ident_list  goto 32
+	ident_list  goto 33
 
 state 16
 	statement:  IF.expr LBRACE statements RBRACE elif else 
 
-	IDENT  shift 38
-	INT  shift 35
-	TRUE  shift 36
-	FALSE  shift 37
-	LPAREN  shift 34
-	SUB  shift 39
-	NOT  shift 40
+	IDENT  shift 39
+	INT  shift 36
+	TRUE  shift 37
+	FALSE  shift 38
+	LPAREN  shift 35
+	SUB  shift 40
+	NOT  shift 41
 	.  error
 
-	expr  goto 33
+	expr  goto 34
 
 state 17
 	statement:  RETURN.    (20)
 	statement:  RETURN.expr 
 
-	IDENT  shift 38
-	INT  shift 35
-	TRUE  shift 36
-	FALSE  shift 37
-	LPAREN  shift 34
-	SUB  shift 39
-	NOT  shift 40
+	IDENT  shift 39
+	INT  shift 36
+	TRUE  shift 37
+	FALSE  shift 38
+	LPAREN  shift 35
+	SUB  shift 40
+	NOT  shift 41
 	.  reduce 20 (src line 135)
 
-	expr  goto 41
+	expr  goto 42
 
 state 18
+	statement:  WHILE.expr LBRACE statements RBRACE 
+
+	IDENT  shift 39
+	INT  shift 36
+	TRUE  shift 37
+	FALSE  shift 38
+	LPAREN  shift 35
+	SUB  shift 40
+	NOT  shift 41
+	.  error
+
+	expr  goto 43
+
+state 19
 	var:  IDENT.    (6)
 
 	.  reduce 6 (src line 112)
 
 
-state 19
+state 20
 	type:  T_BOOL.    (1)
 
 	.  reduce 1 (src line 101)
 
 
-state 20
+state 21
 	type:  T_INT.    (2)
 
 	.  reduce 2 (src line 103)
 
 
-state 21
+state 22
 	var_declarations:  var_declarations.NEWLINE var_declaration 
 	contract_data:  DATA LBRACE var_declarations.NEWLINE RBRACE NEWLINE 
 
-	NEWLINE  shift 42
+	NEWLINE  shift 44
 	.  error
-
-
-state 22
-	var_declarations:  var_declaration.    (45)
-
-	.  reduce 45 (src line 172)
 
 
 state 23
-	var_declaration:  type.ident_list 
+	var_declarations:  var_declaration.    (46)
 
-	IDENT  shift 44
-	.  error
+	.  reduce 46 (src line 173)
 
-	ident_list  goto 43
 
 state 24
+	var_declaration:  type.ident_list 
+
+	IDENT  shift 46
+	.  error
+
+	ident_list  goto 45
+
+state 25
 	statements:  statements statement NEWLINE.    (5)
 
 	.  reduce 5 (src line 109)
 
 
-state 25
+state 26
 	statement:  var ASSIGN.expr 
 
-	IDENT  shift 38
-	INT  shift 35
-	TRUE  shift 36
-	FALSE  shift 37
-	LPAREN  shift 34
-	SUB  shift 39
-	NOT  shift 40
-	.  error
-
-	expr  goto 45
-
-state 26
-	statement:  var ADD_ASSIGN.expr 
-
-	IDENT  shift 38
-	INT  shift 35
-	TRUE  shift 36
-	FALSE  shift 37
-	LPAREN  shift 34
-	SUB  shift 39
-	NOT  shift 40
-	.  error
-
-	expr  goto 46
-
-state 27
-	statement:  var SUB_ASSIGN.expr 
-
-	IDENT  shift 38
-	INT  shift 35
-	TRUE  shift 36
-	FALSE  shift 37
-	LPAREN  shift 34
-	SUB  shift 39
-	NOT  shift 40
+	IDENT  shift 39
+	INT  shift 36
+	TRUE  shift 37
+	FALSE  shift 38
+	LPAREN  shift 35
+	SUB  shift 40
+	NOT  shift 41
 	.  error
 
 	expr  goto 47
 
-state 28
-	statement:  var MUL_ASSIGN.expr 
+state 27
+	statement:  var ADD_ASSIGN.expr 
 
-	IDENT  shift 38
-	INT  shift 35
-	TRUE  shift 36
-	FALSE  shift 37
-	LPAREN  shift 34
-	SUB  shift 39
-	NOT  shift 40
+	IDENT  shift 39
+	INT  shift 36
+	TRUE  shift 37
+	FALSE  shift 38
+	LPAREN  shift 35
+	SUB  shift 40
+	NOT  shift 41
 	.  error
 
 	expr  goto 48
 
-state 29
-	statement:  var DIV_ASSIGN.expr 
+state 28
+	statement:  var SUB_ASSIGN.expr 
 
-	IDENT  shift 38
-	INT  shift 35
-	TRUE  shift 36
-	FALSE  shift 37
-	LPAREN  shift 34
-	SUB  shift 39
-	NOT  shift 40
+	IDENT  shift 39
+	INT  shift 36
+	TRUE  shift 37
+	FALSE  shift 38
+	LPAREN  shift 35
+	SUB  shift 40
+	NOT  shift 41
 	.  error
 
 	expr  goto 49
 
-state 30
-	statement:  var MOD_ASSIGN.expr 
+state 29
+	statement:  var MUL_ASSIGN.expr 
 
-	IDENT  shift 38
-	INT  shift 35
-	TRUE  shift 36
-	FALSE  shift 37
-	LPAREN  shift 34
-	SUB  shift 39
-	NOT  shift 40
+	IDENT  shift 39
+	INT  shift 36
+	TRUE  shift 37
+	FALSE  shift 38
+	LPAREN  shift 35
+	SUB  shift 40
+	NOT  shift 41
 	.  error
 
 	expr  goto 50
 
+state 30
+	statement:  var DIV_ASSIGN.expr 
+
+	IDENT  shift 39
+	INT  shift 36
+	TRUE  shift 37
+	FALSE  shift 38
+	LPAREN  shift 35
+	SUB  shift 40
+	NOT  shift 41
+	.  error
+
+	expr  goto 51
+
 state 31
-	statement:  type IDENT.ASSIGN expr 
-	ident_list:  IDENT.    (42)
+	statement:  var MOD_ASSIGN.expr 
 
-	ASSIGN  shift 51
-	.  reduce 42 (src line 163)
+	IDENT  shift 39
+	INT  shift 36
+	TRUE  shift 37
+	FALSE  shift 38
+	LPAREN  shift 35
+	SUB  shift 40
+	NOT  shift 41
+	.  error
 
+	expr  goto 52
 
 state 32
-	statement:  type ident_list.    (18)
-	ident_list:  ident_list.IDENT 
+	statement:  type IDENT.ASSIGN expr 
+	ident_list:  IDENT.    (43)
 
-	IDENT  shift 52
-	.  reduce 18 (src line 133)
+	ASSIGN  shift 53
+	.  reduce 43 (src line 164)
 
 
 state 33
+	statement:  type ident_list.    (18)
+	ident_list:  ident_list.IDENT 
+
+	IDENT  shift 54
+	.  reduce 18 (src line 133)
+
+
+state 34
 	statement:  IF expr.LBRACE statements RBRACE elif else 
 	expr:  expr.MUL expr 
 	expr:  expr.DIV expr 
@@ -332,90 +347,90 @@ state 33
 	expr:  expr.LT expr 
 	expr:  expr.GT expr 
 
-	LBRACE  shift 53
-	ADD  shift 56
-	SUB  shift 57
-	MUL  shift 54
-	DIV  shift 55
-	MOD  shift 58
-	AND  shift 59
-	OR  shift 60
-	EQ  shift 61
-	NOT_EQ  shift 62
-	LT  shift 65
-	GT  shift 66
-	LTE  shift 63
-	GTE  shift 64
+	LBRACE  shift 55
+	ADD  shift 58
+	SUB  shift 59
+	MUL  shift 56
+	DIV  shift 57
+	MOD  shift 60
+	AND  shift 61
+	OR  shift 62
+	EQ  shift 63
+	NOT_EQ  shift 64
+	LT  shift 67
+	GT  shift 68
+	LTE  shift 65
+	GTE  shift 66
 	.  error
 
-
-state 34
-	expr:  LPAREN.expr RPAREN 
-
-	IDENT  shift 38
-	INT  shift 35
-	TRUE  shift 36
-	FALSE  shift 37
-	LPAREN  shift 34
-	SUB  shift 39
-	NOT  shift 40
-	.  error
-
-	expr  goto 67
 
 state 35
-	expr:  INT.    (23)
+	expr:  LPAREN.expr RPAREN 
 
-	.  reduce 23 (src line 141)
+	IDENT  shift 39
+	INT  shift 36
+	TRUE  shift 37
+	FALSE  shift 38
+	LPAREN  shift 35
+	SUB  shift 40
+	NOT  shift 41
+	.  error
 
+	expr  goto 69
 
 state 36
-	expr:  TRUE.    (24)
+	expr:  INT.    (24)
 
 	.  reduce 24 (src line 142)
 
 
 state 37
-	expr:  FALSE.    (25)
+	expr:  TRUE.    (25)
 
 	.  reduce 25 (src line 143)
 
 
 state 38
-	expr:  IDENT.    (26)
+	expr:  FALSE.    (26)
 
 	.  reduce 26 (src line 144)
 
 
 state 39
-	expr:  SUB.expr 
+	expr:  IDENT.    (27)
 
-	IDENT  shift 38
-	INT  shift 35
-	TRUE  shift 36
-	FALSE  shift 37
-	LPAREN  shift 34
-	SUB  shift 39
-	NOT  shift 40
-	.  error
+	.  reduce 27 (src line 145)
 
-	expr  goto 68
 
 state 40
-	expr:  NOT.expr 
+	expr:  SUB.expr 
 
-	IDENT  shift 38
-	INT  shift 35
-	TRUE  shift 36
-	FALSE  shift 37
-	LPAREN  shift 34
-	SUB  shift 39
-	NOT  shift 40
+	IDENT  shift 39
+	INT  shift 36
+	TRUE  shift 37
+	FALSE  shift 38
+	LPAREN  shift 35
+	SUB  shift 40
+	NOT  shift 41
 	.  error
 
-	expr  goto 69
+	expr  goto 70
 
 state 41
+	expr:  NOT.expr 
+
+	IDENT  shift 39
+	INT  shift 36
+	TRUE  shift 37
+	FALSE  shift 38
+	LPAREN  shift 35
+	SUB  shift 40
+	NOT  shift 41
+	.  error
+
+	expr  goto 71
+
+state 42
 	statement:  RETURN expr.    (21)
 	expr:  expr.MUL expr 
 	expr:  expr.DIV expr 
@@ -431,49 +446,82 @@ state 41
 	expr:  expr.LT expr 
 	expr:  expr.GT expr 
 
-	ADD  shift 56
-	SUB  shift 57
-	MUL  shift 54
-	DIV  shift 55
-	MOD  shift 58
-	AND  shift 59
-	OR  shift 60
-	EQ  shift 61
-	NOT_EQ  shift 62
-	LT  shift 65
-	GT  shift 66
-	LTE  shift 63
-	GTE  shift 64
+	ADD  shift 58
+	SUB  shift 59
+	MUL  shift 56
+	DIV  shift 57
+	MOD  shift 60
+	AND  shift 61
+	OR  shift 62
+	EQ  shift 63
+	NOT_EQ  shift 64
+	LT  shift 67
+	GT  shift 68
+	LTE  shift 65
+	GTE  shift 66
 	.  reduce 21 (src line 136)
 
 
-state 42
-	var_declarations:  var_declarations NEWLINE.var_declaration 
-	contract_data:  DATA LBRACE var_declarations NEWLINE.RBRACE NEWLINE 
-
-	RBRACE  shift 71
-	T_INT  shift 20
-	T_BOOL  shift 19
-	.  error
-
-	type  goto 23
-	var_declaration  goto 70
-
 state 43
-	ident_list:  ident_list.IDENT 
-	var_declaration:  type ident_list.    (44)
+	statement:  WHILE expr.LBRACE statements RBRACE 
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
 
-	IDENT  shift 52
-	.  reduce 44 (src line 168)
+	LBRACE  shift 72
+	ADD  shift 58
+	SUB  shift 59
+	MUL  shift 56
+	DIV  shift 57
+	MOD  shift 60
+	AND  shift 61
+	OR  shift 62
+	EQ  shift 63
+	NOT_EQ  shift 64
+	LT  shift 67
+	GT  shift 68
+	LTE  shift 65
+	GTE  shift 66
+	.  error
 
 
 state 44
-	ident_list:  IDENT.    (42)
+	var_declarations:  var_declarations NEWLINE.var_declaration 
+	contract_data:  DATA LBRACE var_declarations NEWLINE.RBRACE NEWLINE 
 
-	.  reduce 42 (src line 163)
+	RBRACE  shift 74
+	T_INT  shift 21
+	T_BOOL  shift 20
+	.  error
 
+	type  goto 24
+	var_declaration  goto 73
 
 state 45
+	ident_list:  ident_list.IDENT 
+	var_declaration:  type ident_list.    (45)
+
+	IDENT  shift 54
+	.  reduce 45 (src line 169)
+
+
+state 46
+	ident_list:  IDENT.    (43)
+
+	.  reduce 43 (src line 164)
+
+
+state 47
 	statement:  var ASSIGN expr.    (11)
 	expr:  expr.MUL expr 
 	expr:  expr.DIV expr 
@@ -489,23 +537,23 @@ state 45
 	expr:  expr.LT expr 
 	expr:  expr.GT expr 
 
-	ADD  shift 56
-	SUB  shift 57
-	MUL  shift 54
-	DIV  shift 55
-	MOD  shift 58
-	AND  shift 59
-	OR  shift 60
-	EQ  shift 61
-	NOT_EQ  shift 62
-	LT  shift 65
-	GT  shift 66
-	LTE  shift 63
-	GTE  shift 64
+	ADD  shift 58
+	SUB  shift 59
+	MUL  shift 56
+	DIV  shift 57
+	MOD  shift 60
+	AND  shift 61
+	OR  shift 62
+	EQ  shift 63
+	NOT_EQ  shift 64
+	LT  shift 67
+	GT  shift 68
+	LTE  shift 65
+	GTE  shift 66
 	.  reduce 11 (src line 125)
 
 
-state 46
+state 48
 	statement:  var ADD_ASSIGN expr.    (12)
 	expr:  expr.MUL expr 
 	expr:  expr.DIV expr 
@@ -521,23 +569,23 @@ state 46
 	expr:  expr.LT expr 
 	expr:  expr.GT expr 
 
-	ADD  shift 56
-	SUB  shift 57
-	MUL  shift 54
-	DIV  shift 55
-	MOD  shift 58
-	AND  shift 59
-	OR  shift 60
-	EQ  shift 61
-	NOT_EQ  shift 62
-	LT  shift 65
-	GT  shift 66
-	LTE  shift 63
-	GTE  shift 64
+	ADD  shift 58
+	SUB  shift 59
+	MUL  shift 56
+	DIV  shift 57
+	MOD  shift 60
+	AND  shift 61
+	OR  shift 62
+	EQ  shift 63
+	NOT_EQ  shift 64
+	LT  shift 67
+	GT  shift 68
+	LTE  shift 65
+	GTE  shift 66
 	.  reduce 12 (src line 127)
 
 
-state 47
+state 49
 	statement:  var SUB_ASSIGN expr.    (13)
 	expr:  expr.MUL expr 
 	expr:  expr.DIV expr 
@@ -553,23 +601,23 @@ state 47
 	expr:  expr.LT expr 
 	expr:  expr.GT expr 
 
-	ADD  shift 56
-	SUB  shift 57
-	MUL  shift 54
-	DIV  shift 55
-	MOD  shift 58
-	AND  shift 59
-	OR  shift 60
-	EQ  shift 61
-	NOT_EQ  shift 62
-	LT  shift 65
-	GT  shift 66
-	LTE  shift 63
-	GTE  shift 64
+	ADD  shift 58
+	SUB  shift 59
+	MUL  shift 56
+	DIV  shift 57
+	MOD  shift 60
+	AND  shift 61
+	OR  shift 62
+	EQ  shift 63
+	NOT_EQ  shift 64
+	LT  shift 67
+	GT  shift 68
+	LTE  shift 65
+	GTE  shift 66
 	.  reduce 13 (src line 128)
 
 
-state 48
+state 50
 	statement:  var MUL_ASSIGN expr.    (14)
 	expr:  expr.MUL expr 
 	expr:  expr.DIV expr 
@@ -585,23 +633,23 @@ state 48
 	expr:  expr.LT expr 
 	expr:  expr.GT expr 
 
-	ADD  shift 56
-	SUB  shift 57
-	MUL  shift 54
-	DIV  shift 55
-	MOD  shift 58
-	AND  shift 59
-	OR  shift 60
-	EQ  shift 61
-	NOT_EQ  shift 62
-	LT  shift 65
-	GT  shift 66
-	LTE  shift 63
-	GTE  shift 64
+	ADD  shift 58
+	SUB  shift 59
+	MUL  shift 56
+	DIV  shift 57
+	MOD  shift 60
+	AND  shift 61
+	OR  shift 62
+	EQ  shift 63
+	NOT_EQ  shift 64
+	LT  shift 67
+	GT  shift 68
+	LTE  shift 65
+	GTE  shift 66
 	.  reduce 14 (src line 129)
 
 
-state 49
+state 51
 	statement:  var DIV_ASSIGN expr.    (15)
 	expr:  expr.MUL expr 
 	expr:  expr.DIV expr 
@@ -617,23 +665,23 @@ state 49
 	expr:  expr.LT expr 
 	expr:  expr.GT expr 
 
-	ADD  shift 56
-	SUB  shift 57
-	MUL  shift 54
-	DIV  shift 55
-	MOD  shift 58
-	AND  shift 59
-	OR  shift 60
-	EQ  shift 61
-	NOT_EQ  shift 62
-	LT  shift 65
-	GT  shift 66
-	LTE  shift 63
-	GTE  shift 64
+	ADD  shift 58
+	SUB  shift 59
+	MUL  shift 56
+	DIV  shift 57
+	MOD  shift 60
+	AND  shift 61
+	OR  shift 62
+	EQ  shift 63
+	NOT_EQ  shift 64
+	LT  shift 67
+	GT  shift 68
+	LTE  shift 65
+	GTE  shift 66
 	.  reduce 15 (src line 130)
 
 
-state 50
+state 52
 	statement:  var MOD_ASSIGN expr.    (16)
 	expr:  expr.MUL expr 
 	expr:  expr.DIV expr 
@@ -649,233 +697,233 @@ state 50
 	expr:  expr.LT expr 
 	expr:  expr.GT expr 
 
-	ADD  shift 56
-	SUB  shift 57
-	MUL  shift 54
-	DIV  shift 55
-	MOD  shift 58
-	AND  shift 59
-	OR  shift 60
-	EQ  shift 61
-	NOT_EQ  shift 62
-	LT  shift 65
-	GT  shift 66
-	LTE  shift 63
-	GTE  shift 64
+	ADD  shift 58
+	SUB  shift 59
+	MUL  shift 56
+	DIV  shift 57
+	MOD  shift 60
+	AND  shift 61
+	OR  shift 62
+	EQ  shift 63
+	NOT_EQ  shift 64
+	LT  shift 67
+	GT  shift 68
+	LTE  shift 65
+	GTE  shift 66
 	.  reduce 16 (src line 131)
 
 
-state 51
+state 53
 	statement:  type IDENT ASSIGN.expr 
 
-	IDENT  shift 38
-	INT  shift 35
-	TRUE  shift 36
-	FALSE  shift 37
-	LPAREN  shift 34
-	SUB  shift 39
-	NOT  shift 40
+	IDENT  shift 39
+	INT  shift 36
+	TRUE  shift 37
+	FALSE  shift 38
+	LPAREN  shift 35
+	SUB  shift 40
+	NOT  shift 41
 	.  error
 
-	expr  goto 72
+	expr  goto 75
 
-state 52
-	ident_list:  ident_list IDENT.    (43)
+state 54
+	ident_list:  ident_list IDENT.    (44)
 
-	.  reduce 43 (src line 165)
+	.  reduce 44 (src line 166)
 
 
-state 53
+state 55
 	statement:  IF expr LBRACE.statements RBRACE elif else 
 	statements: .    (3)
 
 	.  reduce 3 (src line 106)
 
-	statements  goto 73
-
-state 54
-	expr:  expr MUL.expr 
-
-	IDENT  shift 38
-	INT  shift 35
-	TRUE  shift 36
-	FALSE  shift 37
-	LPAREN  shift 34
-	SUB  shift 39
-	NOT  shift 40
-	.  error
-
-	expr  goto 74
-
-state 55
-	expr:  expr DIV.expr 
-
-	IDENT  shift 38
-	INT  shift 35
-	TRUE  shift 36
-	FALSE  shift 37
-	LPAREN  shift 34
-	SUB  shift 39
-	NOT  shift 40
-	.  error
-
-	expr  goto 75
+	statements  goto 76
 
 state 56
-	expr:  expr ADD.expr 
+	expr:  expr MUL.expr 
 
-	IDENT  shift 38
-	INT  shift 35
-	TRUE  shift 36
-	FALSE  shift 37
-	LPAREN  shift 34
-	SUB  shift 39
-	NOT  shift 40
-	.  error
-
-	expr  goto 76
-
-state 57
-	expr:  expr SUB.expr 
-
-	IDENT  shift 38
-	INT  shift 35
-	TRUE  shift 36
-	FALSE  shift 37
-	LPAREN  shift 34
-	SUB  shift 39
-	NOT  shift 40
+	IDENT  shift 39
+	INT  shift 36
+	TRUE  shift 37
+	FALSE  shift 38
+	LPAREN  shift 35
+	SUB  shift 40
+	NOT  shift 41
 	.  error
 
 	expr  goto 77
 
-state 58
-	expr:  expr MOD.expr 
+state 57
+	expr:  expr DIV.expr 
 
-	IDENT  shift 38
-	INT  shift 35
-	TRUE  shift 36
-	FALSE  shift 37
-	LPAREN  shift 34
-	SUB  shift 39
-	NOT  shift 40
+	IDENT  shift 39
+	INT  shift 36
+	TRUE  shift 37
+	FALSE  shift 38
+	LPAREN  shift 35
+	SUB  shift 40
+	NOT  shift 41
 	.  error
 
 	expr  goto 78
 
-state 59
-	expr:  expr AND.expr 
+state 58
+	expr:  expr ADD.expr 
 
-	IDENT  shift 38
-	INT  shift 35
-	TRUE  shift 36
-	FALSE  shift 37
-	LPAREN  shift 34
-	SUB  shift 39
-	NOT  shift 40
+	IDENT  shift 39
+	INT  shift 36
+	TRUE  shift 37
+	FALSE  shift 38
+	LPAREN  shift 35
+	SUB  shift 40
+	NOT  shift 41
 	.  error
 
 	expr  goto 79
 
-state 60
-	expr:  expr OR.expr 
+state 59
+	expr:  expr SUB.expr 
 
-	IDENT  shift 38
-	INT  shift 35
-	TRUE  shift 36
-	FALSE  shift 37
-	LPAREN  shift 34
-	SUB  shift 39
-	NOT  shift 40
+	IDENT  shift 39
+	INT  shift 36
+	TRUE  shift 37
+	FALSE  shift 38
+	LPAREN  shift 35
+	SUB  shift 40
+	NOT  shift 41
 	.  error
 
 	expr  goto 80
 
-state 61
-	expr:  expr EQ.expr 
+state 60
+	expr:  expr MOD.expr 
 
-	IDENT  shift 38
-	INT  shift 35
-	TRUE  shift 36
-	FALSE  shift 37
-	LPAREN  shift 34
-	SUB  shift 39
-	NOT  shift 40
+	IDENT  shift 39
+	INT  shift 36
+	TRUE  shift 37
+	FALSE  shift 38
+	LPAREN  shift 35
+	SUB  shift 40
+	NOT  shift 41
 	.  error
 
 	expr  goto 81
 
-state 62
-	expr:  expr NOT_EQ.expr 
+state 61
+	expr:  expr AND.expr 
 
-	IDENT  shift 38
-	INT  shift 35
-	TRUE  shift 36
-	FALSE  shift 37
-	LPAREN  shift 34
-	SUB  shift 39
-	NOT  shift 40
+	IDENT  shift 39
+	INT  shift 36
+	TRUE  shift 37
+	FALSE  shift 38
+	LPAREN  shift 35
+	SUB  shift 40
+	NOT  shift 41
 	.  error
 
 	expr  goto 82
 
-state 63
-	expr:  expr LTE.expr 
+state 62
+	expr:  expr OR.expr 
 
-	IDENT  shift 38
-	INT  shift 35
-	TRUE  shift 36
-	FALSE  shift 37
-	LPAREN  shift 34
-	SUB  shift 39
-	NOT  shift 40
+	IDENT  shift 39
+	INT  shift 36
+	TRUE  shift 37
+	FALSE  shift 38
+	LPAREN  shift 35
+	SUB  shift 40
+	NOT  shift 41
 	.  error
 
 	expr  goto 83
 
-state 64
-	expr:  expr GTE.expr 
+state 63
+	expr:  expr EQ.expr 
 
-	IDENT  shift 38
-	INT  shift 35
-	TRUE  shift 36
-	FALSE  shift 37
-	LPAREN  shift 34
-	SUB  shift 39
-	NOT  shift 40
+	IDENT  shift 39
+	INT  shift 36
+	TRUE  shift 37
+	FALSE  shift 38
+	LPAREN  shift 35
+	SUB  shift 40
+	NOT  shift 41
 	.  error
 
 	expr  goto 84
 
-state 65
-	expr:  expr LT.expr 
+state 64
+	expr:  expr NOT_EQ.expr 
 
-	IDENT  shift 38
-	INT  shift 35
-	TRUE  shift 36
-	FALSE  shift 37
-	LPAREN  shift 34
-	SUB  shift 39
-	NOT  shift 40
+	IDENT  shift 39
+	INT  shift 36
+	TRUE  shift 37
+	FALSE  shift 38
+	LPAREN  shift 35
+	SUB  shift 40
+	NOT  shift 41
 	.  error
 
 	expr  goto 85
 
-state 66
-	expr:  expr GT.expr 
+state 65
+	expr:  expr LTE.expr 
 
-	IDENT  shift 38
-	INT  shift 35
-	TRUE  shift 36
-	FALSE  shift 37
-	LPAREN  shift 34
-	SUB  shift 39
-	NOT  shift 40
+	IDENT  shift 39
+	INT  shift 36
+	TRUE  shift 37
+	FALSE  shift 38
+	LPAREN  shift 35
+	SUB  shift 40
+	NOT  shift 41
 	.  error
 
 	expr  goto 86
 
+state 66
+	expr:  expr GTE.expr 
+
+	IDENT  shift 39
+	INT  shift 36
+	TRUE  shift 37
+	FALSE  shift 38
+	LPAREN  shift 35
+	SUB  shift 40
+	NOT  shift 41
+	.  error
+
+	expr  goto 87
+
 state 67
+	expr:  expr LT.expr 
+
+	IDENT  shift 39
+	INT  shift 36
+	TRUE  shift 37
+	FALSE  shift 38
+	LPAREN  shift 35
+	SUB  shift 40
+	NOT  shift 41
+	.  error
+
+	expr  goto 88
+
+state 68
+	expr:  expr GT.expr 
+
+	IDENT  shift 39
+	INT  shift 36
+	TRUE  shift 37
+	FALSE  shift 38
+	LPAREN  shift 35
+	SUB  shift 40
+	NOT  shift 41
+	.  error
+
+	expr  goto 89
+
+state 69
 	expr:  LPAREN expr.RPAREN 
 	expr:  expr.MUL expr 
 	expr:  expr.DIV expr 
@@ -891,24 +939,24 @@ state 67
 	expr:  expr.LT expr 
 	expr:  expr.GT expr 
 
-	RPAREN  shift 87
-	ADD  shift 56
-	SUB  shift 57
-	MUL  shift 54
-	DIV  shift 55
-	MOD  shift 58
-	AND  shift 59
-	OR  shift 60
-	EQ  shift 61
-	NOT_EQ  shift 62
-	LT  shift 65
-	GT  shift 66
-	LTE  shift 63
-	GTE  shift 64
+	RPAREN  shift 90
+	ADD  shift 58
+	SUB  shift 59
+	MUL  shift 56
+	DIV  shift 57
+	MOD  shift 60
+	AND  shift 61
+	OR  shift 62
+	EQ  shift 63
+	NOT_EQ  shift 64
+	LT  shift 67
+	GT  shift 68
+	LTE  shift 65
+	GTE  shift 66
 	.  error
 
 
-state 68
+state 70
 	expr:  expr.MUL expr 
 	expr:  expr.DIV expr 
 	expr:  expr.ADD expr 
@@ -922,44 +970,52 @@ state 68
 	expr:  expr.GTE expr 
 	expr:  expr.LT expr 
 	expr:  expr.GT expr 
-	expr:  SUB expr.    (40)
-
-	.  reduce 40 (src line 159)
-
-
-state 69
-	expr:  expr.MUL expr 
-	expr:  expr.DIV expr 
-	expr:  expr.ADD expr 
-	expr:  expr.SUB expr 
-	expr:  expr.MOD expr 
-	expr:  expr.AND expr 
-	expr:  expr.OR expr 
-	expr:  expr.EQ expr 
-	expr:  expr.NOT_EQ expr 
-	expr:  expr.LTE expr 
-	expr:  expr.GTE expr 
-	expr:  expr.LT expr 
-	expr:  expr.GT expr 
-	expr:  NOT expr.    (41)
+	expr:  SUB expr.    (41)
 
 	.  reduce 41 (src line 160)
 
 
-state 70
-	var_declarations:  var_declarations NEWLINE var_declaration.    (46)
-
-	.  reduce 46 (src line 174)
-
-
 state 71
-	contract_data:  DATA LBRACE var_declarations NEWLINE RBRACE.NEWLINE 
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  NOT expr.    (42)
 
-	NEWLINE  shift 88
-	.  error
+	.  reduce 42 (src line 161)
 
 
 state 72
+	statement:  WHILE expr LBRACE.statements RBRACE 
+	statements: .    (3)
+
+	.  reduce 3 (src line 106)
+
+	statements  goto 91
+
+state 73
+	var_declarations:  var_declarations NEWLINE var_declaration.    (47)
+
+	.  reduce 47 (src line 175)
+
+
+state 74
+	contract_data:  DATA LBRACE var_declarations NEWLINE RBRACE.NEWLINE 
+
+	NEWLINE  shift 92
+	.  error
+
+
+state 75
 	statement:  type IDENT ASSIGN expr.    (17)
 	expr:  expr.MUL expr 
 	expr:  expr.DIV expr 
@@ -975,63 +1031,45 @@ state 72
 	expr:  expr.LT expr 
 	expr:  expr.GT expr 
 
-	ADD  shift 56
-	SUB  shift 57
-	MUL  shift 54
-	DIV  shift 55
-	MOD  shift 58
-	AND  shift 59
-	OR  shift 60
-	EQ  shift 61
-	NOT_EQ  shift 62
-	LT  shift 65
-	GT  shift 66
-	LTE  shift 63
-	GTE  shift 64
+	ADD  shift 58
+	SUB  shift 59
+	MUL  shift 56
+	DIV  shift 57
+	MOD  shift 60
+	AND  shift 61
+	OR  shift 62
+	EQ  shift 63
+	NOT_EQ  shift 64
+	LT  shift 67
+	GT  shift 68
+	LTE  shift 65
+	GTE  shift 66
 	.  reduce 17 (src line 132)
 
 
-state 73
+state 76
 	statements:  statements.NEWLINE 
 	statements:  statements.statement NEWLINE 
 	statement:  IF expr LBRACE statements.RBRACE elif else 
 
-	IDENT  shift 18
+	IDENT  shift 19
 	NEWLINE  shift 12
-	RBRACE  shift 89
+	RBRACE  shift 93
 	IF  shift 16
 	RETURN  shift 17
-	T_INT  shift 20
-	T_BOOL  shift 19
+	WHILE  shift 18
+	T_INT  shift 21
+	T_BOOL  shift 20
 	.  error
 
 	type  goto 15
 	var  goto 14
 	statement  goto 13
 
-state 74
+state 77
 	expr:  expr.MUL expr 
-	expr:  expr MUL expr.    (27)
+	expr:  expr MUL expr.    (28)
 	expr:  expr.DIV expr 
-	expr:  expr.ADD expr 
-	expr:  expr.SUB expr 
-	expr:  expr.MOD expr 
-	expr:  expr.AND expr 
-	expr:  expr.OR expr 
-	expr:  expr.EQ expr 
-	expr:  expr.NOT_EQ expr 
-	expr:  expr.LTE expr 
-	expr:  expr.GTE expr 
-	expr:  expr.LT expr 
-	expr:  expr.GT expr 
-
-	.  reduce 27 (src line 145)
-
-
-state 75
-	expr:  expr.MUL expr 
-	expr:  expr.DIV expr 
-	expr:  expr DIV expr.    (28)
 	expr:  expr.ADD expr 
 	expr:  expr.SUB expr 
 	expr:  expr.MOD expr 
@@ -1047,57 +1085,13 @@ state 75
 	.  reduce 28 (src line 146)
 
 
-state 76
-	expr:  expr.MUL expr 
-	expr:  expr.DIV expr 
-	expr:  expr.ADD expr 
-	expr:  expr ADD expr.    (29)
-	expr:  expr.SUB expr 
-	expr:  expr.MOD expr 
-	expr:  expr.AND expr 
-	expr:  expr.OR expr 
-	expr:  expr.EQ expr 
-	expr:  expr.NOT_EQ expr 
-	expr:  expr.LTE expr 
-	expr:  expr.GTE expr 
-	expr:  expr.LT expr 
-	expr:  expr.GT expr 
-
-	MUL  shift 54
-	DIV  shift 55
-	MOD  shift 58
-	.  reduce 29 (src line 147)
-
-
-state 77
-	expr:  expr.MUL expr 
-	expr:  expr.DIV expr 
-	expr:  expr.ADD expr 
-	expr:  expr.SUB expr 
-	expr:  expr SUB expr.    (30)
-	expr:  expr.MOD expr 
-	expr:  expr.AND expr 
-	expr:  expr.OR expr 
-	expr:  expr.EQ expr 
-	expr:  expr.NOT_EQ expr 
-	expr:  expr.LTE expr 
-	expr:  expr.GTE expr 
-	expr:  expr.LT expr 
-	expr:  expr.GT expr 
-
-	MUL  shift 54
-	DIV  shift 55
-	MOD  shift 58
-	.  reduce 30 (src line 148)
-
-
 state 78
 	expr:  expr.MUL expr 
 	expr:  expr.DIV expr 
+	expr:  expr DIV expr.    (29)
 	expr:  expr.ADD expr 
 	expr:  expr.SUB expr 
 	expr:  expr.MOD expr 
-	expr:  expr MOD expr.    (31)
 	expr:  expr.AND expr 
 	expr:  expr.OR expr 
 	expr:  expr.EQ expr 
@@ -1107,17 +1101,17 @@ state 78
 	expr:  expr.LT expr 
 	expr:  expr.GT expr 
 
-	.  reduce 31 (src line 149)
+	.  reduce 29 (src line 147)
 
 
 state 79
 	expr:  expr.MUL expr 
 	expr:  expr.DIV expr 
 	expr:  expr.ADD expr 
+	expr:  expr ADD expr.    (30)
 	expr:  expr.SUB expr 
 	expr:  expr.MOD expr 
 	expr:  expr.AND expr 
-	expr:  expr AND expr.    (32)
 	expr:  expr.OR expr 
 	expr:  expr.EQ expr 
 	expr:  expr.NOT_EQ expr 
@@ -1126,19 +1120,10 @@ state 79
 	expr:  expr.LT expr 
 	expr:  expr.GT expr 
 
-	ADD  shift 56
-	SUB  shift 57
-	MUL  shift 54
-	DIV  shift 55
-	MOD  shift 58
-	OR  shift 60
-	EQ  shift 61
-	NOT_EQ  shift 62
-	LT  shift 65
-	GT  shift 66
-	LTE  shift 63
-	GTE  shift 64
-	.  reduce 32 (src line 150)
+	MUL  shift 56
+	DIV  shift 57
+	MOD  shift 60
+	.  reduce 30 (src line 148)
 
 
 state 80
@@ -1146,10 +1131,10 @@ state 80
 	expr:  expr.DIV expr 
 	expr:  expr.ADD expr 
 	expr:  expr.SUB expr 
+	expr:  expr SUB expr.    (31)
 	expr:  expr.MOD expr 
 	expr:  expr.AND expr 
 	expr:  expr.OR expr 
-	expr:  expr OR expr.    (33)
 	expr:  expr.EQ expr 
 	expr:  expr.NOT_EQ expr 
 	expr:  expr.LTE expr 
@@ -1157,18 +1142,10 @@ state 80
 	expr:  expr.LT expr 
 	expr:  expr.GT expr 
 
-	ADD  shift 56
-	SUB  shift 57
-	MUL  shift 54
-	DIV  shift 55
-	MOD  shift 58
-	EQ  shift 61
-	NOT_EQ  shift 62
-	LT  shift 65
-	GT  shift 66
-	LTE  shift 63
-	GTE  shift 64
-	.  reduce 33 (src line 151)
+	MUL  shift 56
+	DIV  shift 57
+	MOD  shift 60
+	.  reduce 31 (src line 149)
 
 
 state 81
@@ -1177,22 +1154,17 @@ state 81
 	expr:  expr.ADD expr 
 	expr:  expr.SUB expr 
 	expr:  expr.MOD expr 
+	expr:  expr MOD expr.    (32)
 	expr:  expr.AND expr 
 	expr:  expr.OR expr 
 	expr:  expr.EQ expr 
-	expr:  expr EQ expr.    (34)
 	expr:  expr.NOT_EQ expr 
 	expr:  expr.LTE expr 
 	expr:  expr.GTE expr 
 	expr:  expr.LT expr 
 	expr:  expr.GT expr 
 
-	ADD  shift 56
-	SUB  shift 57
-	MUL  shift 54
-	DIV  shift 55
-	MOD  shift 58
-	.  reduce 34 (src line 152)
+	.  reduce 32 (src line 150)
 
 
 state 82
@@ -1202,21 +1174,28 @@ state 82
 	expr:  expr.SUB expr 
 	expr:  expr.MOD expr 
 	expr:  expr.AND expr 
+	expr:  expr AND expr.    (33)
 	expr:  expr.OR expr 
 	expr:  expr.EQ expr 
 	expr:  expr.NOT_EQ expr 
-	expr:  expr NOT_EQ expr.    (35)
 	expr:  expr.LTE expr 
 	expr:  expr.GTE expr 
 	expr:  expr.LT expr 
 	expr:  expr.GT expr 
 
-	ADD  shift 56
-	SUB  shift 57
-	MUL  shift 54
-	DIV  shift 55
-	MOD  shift 58
-	.  reduce 35 (src line 153)
+	ADD  shift 58
+	SUB  shift 59
+	MUL  shift 56
+	DIV  shift 57
+	MOD  shift 60
+	OR  shift 62
+	EQ  shift 63
+	NOT_EQ  shift 64
+	LT  shift 67
+	GT  shift 68
+	LTE  shift 65
+	GTE  shift 66
+	.  reduce 33 (src line 151)
 
 
 state 83
@@ -1227,20 +1206,26 @@ state 83
 	expr:  expr.MOD expr 
 	expr:  expr.AND expr 
 	expr:  expr.OR expr 
+	expr:  expr OR expr.    (34)
 	expr:  expr.EQ expr 
 	expr:  expr.NOT_EQ expr 
 	expr:  expr.LTE expr 
-	expr:  expr LTE expr.    (36)
 	expr:  expr.GTE expr 
 	expr:  expr.LT expr 
 	expr:  expr.GT expr 
 
-	ADD  shift 56
-	SUB  shift 57
-	MUL  shift 54
-	DIV  shift 55
-	MOD  shift 58
-	.  reduce 36 (src line 154)
+	ADD  shift 58
+	SUB  shift 59
+	MUL  shift 56
+	DIV  shift 57
+	MOD  shift 60
+	EQ  shift 63
+	NOT_EQ  shift 64
+	LT  shift 67
+	GT  shift 68
+	LTE  shift 65
+	GTE  shift 66
+	.  reduce 34 (src line 152)
 
 
 state 84
@@ -1252,19 +1237,19 @@ state 84
 	expr:  expr.AND expr 
 	expr:  expr.OR expr 
 	expr:  expr.EQ expr 
+	expr:  expr EQ expr.    (35)
 	expr:  expr.NOT_EQ expr 
 	expr:  expr.LTE expr 
 	expr:  expr.GTE expr 
-	expr:  expr GTE expr.    (37)
 	expr:  expr.LT expr 
 	expr:  expr.GT expr 
 
-	ADD  shift 56
-	SUB  shift 57
-	MUL  shift 54
-	DIV  shift 55
-	MOD  shift 58
-	.  reduce 37 (src line 155)
+	ADD  shift 58
+	SUB  shift 59
+	MUL  shift 56
+	DIV  shift 57
+	MOD  shift 60
+	.  reduce 35 (src line 153)
 
 
 state 85
@@ -1277,18 +1262,18 @@ state 85
 	expr:  expr.OR expr 
 	expr:  expr.EQ expr 
 	expr:  expr.NOT_EQ expr 
+	expr:  expr NOT_EQ expr.    (36)
 	expr:  expr.LTE expr 
 	expr:  expr.GTE expr 
 	expr:  expr.LT expr 
-	expr:  expr LT expr.    (38)
 	expr:  expr.GT expr 
 
-	ADD  shift 56
-	SUB  shift 57
-	MUL  shift 54
-	DIV  shift 55
-	MOD  shift 58
-	.  reduce 38 (src line 156)
+	ADD  shift 58
+	SUB  shift 59
+	MUL  shift 56
+	DIV  shift 57
+	MOD  shift 60
+	.  reduce 36 (src line 154)
 
 
 state 86
@@ -1302,78 +1287,175 @@ state 86
 	expr:  expr.EQ expr 
 	expr:  expr.NOT_EQ expr 
 	expr:  expr.LTE expr 
+	expr:  expr LTE expr.    (37)
 	expr:  expr.GTE expr 
 	expr:  expr.LT expr 
 	expr:  expr.GT expr 
-	expr:  expr GT expr.    (39)
 
-	ADD  shift 56
-	SUB  shift 57
-	MUL  shift 54
-	DIV  shift 55
-	MOD  shift 58
-	.  reduce 39 (src line 157)
+	ADD  shift 58
+	SUB  shift 59
+	MUL  shift 56
+	DIV  shift 57
+	MOD  shift 60
+	.  reduce 37 (src line 155)
 
 
 state 87
-	expr:  LPAREN expr RPAREN.    (22)
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr GTE expr.    (38)
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
 
-	.  reduce 22 (src line 139)
+	ADD  shift 58
+	SUB  shift 59
+	MUL  shift 56
+	DIV  shift 57
+	MOD  shift 60
+	.  reduce 38 (src line 156)
 
 
 state 88
-	contract_data:  DATA LBRACE var_declarations NEWLINE RBRACE NEWLINE.    (48)
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr LT expr.    (39)
+	expr:  expr.GT expr 
 
-	.  reduce 48 (src line 179)
+	ADD  shift 58
+	SUB  shift 59
+	MUL  shift 56
+	DIV  shift 57
+	MOD  shift 60
+	.  reduce 39 (src line 157)
 
 
 state 89
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	expr:  expr GT expr.    (40)
+
+	ADD  shift 58
+	SUB  shift 59
+	MUL  shift 56
+	DIV  shift 57
+	MOD  shift 60
+	.  reduce 40 (src line 158)
+
+
+state 90
+	expr:  LPAREN expr RPAREN.    (23)
+
+	.  reduce 23 (src line 140)
+
+
+state 91
+	statements:  statements.NEWLINE 
+	statements:  statements.statement NEWLINE 
+	statement:  WHILE expr LBRACE statements.RBRACE 
+
+	IDENT  shift 19
+	NEWLINE  shift 12
+	RBRACE  shift 94
+	IF  shift 16
+	RETURN  shift 17
+	WHILE  shift 18
+	T_INT  shift 21
+	T_BOOL  shift 20
+	.  error
+
+	type  goto 15
+	var  goto 14
+	statement  goto 13
+
+state 92
+	contract_data:  DATA LBRACE var_declarations NEWLINE RBRACE NEWLINE.    (49)
+
+	.  reduce 49 (src line 180)
+
+
+state 93
 	statement:  IF expr LBRACE statements RBRACE.elif else 
 	elif: .    (9)
 
 	.  reduce 9 (src line 120)
 
-	elif  goto 90
+	elif  goto 95
 
-state 90
+state 94
+	statement:  WHILE expr LBRACE statements RBRACE.    (22)
+
+	.  reduce 22 (src line 137)
+
+
+state 95
 	elif:  elif.ELIF expr LBRACE statements RBRACE 
 	statement:  IF expr LBRACE statements RBRACE elif.else 
 	else: .    (7)
 
-	ELIF  shift 91
-	ELSE  shift 93
+	ELIF  shift 96
+	ELSE  shift 98
 	.  reduce 7 (src line 115)
 
-	else  goto 92
+	else  goto 97
 
-state 91
+state 96
 	elif:  elif ELIF.expr LBRACE statements RBRACE 
 
-	IDENT  shift 38
-	INT  shift 35
-	TRUE  shift 36
-	FALSE  shift 37
-	LPAREN  shift 34
-	SUB  shift 39
-	NOT  shift 40
+	IDENT  shift 39
+	INT  shift 36
+	TRUE  shift 37
+	FALSE  shift 38
+	LPAREN  shift 35
+	SUB  shift 40
+	NOT  shift 41
 	.  error
 
-	expr  goto 94
+	expr  goto 99
 
-state 92
+state 97
 	statement:  IF expr LBRACE statements RBRACE elif else.    (19)
 
 	.  reduce 19 (src line 134)
 
 
-state 93
+state 98
 	else:  ELSE.LBRACE statements RBRACE 
 
-	LBRACE  shift 95
+	LBRACE  shift 100
 	.  error
 
 
-state 94
+state 99
 	elif:  elif ELIF expr.LBRACE statements RBRACE 
 	expr:  expr.MUL expr 
 	expr:  expr.DIV expr 
@@ -1389,96 +1471,98 @@ state 94
 	expr:  expr.LT expr 
 	expr:  expr.GT expr 
 
-	LBRACE  shift 96
-	ADD  shift 56
-	SUB  shift 57
-	MUL  shift 54
-	DIV  shift 55
-	MOD  shift 58
-	AND  shift 59
-	OR  shift 60
-	EQ  shift 61
-	NOT_EQ  shift 62
-	LT  shift 65
-	GT  shift 66
-	LTE  shift 63
-	GTE  shift 64
+	LBRACE  shift 101
+	ADD  shift 58
+	SUB  shift 59
+	MUL  shift 56
+	DIV  shift 57
+	MOD  shift 60
+	AND  shift 61
+	OR  shift 62
+	EQ  shift 63
+	NOT_EQ  shift 64
+	LT  shift 67
+	GT  shift 68
+	LTE  shift 65
+	GTE  shift 66
 	.  error
 
 
-state 95
+state 100
 	else:  ELSE LBRACE.statements RBRACE 
 	statements: .    (3)
 
 	.  reduce 3 (src line 106)
 
-	statements  goto 97
+	statements  goto 102
 
-state 96
+state 101
 	elif:  elif ELIF expr LBRACE.statements RBRACE 
 	statements: .    (3)
 
 	.  reduce 3 (src line 106)
 
-	statements  goto 98
+	statements  goto 103
 
-state 97
+state 102
 	statements:  statements.NEWLINE 
 	statements:  statements.statement NEWLINE 
 	else:  ELSE LBRACE statements.RBRACE 
 
-	IDENT  shift 18
+	IDENT  shift 19
 	NEWLINE  shift 12
-	RBRACE  shift 99
+	RBRACE  shift 104
 	IF  shift 16
 	RETURN  shift 17
-	T_INT  shift 20
-	T_BOOL  shift 19
+	WHILE  shift 18
+	T_INT  shift 21
+	T_BOOL  shift 20
 	.  error
 
 	type  goto 15
 	var  goto 14
 	statement  goto 13
 
-state 98
+state 103
 	statements:  statements.NEWLINE 
 	statements:  statements.statement NEWLINE 
 	elif:  elif ELIF expr LBRACE statements.RBRACE 
 
-	IDENT  shift 18
+	IDENT  shift 19
 	NEWLINE  shift 12
-	RBRACE  shift 100
+	RBRACE  shift 105
 	IF  shift 16
 	RETURN  shift 17
-	T_INT  shift 20
-	T_BOOL  shift 19
+	WHILE  shift 18
+	T_INT  shift 21
+	T_BOOL  shift 20
 	.  error
 
 	type  goto 15
 	var  goto 14
 	statement  goto 13
 
-state 99
+state 104
 	else:  ELSE LBRACE statements RBRACE.    (8)
 
 	.  reduce 8 (src line 117)
 
 
-state 100
+state 105
 	elif:  elif ELIF expr LBRACE statements RBRACE.    (10)
 
 	.  reduce 10 (src line 122)
 
 
-46 terminals, 14 nonterminals
-52 grammar rules, 101/8000 states
+47 terminals, 14 nonterminals
+53 grammar rules, 106/8000 states
 0 shift/reduce, 0 reduce/reduce conflicts reported
 63 working sets used
-memory: parser 44/120000
+memory: parser 46/120000
 29 extra closures
-443 shift entries, 1 exceptions
-45 goto entries
-9 entries saved by goto default
-Optimizer space used: output 244/120000
-244 table entries, 51 zero
-maximum spread: 44, maximum offset: 96
+476 shift entries, 1 exceptions
+47 goto entries
+12 entries saved by goto default
+Optimizer space used: output 296/120000
+296 table entries, 75 zero
+maximum spread: 45, maximum offset: 101

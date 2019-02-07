@@ -104,7 +104,6 @@ func testFile(filename string) error {
 			return err
 		}
 	}
-	fmt.Println(`NAMES`, vm.NameSpace)
 	return nil
 }
 
@@ -114,4 +113,11 @@ func TestLang(t *testing.T) {
 		return
 	}
 	t.Error(`OK`)
+}
+
+func TestHard(t *testing.T) {
+	if err := testFile(`hard_test`); err != nil {
+		t.Error(err)
+		return
+	}
 }

@@ -1,3 +1,45 @@
+contract myFact {
+    int f = 1
+    int i = 1
+    while i <= 16 {
+        f *= i
+        i+=1
+    }
+    return f
+} 
+==== 20922789888000
+contract myWhile {
+    int i sum
+    while i < 5 {
+        int j
+        while j <= i {
+            sum += j
+            j+=2
+        }
+        i+=1
+    }
+    return sum
+} 
+==== 10
+contract myVar {
+    int myVar
+    while false {
+        int myVar
+    }
+} 
+==== myVar 4:19: Variable myVar has already been defined
+contract myGT {
+    while 10 + 5 {
+
+    }
+} 
+==== myGT 4:5: Unexpected type int of expression; expecting bool
+contract myGT {
+    while 10 {
+        
+    }
+} 
+==== myGT 4:5: Unexpected type int of expression; expecting bool
 contract myGT {
     return 5 > 10
 } 

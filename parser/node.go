@@ -16,6 +16,7 @@ const (
 	TElif
 	TReturn
 	TGetVar
+	TWhile
 )
 
 const (
@@ -33,6 +34,12 @@ type NVar struct {
 // NVarValue contains the name of variable
 type NVarValue struct {
 	Name string
+}
+
+// NWhile - while statement
+type NWhile struct {
+	Cond *Node
+	Body *Node
 }
 
 // NIf - if statement
@@ -228,6 +235,16 @@ func newUnary(operand *Node, oper int, l yyLexer) *Node {
 		Value: &NUnary{
 			Oper:    oper,
 			Operand: operand,
+		},
+	}, l)
+}
+
+func newWhile(cond *Node, body *Node, l yyLexer) *Node {
+	return setPos(&Node{
+		Type: TWhile,
+		Value: &NWhile{
+			Cond: cond,
+			Body: body,
 		},
 	}, l)
 }

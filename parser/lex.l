@@ -72,6 +72,7 @@ unicodeLetter	\x80
 
 data    		return l.char(DATA)
 contract		return l.char(CONTRACT)
+while           return l.char(WHILE)
 if				return l.char(IF)
 elif			return l.char(ELIF)
 else			return l.char(ELSE)

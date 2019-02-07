@@ -67,7 +67,7 @@ func setResult(l yyLexer, v *Node) {
 %token ELIF     // elif
 %token ELSE     // else
 %token RETURN   // return
-
+%token WHILE   // while
 
 // Types
 %token T_INT    // int
@@ -134,6 +134,7 @@ statement
     | IF expr LBRACE statements RBRACE elif else { $$ = newIf( $2, $4, $6, $7, yylex )}
     | RETURN { $$ = newReturn(nil, yylex); }
     | RETURN expr { $$ = newReturn($2, yylex); }
+    | WHILE expr LBRACE statements RBRACE { $$ = newWhile( $2, $4, yylex )}
     ;
 
 expr

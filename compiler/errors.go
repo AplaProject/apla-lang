@@ -12,6 +12,8 @@ const (
 	errNodeType   = `Unknown node type`
 	errVarExists  = `Variable %s has already been defined`
 	errVarUnknown = `Variable %s hasn't been defined`
+	errCond       = `Unexpected type %s of expression; expecting bool`
+	errJump       = `Too big relative jump`
 )
 
 func (cmpl *compiler) Error(node *parser.Node, text string) error {
