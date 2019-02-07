@@ -60,6 +60,18 @@ func (cmpl *compiler) ErrorOperator(node *parser.Node) error {
 		name = `/=`
 	case parser.MOD_ASSIGN:
 		name = `%=`
+	case parser.EQ:
+		name = `==`
+	case parser.NOT_EQ:
+		name = `!=`
+	case parser.LT:
+		name = `<`
+	case parser.LTE:
+		name = `<=`
+	case parser.GT:
+		name = `>`
+	case parser.GTE:
+		name = `>=`
 	}
 	return cmpl.Error(node, fmt.Sprintf(errOperator, left+name+right))
 }

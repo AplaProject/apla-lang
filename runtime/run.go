@@ -67,6 +67,48 @@ main:
 				return ``, gas, fmt.Errorf(errDivZero)
 			}
 			stack[top] %= stack[top+1]
+		case EQINT:
+			var b int64
+			top--
+			if stack[top] == stack[top+1] {
+				b = 1
+			}
+			stack[top] = b
+		case NEINT:
+			var b int64
+			top--
+			if stack[top] != stack[top+1] {
+				b = 1
+			}
+			stack[top] = b
+		case LTINT:
+			var b int64
+			top--
+			if stack[top] < stack[top+1] {
+				b = 1
+			}
+			stack[top] = b
+		case LEINT:
+			var b int64
+			top--
+			if stack[top] <= stack[top+1] {
+				b = 1
+			}
+			stack[top] = b
+		case GTINT:
+			var b int64
+			top--
+			if stack[top] > stack[top+1] {
+				b = 1
+			}
+			stack[top] = b
+		case GEINT:
+			var b int64
+			top--
+			if stack[top] >= stack[top+1] {
+				b = 1
+			}
+			stack[top] = b
 		case GETVAR:
 			i++
 			top++

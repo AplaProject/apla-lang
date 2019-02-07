@@ -23,6 +23,12 @@ var (
 		{rt.ASSIGNMULINT, parser.VVoid, parser.MUL_ASSIGN, parser.VInt, parser.VInt}, // int *= int
 		{rt.ASSIGNDIVINT, parser.VVoid, parser.DIV_ASSIGN, parser.VInt, parser.VInt}, // int /= int
 		{rt.ASSIGNMODINT, parser.VVoid, parser.MOD_ASSIGN, parser.VInt, parser.VInt}, // int %= int
+		{rt.EQINT, parser.VBool, parser.EQ, parser.VInt, parser.VInt},                // int == int
+		{rt.NEINT, parser.VBool, parser.NOT_EQ, parser.VInt, parser.VInt},            // int != int
+		{rt.LTINT, parser.VBool, parser.LT, parser.VInt, parser.VInt},                // int < int
+		{rt.LEINT, parser.VBool, parser.LTE, parser.VInt, parser.VInt},               // int <= int
+		{rt.GTINT, parser.VBool, parser.GT, parser.VInt, parser.VInt},                // int > int
+		{rt.GEINT, parser.VBool, parser.GTE, parser.VInt, parser.VInt},               // int >= int
 	}
 )
 

@@ -1,3 +1,36 @@
+contract myGT {
+    return 5 > 10
+} 
+==== false
+contract myGE {
+    return 6 >= 6
+} 
+==== true
+contract myLT {
+    return 5 < 10
+} 
+==== true
+contract myLE {
+    return 6 >= 6
+} 
+==== true
+contract myNE2 {
+    return 5 != 10
+} 
+==== true
+contract myNE1 {
+    return 8+2 != 10
+} 
+==== false
+contract myEQ2 {
+    return 5 == 10
+} 
+==== false
+contract myEQ1 {
+    int a = 10
+    return a == 10
+} 
+==== true
 contract myVarSetAB {
     int a
     a += true
