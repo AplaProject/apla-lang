@@ -1,10 +1,35 @@
 contract myVarSetAB {
+    int a
+    a += true
+} 
+==== myVarSetAB 3:15: Operator int+=bool has not been found
+contract myMod2 {
+    int a = 21 % 0
+} 
+==== integer divide by zero
+contract myMod {
+    int a = 21
+    a %= 2-2
+} 
+==== integer divide by zero
+contract myVarAssign {
+    int a = 7
+    int b = a + 3
+    a += 8
+    b -= 5
+    a *= b + 5
+    b /=5
+    a %= 17
+    return a + b
+} 
+==== 15
+contract myVarSetAB {
     int a = 10
     int b = 15
     b = b + 1
-    return a + b
+    return a + b + a % 3
 } 
-==== 26
+==== 27
 contract myVarSet {
     int a
     a = 23

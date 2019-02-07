@@ -36,6 +36,7 @@ main:
 			top++
 			stack[top] = int64((uint64(code[i-1]) << 16) | uint64(code[i]&0xffff))
 		case INITVARS:
+			top = 0
 			count := int64(code[i+1])
 			for iVar := int64(0); iVar < count; iVar++ {
 				rt.Vars = append(rt.Vars, 0)
@@ -60,6 +61,12 @@ main:
 				return ``, gas, fmt.Errorf(errDivZero)
 			}
 			stack[top] /= stack[top+1]
+		case MODINT:
+			top--
+			if stack[top+1] == 0 {
+				return ``, gas, fmt.Errorf(errDivZero)
+			}
+			stack[top] %= stack[top+1]
 		case GETVAR:
 			i++
 			top++
@@ -72,6 +79,27 @@ main:
 		case ASSIGNINT:
 			fmt.Println(`STACK`, stack[:top+1])
 			*(*int64)(unsafe.Pointer(uintptr(stack[top-1]))) = stack[top]
+			top -= 2
+		case ASSIGNADDINT:
+			*(*int64)(unsafe.Pointer(uintptr(stack[top-1]))) += stack[top]
+			top -= 2
+		case ASSIGNSUBINT:
+			*(*int64)(unsafe.Pointer(uintptr(stack[top-1]))) -= stack[top]
+			top -= 2
+		case ASSIGNMULINT:
+			*(*int64)(unsafe.Pointer(uintptr(stack[top-1]))) *= stack[top]
+			top -= 2
+		case ASSIGNDIVINT:
+			if stack[top] == 0 {
+				return ``, gas, fmt.Errorf(errDivZero)
+			}
+			*(*int64)(unsafe.Pointer(uintptr(stack[top-1]))) /= stack[top]
+			top -= 2
+		case ASSIGNMODINT:
+			if stack[top] == 0 {
+				return ``, gas, fmt.Errorf(errDivZero)
+			}
+			*(*int64)(unsafe.Pointer(uintptr(stack[top-1]))) %= stack[top]
 			top -= 2
 		case RETURN:
 			switch code[i+1] {

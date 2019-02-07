@@ -10,13 +10,19 @@ import (
 var (
 	operators = [][]uint32{
 		// BCode, Result, Operator, Type of parameters...
-		{rt.SIGNINT, parser.VInt, parser.SUB, parser.VInt},                    // -int
-		{rt.NOT, parser.VBool, parser.NOT, parser.VBool},                      // !bool
-		{rt.ADDINT, parser.VInt, parser.ADD, parser.VInt, parser.VInt},        // int+int
-		{rt.SUBINT, parser.VInt, parser.SUB, parser.VInt, parser.VInt},        // int-int
-		{rt.MULINT, parser.VInt, parser.MUL, parser.VInt, parser.VInt},        // int*int
-		{rt.DIVINT, parser.VInt, parser.DIV, parser.VInt, parser.VInt},        // int/int
-		{rt.ASSIGNINT, parser.VVoid, parser.ASSIGN, parser.VInt, parser.VInt}, // int = int
+		{rt.SIGNINT, parser.VInt, parser.SUB, parser.VInt},                           // -int
+		{rt.NOT, parser.VBool, parser.NOT, parser.VBool},                             // !bool
+		{rt.ADDINT, parser.VInt, parser.ADD, parser.VInt, parser.VInt},               // int+int
+		{rt.SUBINT, parser.VInt, parser.SUB, parser.VInt, parser.VInt},               // int-int
+		{rt.MULINT, parser.VInt, parser.MUL, parser.VInt, parser.VInt},               // int*int
+		{rt.DIVINT, parser.VInt, parser.DIV, parser.VInt, parser.VInt},               // int/int
+		{rt.MODINT, parser.VInt, parser.MOD, parser.VInt, parser.VInt},               // int%int
+		{rt.ASSIGNINT, parser.VVoid, parser.ASSIGN, parser.VInt, parser.VInt},        // int = int
+		{rt.ASSIGNADDINT, parser.VVoid, parser.ADD_ASSIGN, parser.VInt, parser.VInt}, // int += int
+		{rt.ASSIGNSUBINT, parser.VVoid, parser.SUB_ASSIGN, parser.VInt, parser.VInt}, // int -= int
+		{rt.ASSIGNMULINT, parser.VVoid, parser.MUL_ASSIGN, parser.VInt, parser.VInt}, // int *= int
+		{rt.ASSIGNDIVINT, parser.VVoid, parser.DIV_ASSIGN, parser.VInt, parser.VInt}, // int /= int
+		{rt.ASSIGNMODINT, parser.VVoid, parser.MOD_ASSIGN, parser.VInt, parser.VInt}, // int %= int
 	}
 )
 
