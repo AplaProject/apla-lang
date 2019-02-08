@@ -129,7 +129,6 @@ main:
 			}
 			i++
 		case ASSIGNINT:
-			//			fmt.Println(`STACK`, stack[:top+1])
 			*(*int64)(unsafe.Pointer(uintptr(stack[top-1]))) = stack[top]
 			top -= 2
 		case ASSIGNADDINT:

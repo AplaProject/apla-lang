@@ -1,3 +1,56 @@
+contract myIf {
+    int ret = 1
+    if ret == 1 {
+        ret += 2
+    }
+    if ret < 3 {
+        ret /= 2
+    } else {
+        ret += 5
+    }
+    if false {
+        ret *=3
+    } elif ret < 10 {
+        ret *= 2
+    }
+    if ret < 10 {
+        ret *=3
+    } elif ret != 16 {
+        ret *= 2
+    } elif ret == 16 {
+        ret += 4
+    } elif ret >5 {
+        ret/=3
+    } elif ret == 5 {
+        ret -= 20
+    } else {
+        ret *= 0
+    }
+    if ret < 10 {
+        ret *=3
+    } elif ret == 16 {
+        ret *= 2
+    } elif false {
+        ret += 4
+    } else {
+        ret *= 2
+    }
+    return ret
+} 
+==== 40
+contract myIf {
+    int ret
+    if true  {
+    } elif ret {
+    }
+} 
+==== myIf 4:12: Unexpected type int of expression; expecting bool
+contract myIf {
+    int ret
+    if ret  {
+    }
+} 
+==== myIf 3:8: Unexpected type int of expression; expecting bool
 contract myFact {
     int f = 1
     int i = 1
@@ -30,16 +83,14 @@ contract myVar {
 ==== myVar 4:19: Variable myVar has already been defined
 contract myGT {
     while 10 + 5 {
-
     }
 } 
-==== myGT 4:5: Unexpected type int of expression; expecting bool
+==== myGT 2:18: Unexpected type int of expression; expecting bool
 contract myGT {
     while 10 {
-        
     }
 } 
-==== myGT 4:5: Unexpected type int of expression; expecting bool
+==== myGT 2:11: Unexpected type int of expression; expecting bool
 contract myGT {
     return 5 > 10
 } 

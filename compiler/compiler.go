@@ -178,7 +178,7 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 			return err
 		}
 		if nWhile.Cond.Result != parser.VBool {
-			return cmpl.ErrorParam(node, errCond, Type2Str(nWhile.Cond.Result))
+			return cmpl.ErrorParam(nWhile.Cond, errCond, Type2Str(nWhile.Cond.Result))
 		}
 		sizeCond := len(cmpl.Contract.Code)
 		cmpl.Append(rt.JZE, 0)
@@ -195,10 +195,63 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 			return err
 		}
 		cmpl.Contract.Code[sizeCond+1] = off
-
-		fmt.Println(`TWhile`, sizeCode, sizeCond)
-
+	case parser.TIf:
+		ends := make([]int, 0, 16)
+		nIf := node.Value.(*parser.NIf)
+		if err = nodeToCode(nIf.Cond, cmpl); err != nil {
+			return err
+		}
+		if nIf.Cond.Result != parser.VBool {
+			return cmpl.ErrorParam(nIf.Cond, errCond, Type2Str(nIf.Cond.Result))
+		}
+		sizeCond := len(cmpl.Contract.Code)
+		cmpl.Append(rt.JZE, 0)
+		if err = nodeToCode(nIf.IfBody, cmpl); err != nil {
+			return err
+		}
+		ends = append(ends, len(cmpl.Contract.Code))
+		cmpl.Append(rt.JMP, 0)
+		var off rt.Bcode
+		if off, err = cmpl.JumpOff(node, len(cmpl.Contract.Code)-sizeCond); err != nil {
+			return err
+		}
+		cmpl.Contract.Code[sizeCond+1] = off
+		if nIf.ElifBody != nil {
+			nElif := nIf.ElifBody.Value.(*parser.NElif)
+			for _, child := range nElif.List {
+				if err = nodeToCode(child.Cond, cmpl); err != nil {
+					return err
+				}
+				if child.Cond.Result != parser.VBool {
+					return cmpl.ErrorParam(child.Cond, errCond, Type2Str(child.Cond.Result))
+				}
+				sizeCond = len(cmpl.Contract.Code)
+				cmpl.Append(rt.JZE, 0)
+				if err = nodeToCode(child.Body, cmpl); err != nil {
+					return err
+				}
+				ends = append(ends, len(cmpl.Contract.Code))
+				cmpl.Append(rt.JMP, 0)
+				if off, err = cmpl.JumpOff(node, len(cmpl.Contract.Code)-sizeCond); err != nil {
+					return err
+				}
+				cmpl.Contract.Code[sizeCond+1] = off
+			}
+		}
+		if nIf.ElseBody != nil {
+			if err = nodeToCode(nIf.ElseBody, cmpl); err != nil {
+				return err
+			}
+		}
+		size := len(cmpl.Contract.Code)
+		for _, end := range ends {
+			if off, err = cmpl.JumpOff(node, size-end); err != nil {
+				return err
+			}
+			cmpl.Contract.Code[end+1] = off
+		}
 	default:
+		fmt.Println(`Ooops`)
 		return cmpl.Error(node, errNodeType)
 	}
 	return nil

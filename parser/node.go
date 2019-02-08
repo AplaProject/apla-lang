@@ -263,11 +263,16 @@ func newIf(cond *Node, ifbody *Node, elif *Node, elsebody *Node, l yyLexer) *Nod
 
 func newElif(statements *Node, cond *Node, statement *Node, l yyLexer) *Node {
 	if statements == nil {
+		list := &NElif{
+			List: make([]*NElifBody, 1, 10),
+		}
+		list.List[0] = &NElifBody{
+			Cond: cond,
+			Body: statement,
+		}
 		statements = setPos(&Node{
-			Type: TElif,
-			Value: &NElif{
-				List: make([]*NElifBody, 0, 10),
-			},
+			Type:  TElif,
+			Value: list,
 		}, l)
 	} else {
 		statements.Value.(*NElif).List = append(statements.Value.(*NElif).List, &NElifBody{
