@@ -1,3 +1,28 @@
+contract myCycle {
+    int i
+    while i < 1000 {
+        int j k
+        j = i 
+        k = i*2
+        if k > i {
+            int x = j
+            j = x + 2
+        }
+        i += 1
+    }
+    return i
+}
+==== 1000
+contract myORAND {
+    bool b = 10 > 1 || 2/0 == 3
+    if !b {
+        return false
+    }
+    b = b && 1 > 5 && 6/0 == 7
+    b = !b && true && 5==5
+    return b
+}
+==== true
 contract myIf {
     int ret = 1
     if ret == 1 {

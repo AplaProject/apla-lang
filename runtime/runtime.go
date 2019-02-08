@@ -17,10 +17,13 @@ const (
 	LEINT        // int <= int
 	GTINT        // int > int
 	GEINT        // int >= int
+	AND          // bool && bool
+	OR           // bool || bool
 	GETVAR       // + uint16
 	SETVAR       // + uint16
 	JMP          // + int16   jump with the offset
-	JZE          // + int16   jump if top is equal zero with the offset
+	JZE          // + int16   jump if top equals zero with the offset
+	JNZ          // + int16   jump if top does not equal zero with the offset
 	ASSIGNINT    // vars = int
 	ASSIGNADDINT // vars += int
 	ASSIGNSUBINT // vars -= int

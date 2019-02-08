@@ -74,6 +74,10 @@ func (cmpl *compiler) ErrorOperator(node *parser.Node) error {
 		name = `>`
 	case parser.GTE:
 		name = `>=`
+	case parser.AND:
+		name = `&&`
+	case parser.OR:
+		name = `||`
 	}
 	return cmpl.Error(node, fmt.Sprintf(errOperator, left+name+right))
 }

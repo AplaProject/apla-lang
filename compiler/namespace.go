@@ -29,6 +29,9 @@ var (
 		{rt.LEINT, parser.VBool, parser.LTE, parser.VInt, parser.VInt},               // int <= int
 		{rt.GTINT, parser.VBool, parser.GT, parser.VInt, parser.VInt},                // int > int
 		{rt.GEINT, parser.VBool, parser.GTE, parser.VInt, parser.VInt},               // int >= int
+		{rt.ASSIGNINT, parser.VVoid, parser.ASSIGN, parser.VBool, parser.VBool},      // bool = bool
+		{rt.AND, parser.VBool, parser.AND, parser.VBool, parser.VBool},               // bool && bool
+		{rt.OR, parser.VBool, parser.OR, parser.VBool, parser.VBool},                 // bool || bool
 	}
 )
 

@@ -110,6 +110,20 @@ main:
 				b = 1
 			}
 			stack[top] = b
+		case AND:
+			var b int64
+			top--
+			if stack[top] == 1 && stack[top+1] == 1 {
+				b = 1
+			}
+			stack[top] = b
+		case OR:
+			var b int64
+			top--
+			if stack[top] == 1 || stack[top+1] == 1 {
+				b = 1
+			}
+			stack[top] = b
 		case GETVAR:
 			i++
 			top++
@@ -120,10 +134,16 @@ main:
 			stack[top] = int64(uintptr(unsafe.Pointer(&rt.Vars[code[i]])))
 		case JMP:
 			i += int64(int16(code[i+1]))
+			top = 0
 			continue
 		case JZE:
-			top--
-			if stack[top+1] == 0 {
+			if stack[top] == 0 {
+				i += int64(int16(code[i+1]))
+				continue
+			}
+			i++
+		case JNZ:
+			if stack[top] != 0 {
 				i += int64(int16(code[i+1]))
 				continue
 			}

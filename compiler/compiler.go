@@ -41,8 +41,26 @@ func (cmpl *compiler) JumpOff(node *parser.Node, off int) (rt.Bcode, error) {
 	return rt.Bcode(off), nil
 }
 
+func (cmpl *compiler) ConditionCode(node *parser.Node) (before int, after int, err error) {
+	before = len(cmpl.Contract.Code)
+	if err = nodeToCode(node, cmpl); err != nil {
+		return
+	}
+	if node.Result != parser.VBool {
+		err = cmpl.ErrorParam(node, errCond, Type2Str(node.Result))
+		return
+	}
+	after = len(cmpl.Contract.Code)
+	return
+}
+
 func nodeToCode(node *parser.Node, cmpl *compiler) error {
-	var err error
+	var (
+		err                error
+		vinfo              VarInfo
+		ok                 bool
+		sizeCode, sizeCond int
+	)
 	if node == nil {
 		return nil
 	}
@@ -97,14 +115,26 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 				return err
 			}
 		}
+		forJump := len(cmpl.Contract.Code)
 		if err = nodeToCode(nBinary.Right, cmpl); err != nil {
 			return err
 		}
 		code, result := cmpl.findBinary(nBinary)
-		if code == rt.NOP {
+		var jumpCmd rt.Bcode
+		switch code {
+		case rt.NOP:
 			return cmpl.ErrorOperator(node)
+		case rt.AND:
+			jumpCmd = rt.Bcode(rt.JZE)
+		case rt.OR:
+			jumpCmd = rt.Bcode(rt.JNZ)
 		}
 		cmpl.Append(code)
+		if jumpCmd != rt.NOP {
+			cmpl.Contract.Code = append(cmpl.Contract.Code[:forJump],
+				append([]rt.Bcode{jumpCmd, rt.Bcode(len(cmpl.Contract.Code) - forJump + 2)},
+					cmpl.Contract.Code[forJump:]...)...)
+		}
 		node.Result = result
 	case parser.TUnary:
 		nUnary := node.Value.(*parser.NUnary)
@@ -144,7 +174,7 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 	case parser.TVars:
 		types := make([]rt.Bcode, len(node.Value.(*parser.NVars).Vars))
 		for i, v := range node.Value.(*parser.NVars).Vars {
-			if _, ok := cmpl.Contract.Vars[v.Name]; ok {
+			if _, ok = cmpl.Contract.Vars[v.Name]; ok {
 				return cmpl.ErrorParam(node, errVarExists, v.Name)
 			}
 			types[i] = rt.Bcode(v.Type)
@@ -157,30 +187,24 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 		cmpl.Append(types...)
 	case parser.TGetVar:
 		name := node.Value.(*parser.NVarValue).Name
-		if vinfo, ok := cmpl.Contract.Vars[name]; !ok {
+		if vinfo, ok = cmpl.Contract.Vars[name]; !ok {
 			return cmpl.ErrorParam(node, errVarUnknown, name)
-		} else {
-			cmpl.Append(rt.GETVAR, rt.Bcode(vinfo.Index))
-			node.Result = uint32(vinfo.Type)
 		}
+		cmpl.Append(rt.GETVAR, rt.Bcode(vinfo.Index))
+		node.Result = uint32(vinfo.Type)
 	case parser.TSetVar:
 		name := node.Value.(*parser.NVarValue).Name
-		if vinfo, ok := cmpl.Contract.Vars[name]; !ok {
+		if vinfo, ok = cmpl.Contract.Vars[name]; !ok {
 			return cmpl.ErrorParam(node, errVarUnknown, name)
-		} else {
-			cmpl.Append(rt.SETVAR, rt.Bcode(vinfo.Index))
-			node.Result = uint32(vinfo.Type)
 		}
+		cmpl.Append(rt.SETVAR, rt.Bcode(vinfo.Index))
+		node.Result = uint32(vinfo.Type)
 	case parser.TWhile:
 		nWhile := node.Value.(*parser.NWhile)
-		sizeCode := len(cmpl.Contract.Code)
-		if err = nodeToCode(nWhile.Cond, cmpl); err != nil {
+		sizeCode, sizeCond, err = cmpl.ConditionCode(nWhile.Cond)
+		if err != nil {
 			return err
 		}
-		if nWhile.Cond.Result != parser.VBool {
-			return cmpl.ErrorParam(nWhile.Cond, errCond, Type2Str(nWhile.Cond.Result))
-		}
-		sizeCond := len(cmpl.Contract.Code)
 		cmpl.Append(rt.JZE, 0)
 		if err = nodeToCode(nWhile.Body, cmpl); err != nil {
 			return err
@@ -198,13 +222,10 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 	case parser.TIf:
 		ends := make([]int, 0, 16)
 		nIf := node.Value.(*parser.NIf)
-		if err = nodeToCode(nIf.Cond, cmpl); err != nil {
+		_, sizeCond, err = cmpl.ConditionCode(nIf.Cond)
+		if err != nil {
 			return err
 		}
-		if nIf.Cond.Result != parser.VBool {
-			return cmpl.ErrorParam(nIf.Cond, errCond, Type2Str(nIf.Cond.Result))
-		}
-		sizeCond := len(cmpl.Contract.Code)
 		cmpl.Append(rt.JZE, 0)
 		if err = nodeToCode(nIf.IfBody, cmpl); err != nil {
 			return err
@@ -219,13 +240,10 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 		if nIf.ElifBody != nil {
 			nElif := nIf.ElifBody.Value.(*parser.NElif)
 			for _, child := range nElif.List {
-				if err = nodeToCode(child.Cond, cmpl); err != nil {
+				_, sizeCond, err = cmpl.ConditionCode(child.Cond)
+				if err != nil {
 					return err
 				}
-				if child.Cond.Result != parser.VBool {
-					return cmpl.ErrorParam(child.Cond, errCond, Type2Str(child.Cond.Result))
-				}
-				sizeCond = len(cmpl.Contract.Code)
 				cmpl.Append(rt.JZE, 0)
 				if err = nodeToCode(child.Body, cmpl); err != nil {
 					return err
