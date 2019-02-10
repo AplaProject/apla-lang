@@ -33,6 +33,7 @@ func setResult(l yyLexer, v *Node) {
 %token RBRACE  // }
 %token LBRAKET // [
 %token RBRAKET // ]
+%token QUESTION // ?
 
 // Operators
 %token ADD // +
@@ -143,6 +144,7 @@ expr
     | TRUE { $$ = newValue(true, yylex);}
     | FALSE { $$ = newValue(false, yylex);}
     | IDENT { $$ = newGetVar($1, yylex);}
+    | QUESTION LPAREN expr COMMA expr COMMA expr RPAREN { $$ = newQuestion($3, $5, $7, yylex);}
     | expr MUL expr { $$ = newBinary($1, $3, MUL, yylex); }
     | expr DIV expr { $$ = newBinary($1, $3, DIV, yylex);  }
     | expr ADD expr { $$ = newBinary($1, $3, ADD, yylex); }

@@ -17,6 +17,7 @@ const (
 	TReturn
 	TGetVar
 	TWhile
+	TQuestion
 )
 
 const (
@@ -70,6 +71,13 @@ type NBlock struct {
 // NBinary contains binary operator
 type NBinary struct {
 	Oper  int
+	Left  *Node
+	Right *Node
+}
+
+// NQuestions contains ? operator
+type NQuestion struct {
+	Cond  *Node
 	Left  *Node
 	Right *Node
 }
@@ -281,6 +289,17 @@ func newElif(statements *Node, cond *Node, statement *Node, l yyLexer) *Node {
 		})
 	}
 	return statements
+}
+
+func newQuestion(cond *Node, left *Node, right *Node, l yyLexer) *Node {
+	return setPos(&Node{
+		Type: TQuestion,
+		Value: &NQuestion{
+			Cond:  cond,
+			Left:  left,
+			Right: right,
+		},
+	}, l)
 }
 
 // Parser creates AST

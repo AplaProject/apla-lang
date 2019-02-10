@@ -19,9 +19,11 @@ const (
 	GEINT        // int >= int
 	AND          // bool && bool
 	OR           // bool || bool
+	DUP          // duplicate top of stack
 	GETVAR       // + uint16
 	SETVAR       // + uint16
-	JMP          // + int16   jump with the offset
+	JMP          // + int16   jump with the offset with clearing stack
+	JMPREL       // + int16   jump with the offset
 	JZE          // + int16   jump if top equals zero with the offset
 	JNZ          // + int16   jump if top does not equal zero with the offset
 	ASSIGNINT    // vars = int

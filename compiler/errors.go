@@ -14,6 +14,7 @@ const (
 	errVarUnknown = `Variable %s hasn't been defined`
 	errCond       = `Unexpected type %s of expression; expecting bool`
 	errJump       = `Too big relative jump`
+	errQuestTypes = `Different types of ?`
 )
 
 func (cmpl *compiler) Error(node *parser.Node, text string) error {

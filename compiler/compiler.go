@@ -132,7 +132,7 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 		cmpl.Append(code)
 		if jumpCmd != rt.NOP {
 			cmpl.Contract.Code = append(cmpl.Contract.Code[:forJump],
-				append([]rt.Bcode{jumpCmd, rt.Bcode(len(cmpl.Contract.Code) - forJump + 2)},
+				append([]rt.Bcode{rt.DUP, jumpCmd, rt.Bcode(len(cmpl.Contract.Code) - forJump + 2)},
 					cmpl.Contract.Code[forJump:]...)...)
 		}
 		node.Result = result
@@ -147,6 +147,35 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 		}
 		cmpl.Append(code)
 		node.Result = result
+	case parser.TQuestion:
+		nQuestion := node.Value.(*parser.NQuestion)
+		_, sizeCond, err = cmpl.ConditionCode(nQuestion.Cond)
+		if err != nil {
+			return err
+		}
+		cmpl.Append(rt.JZE, 0)
+		if err = nodeToCode(nQuestion.Left, cmpl); err != nil {
+			return err
+		}
+		sizeCode = len(cmpl.Contract.Code)
+		cmpl.Append(rt.JMPREL, 0)
+		if err = nodeToCode(nQuestion.Right, cmpl); err != nil {
+			return err
+		}
+		if nQuestion.Left.Result != nQuestion.Right.Result {
+			return cmpl.Error(node, errQuestTypes)
+		}
+		var off rt.Bcode
+		if off, err = cmpl.JumpOff(node, sizeCode-sizeCond+2); err != nil {
+			return err
+		}
+		cmpl.Contract.Code[sizeCond+1] = off
+
+		if off, err = cmpl.JumpOff(node, len(cmpl.Contract.Code)-sizeCode); err != nil {
+			return err
+		}
+		cmpl.Contract.Code[sizeCode+1] = off
+		node.Result = nQuestion.Left.Result
 	case parser.TValue:
 		switch v := node.Value.(type) {
 		case int:

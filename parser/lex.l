@@ -42,6 +42,7 @@ unicodeLetter	\x80
 
 ,[ \t]*\n?		return l.char(COMMA)
 :				return l.char(COLON)
+\?         	    return l.char(QUESTION)
 \([ \t]*\n?     return l.char(LPAREN)
 \n[ \t]*\)		return l.char(RPAREN)
 \)				return l.char(RPAREN)

@@ -124,6 +124,9 @@ main:
 				b = 1
 			}
 			stack[top] = b
+		case DUP:
+			top++
+			stack[top] = stack[top-1]
 		case GETVAR:
 			i++
 			top++
@@ -136,14 +139,19 @@ main:
 			i += int64(int16(code[i+1]))
 			top = 0
 			continue
+		case JMPREL:
+			i += int64(int16(code[i+1]))
+			continue
 		case JZE:
-			if stack[top] == 0 {
+			top--
+			if stack[top+1] == 0 {
 				i += int64(int16(code[i+1]))
 				continue
 			}
 			i++
 		case JNZ:
-			if stack[top] != 0 {
+			top--
+			if stack[top+1] != 0 {
 				i += int64(int16(code[i+1]))
 				continue
 			}
