@@ -32,7 +32,9 @@ const (
 	ASSIGNMULINT // vars *= int
 	ASSIGNDIVINT // vars /= int
 	ASSIGNMODINT // vars %= int
-	RETURN       // return from contract or function + int16 (type)
+	CALLFUNC     // + uint16 call contract function
+	RETURN       // return from contract + int16 (type)
+	RETFUNC      // return from function
 	SIGNINT      // unary minus int
 	NOT          // unary logical not
 	PUSH64       // + int64

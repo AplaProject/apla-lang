@@ -19,6 +19,7 @@ func setResult(l yyLexer, v *Node) {
 
 // Identifiers + literals
 %token<s> IDENT  // foobar
+%token<s> CALL  // foobar(
 %token<i> INT    // 314
 %token<b> TRUE   // true
 %token<b> FALSE  // false
@@ -69,12 +70,14 @@ func setResult(l yyLexer, v *Node) {
 %token ELSE     // else
 %token RETURN   // return
 %token WHILE   // while
+%token FUNC    // func
 
 // Types
 %token T_INT    // int
 %token T_BOOL   // bool
 
 %type <i> type
+%type <i> rettype
 %type <sa> ident_list
 %type <va> var_declaration
 %type <va> var_declarations
@@ -102,6 +105,11 @@ func setResult(l yyLexer, v *Node) {
 type
     : T_BOOL {$$ = VBool}
     | T_INT {$$ = VInt}
+    ;
+
+rettype
+    : /*empty*/ { $$ = VVoid }
+    | type { $$ = $1 }
     ;
 
 statements
@@ -136,6 +144,8 @@ statement
     | RETURN { $$ = newReturn(nil, yylex); }
     | RETURN expr { $$ = newReturn($2, yylex); }
     | WHILE expr LBRACE statements RBRACE { $$ = newWhile( $2, $4, yylex )}
+    | FUNC CALL RPAREN rettype LBRACE statements RBRACE { $$ = newFunc($2, $4, $6, yylex)}
+    | CALL RPAREN { $$ = newCallFunc($1, yylex);}
     ;
 
 expr
@@ -143,6 +153,7 @@ expr
     | INT { $$ = newValue($1, yylex);}
     | TRUE { $$ = newValue(true, yylex);}
     | FALSE { $$ = newValue(false, yylex);}
+    | CALL RPAREN { $$ = newCallFunc($1, yylex);}
     | IDENT { $$ = newGetVar($1, yylex);}
     | QUESTION LPAREN expr COMMA expr COMMA expr RPAREN { $$ = newQuestion($3, $5, $7, yylex);}
     | expr MUL expr { $$ = newBinary($1, $3, MUL, yylex); }

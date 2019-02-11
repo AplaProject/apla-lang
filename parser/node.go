@@ -18,6 +18,8 @@ const (
 	TGetVar
 	TWhile
 	TQuestion
+	TFunc
+	TCallFunc
 )
 
 const (
@@ -41,6 +43,18 @@ type NVarValue struct {
 type NWhile struct {
 	Cond *Node
 	Body *Node
+}
+
+// NFunc - function
+type NFunc struct {
+	Name   string
+	Result int
+	Body   *Node
+}
+
+// NCallFunc - call function
+type NCallFunc struct {
+	Name string
 }
 
 // NIf - if statement
@@ -298,6 +312,26 @@ func newQuestion(cond *Node, left *Node, right *Node, l yyLexer) *Node {
 			Cond:  cond,
 			Left:  left,
 			Right: right,
+		},
+	}, l)
+}
+
+func newFunc(name string, retType int, body *Node, l yyLexer) *Node {
+	return setPos(&Node{
+		Type: TFunc,
+		Value: &NFunc{
+			Name:   name,
+			Result: retType,
+			Body:   body,
+		},
+	}, l)
+}
+
+func newCallFunc(name string, l yyLexer) *Node {
+	return setPos(&Node{
+		Type: TCallFunc,
+		Value: &NCallFunc{
+			Name: name,
 		},
 	}, l)
 }

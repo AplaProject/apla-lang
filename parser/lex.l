@@ -20,6 +20,7 @@ digit			[0-9]|{unicodeDigit}
 int				[0-9]+
 float			{int}\.[0-9]*
 identifier		{letter}({letter}|{digit})*
+call    		{identifier}\(
 string			\"({letter}|{digit})*\"
 letter			[_a-zA-Z]|{unicodeLetter}
 unicodeDigit	\x81
@@ -80,6 +81,7 @@ else			return l.char(ELSE)
 return			return l.char(RETURN)
 true			return l.char(TRUE)
 false			return l.char(FALSE)
+func			return l.char(FUNC)
 
 bool			return l.char(T_BOOL)
 int				return l.char(T_INT)
@@ -98,6 +100,11 @@ hexint			return l.char(T_INT)
 {identifier}	{
 					lval.s = string(l.TokenBytes(nil))
 					return l.char(IDENT)
+				}
+{call}	{
+					lval.s = string(l.TokenBytes(nil))
+					lval.s = lval.s[:len(lval.s)-1]
+					return l.char(CALL)
 				}
 
 %%

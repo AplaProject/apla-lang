@@ -7,14 +7,20 @@ import (
 )
 
 const (
-	errOperator   = `Operator %s has not been found`
-	errType       = `Unknown type %T`
-	errNodeType   = `Unknown node type`
-	errVarExists  = `Variable %s has already been defined`
-	errVarUnknown = `Variable %s hasn't been defined`
-	errCond       = `Unexpected type %s of expression; expecting bool`
-	errJump       = `Too big relative jump`
-	errQuestTypes = `Different types of ?`
+	errOperator      = `Operator %s has not been found`
+	errType          = `Unknown type %T`
+	errNodeType      = `Unknown node type`
+	errVarExists     = `Variable %s has already been defined`
+	errFuncExists    = `Function %s has already been defined`
+	errVarUnknown    = `Variable %s hasn't been defined`
+	errCond          = `Unexpected type %s of expression; expecting bool`
+	errJump          = `Too big relative jump`
+	errQuestTypes    = `Different types of ?`
+	errFuncNotExists = `Function %s hasn't been defined`
+	errFuncLevel     = `Function cannot be defined inside another function`
+	errFuncReturn    = `Function must return a value`
+	errNotReturn     = `Function cannot return a value`
+	errReturnType    = `Function must return %s`
 )
 
 func (cmpl *compiler) Error(node *parser.Node, text string) error {

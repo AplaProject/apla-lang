@@ -17,11 +17,12 @@ const (
 // Run executes a bytecode
 func (rt *Runtime) Run(code []Bcode) (string, int64, error) {
 	var (
-		i, top, gas int64
-		result      string
+		i, top, gas, coff int64
+		result            string
 	)
 	length := int64(len(code))
 	stack := make([]int64, 100)
+	calls := make([]int64, 1000)
 	// top the latest value
 
 main:
@@ -180,6 +181,11 @@ main:
 			}
 			*(*int64)(unsafe.Pointer(uintptr(stack[top-1]))) %= stack[top]
 			top -= 2
+		case CALLFUNC:
+			calls[coff] = i + 2
+			coff++
+			i += int64(int16(code[i+1]))
+			continue
 		case RETURN:
 			switch code[i+1] {
 			case parser.VVoid: // skip result
@@ -195,6 +201,11 @@ main:
 				result = fmt.Sprint(stack[top])
 			}
 			break main
+		case RETFUNC:
+			coff--
+			i = calls[coff]
+			fmt.Println(`RETFUNC`)
+			continue
 		case SIGNINT:
 			stack[top] = -stack[top]
 		case NOT:

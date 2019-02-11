@@ -51,6 +51,26 @@ func (cmpl *compiler) findUnary(unary *parser.NUnary) (rt.Bcode, uint32) {
 	return rt.NOP, 0
 }
 
+func getFuncKey(nfunc *FuncInfo) string {
+	return fmt.Sprintf("$%s", nfunc.Name)
+}
+
+func (cmpl *compiler) findFunc(nfunc *FuncInfo) (rt.Bcode, uint32) {
+	key := getFuncKey(nfunc)
+	if v, ok := (*cmpl.NameSpace)[key]; ok {
+		return rt.Bcode(v & 0xffff), v >> 24
+	}
+	return rt.NOP, 0
+}
+
+func (cmpl *compiler) findCallFunc(nfunc *parser.NCallFunc) (rt.Bcode, uint32) {
+	key := fmt.Sprintf("$%s", nfunc.Name)
+	if v, ok := (*cmpl.NameSpace)[key]; ok {
+		return rt.Bcode(v & 0xffff), v >> 24
+	}
+	return rt.NOP, 0
+}
+
 func initNameSpace(nameSpace *map[string]uint32) {
 	for _, oper := range operators {
 		var key string

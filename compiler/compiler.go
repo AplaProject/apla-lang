@@ -12,6 +12,8 @@ type compiler struct {
 	Contract  *Contract
 	Blocks    []*parser.Node
 	NameSpace *map[string]uint32
+	RetFunc   int
+	InFunc    bool
 }
 
 // VarInfo describes a variable
@@ -20,12 +22,20 @@ type VarInfo struct {
 	Type  uint16
 }
 
+// FuncInfo describes a function
+type FuncInfo struct {
+	Offset int
+	Result int
+	Name   string
+}
+
 // Contract contains information about the contract
 type Contract struct {
-	ID   int64 // External id
-	Name string
-	Code []rt.Bcode
-	Vars map[string]VarInfo
+	ID    int64 // External id
+	Name  string
+	Code  []rt.Bcode
+	Vars  map[string]VarInfo
+	Funcs []*FuncInfo
 }
 
 func (cmpl *compiler) Append(codes ...rt.Bcode) {
@@ -68,6 +78,7 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 	case parser.TBlock:
 		//		startSize := len(cmpl.Contract.Code)
 		varsCount := uint16(len(cmpl.Contract.Vars))
+		funcsCount := len(cmpl.Contract.Funcs)
 		cmpl.Blocks = append(cmpl.Blocks, node)
 		for _, child := range node.Value.(*parser.NBlock).Statements {
 			if err = nodeToCode(child, cmpl); err != nil {
@@ -84,6 +95,13 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 				delete(cmpl.Contract.Vars, key)
 			}
 		}
+		if funcsCount < len(cmpl.Contract.Funcs) {
+			// Remove funcs
+			for i := funcsCount; i < len(cmpl.Contract.Funcs); i++ {
+				delete(*cmpl.NameSpace, getFuncKey(cmpl.Contract.Funcs[i]))
+			}
+			cmpl.Contract.Funcs = cmpl.Contract.Funcs[:funcsCount]
+		}
 	case parser.TContract:
 		cmpl.Contract.Name = node.Value.(*parser.NContract).Name
 		if err = nodeToCode(node.Value.(*parser.NContract).Block, cmpl); err != nil {
@@ -98,7 +116,20 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 			}
 			vtype = expr.Result
 		}
-		cmpl.Append(rt.RETURN, rt.Bcode(vtype))
+		if cmpl.InFunc {
+			if vtype != uint32(cmpl.RetFunc) {
+				if cmpl.RetFunc == parser.VVoid {
+					return cmpl.Error(node, errNotReturn)
+				}
+				if vtype == parser.VVoid {
+					return cmpl.Error(node, errFuncReturn)
+				}
+				return cmpl.ErrorParam(node, errReturnType, Type2Str(uint32(cmpl.RetFunc)))
+			}
+			cmpl.Append(rt.RETFUNC)
+		} else {
+			cmpl.Append(rt.RETURN, rt.Bcode(vtype))
+		}
 	case parser.TBinary:
 		nBinary := node.Value.(*parser.NBinary)
 		if err = nodeToCode(nBinary.Left, cmpl); err != nil {
@@ -297,6 +328,57 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 			}
 			cmpl.Contract.Code[end+1] = off
 		}
+	case parser.TFunc:
+		var off rt.Bcode
+		nFunc := node.Value.(*parser.NFunc)
+		finfo := &FuncInfo{
+			Name:   nFunc.Name,
+			Result: nFunc.Result,
+		}
+		fmt.Println(`TFUNC`, nFunc.Name, cmpl.InFunc)
+		if cmpl.InFunc {
+			return cmpl.Error(node, errFuncLevel)
+		}
+		cmpl.RetFunc = nFunc.Result
+		if code, _ := cmpl.findFunc(finfo); code != rt.NOP {
+			return cmpl.ErrorParam(node, errFuncExists, nFunc.Name)
+		}
+		start := len(cmpl.Contract.Code)
+		cmpl.Append(rt.JMP, 0)
+		finfo.Offset = start + 2
+		cmpl.InFunc = true
+		fmt.Println(`NEXT`, nFunc.Name, cmpl.InFunc)
+		if err = nodeToCode(nFunc.Body, cmpl); err != nil {
+			return err
+		}
+		cmpl.InFunc = false
+		if cmpl.Contract.Code[len(cmpl.Contract.Code)-1] != rt.RETFUNC {
+			if cmpl.RetFunc != parser.VVoid {
+				return cmpl.Error(node, errFuncReturn)
+			}
+			cmpl.Append(rt.RETFUNC)
+		}
+		if off, err = cmpl.JumpOff(nFunc.Body, len(cmpl.Contract.Code)-start); err != nil {
+			return err
+		}
+		cmpl.Contract.Code[start+1] = off
+		cmpl.Contract.Funcs = append(cmpl.Contract.Funcs, finfo)
+		(*cmpl.NameSpace)[getFuncKey(finfo)] = uint32(len(cmpl.Contract.Funcs) | (finfo.Result << 24))
+		fmt.Println(`FUNC`, finfo, getFuncKey(finfo))
+	case parser.TCallFunc:
+		nFunc := node.Value.(*parser.NCallFunc)
+		code, ftype := cmpl.findCallFunc(nFunc)
+		if code == rt.NOP {
+			return cmpl.ErrorParam(node, errFuncNotExists, nFunc.Name)
+		}
+		node.Result = ftype
+		var off rt.Bcode
+		if off, err = cmpl.JumpOff(node, cmpl.Contract.Funcs[code-1].Offset-
+			len(cmpl.Contract.Code)); err != nil {
+			return err
+		}
+		cmpl.Append(rt.CALLFUNC, off)
+		fmt.Println(`CALLFUNC`, nFunc, off)
 	default:
 		fmt.Println(`Ooops`)
 		return cmpl.Error(node, errNodeType)
@@ -323,6 +405,11 @@ func Compile(input string, nameSpace *map[string]uint32) (*Contract, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer func() {
+		for i := 0; i < len(cmpl.Contract.Funcs); i++ {
+			delete(*cmpl.NameSpace, getFuncKey(cmpl.Contract.Funcs[i]))
+		}
+	}()
 	if err = nodeToCode(root, cmpl); err != nil {
 		return nil, err
 	}
