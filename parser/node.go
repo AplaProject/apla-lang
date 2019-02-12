@@ -20,6 +20,7 @@ const (
 	TQuestion
 	TFunc
 	TCallFunc
+	TParams
 )
 
 const (
@@ -49,12 +50,14 @@ type NWhile struct {
 type NFunc struct {
 	Name   string
 	Result int
+	Params []NVar
 	Body   *Node
 }
 
 // NCallFunc - call function
 type NCallFunc struct {
-	Name string
+	Name   string
+	Params *Node
 }
 
 // NIf - if statement
@@ -82,6 +85,11 @@ type NBlock struct {
 	Statements []*Node
 }
 
+// NParams contains param expressions
+type NParams struct {
+	Expr []*Node
+}
+
 // NBinary contains binary operator
 type NBinary struct {
 	Oper  int
@@ -89,7 +97,7 @@ type NBinary struct {
 	Right *Node
 }
 
-// NQuestions contains ? operator
+// NQuestion contains ? operator
 type NQuestion struct {
 	Cond  *Node
 	Left  *Node
@@ -155,6 +163,20 @@ func newBlock(vars []NVar, block *Node, l yyLexer) *Node {
 		block.Value.(*NBlock).Params = append(vars, block.Value.(*NBlock).Params...)
 	}
 	return block
+}
+
+func newParam(expr *Node, l yyLexer) *Node {
+	return setPos(&Node{
+		Type: TParams,
+		Value: &NParams{
+			Expr: []*Node{expr},
+		},
+	}, l)
+}
+
+func addParam(node *Node, expr *Node) *Node {
+	node.Value.(*NParams).Expr = append(node.Value.(*NParams).Expr, expr)
+	return node
 }
 
 func newReturn(expr *Node, l yyLexer) *Node {
@@ -316,22 +338,24 @@ func newQuestion(cond *Node, left *Node, right *Node, l yyLexer) *Node {
 	}, l)
 }
 
-func newFunc(name string, retType int, body *Node, l yyLexer) *Node {
+func newFunc(name string, pars []NVar, retType int, body *Node, l yyLexer) *Node {
 	return setPos(&Node{
 		Type: TFunc,
 		Value: &NFunc{
 			Name:   name,
 			Result: retType,
 			Body:   body,
+			Params: pars,
 		},
 	}, l)
 }
 
-func newCallFunc(name string, l yyLexer) *Node {
+func newCallFunc(name string, params *Node, l yyLexer) *Node {
 	return setPos(&Node{
 		Type: TCallFunc,
 		Value: &NCallFunc{
-			Name: name,
+			Name:   name,
+			Params: params,
 		},
 	}, l)
 }

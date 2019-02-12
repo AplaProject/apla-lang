@@ -33,6 +33,7 @@ const (
 	ASSIGNDIVINT // vars /= int
 	ASSIGNMODINT // vars %= int
 	CALLFUNC     // + uint16 call contract function
+	GETPARAMS    // + uint16 count of parameters
 	RETURN       // return from contract + int16 (type)
 	RETFUNC      // return from function
 	SIGNINT      // unary minus int

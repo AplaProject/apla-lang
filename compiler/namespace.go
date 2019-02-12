@@ -52,7 +52,11 @@ func (cmpl *compiler) findUnary(unary *parser.NUnary) (rt.Bcode, uint32) {
 }
 
 func getFuncKey(nfunc *FuncInfo) string {
-	return fmt.Sprintf("$%s", nfunc.Name)
+	ret := fmt.Sprintf("$%s", nfunc.Name)
+	for _, par := range nfunc.Params {
+		ret += `$` + Type2Str(uint32(par.Type))
+	}
+	return ret
 }
 
 func (cmpl *compiler) findFunc(nfunc *FuncInfo) (rt.Bcode, uint32) {
@@ -65,6 +69,11 @@ func (cmpl *compiler) findFunc(nfunc *FuncInfo) (rt.Bcode, uint32) {
 
 func (cmpl *compiler) findCallFunc(nfunc *parser.NCallFunc) (rt.Bcode, uint32) {
 	key := fmt.Sprintf("$%s", nfunc.Name)
+	if nfunc.Params != nil {
+		for _, par := range nfunc.Params.Value.(*parser.NParams).Expr {
+			key += `$` + Type2Str(uint32(par.Result))
+		}
+	}
 	if v, ok := (*cmpl.NameSpace)[key]; ok {
 		return rt.Bcode(v & 0xffff), v >> 24
 	}

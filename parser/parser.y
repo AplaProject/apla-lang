@@ -81,7 +81,10 @@ func setResult(l yyLexer, v *Node) {
 %type <sa> ident_list
 %type <va> var_declaration
 %type <va> var_declarations
+%type <va> par_declaration
+%type <va> par_declarations
 %type <va> contract_data
+%type <n> params
 %type <n> var
 %type <n> expr
 %type <n> elif
@@ -118,6 +121,12 @@ statements
     | statements statement NEWLINE { $$ = addStatement($1, $2, yylex)}
     ;
 
+params
+    : /*empty*/ { $$ = nil }
+    | expr { $$ = newParam( $1, yylex ) }
+    | params COMMA expr { $$ = addParam($1, $3)}
+    ;
+
 var 
     : IDENT { $$ = newVarValue($1, yylex); }
 
@@ -144,8 +153,10 @@ statement
     | RETURN { $$ = newReturn(nil, yylex); }
     | RETURN expr { $$ = newReturn($2, yylex); }
     | WHILE expr LBRACE statements RBRACE { $$ = newWhile( $2, $4, yylex )}
-    | FUNC CALL RPAREN rettype LBRACE statements RBRACE { $$ = newFunc($2, $4, $6, yylex)}
-    | CALL RPAREN { $$ = newCallFunc($1, yylex);}
+    | FUNC CALL par_declarations RPAREN rettype LBRACE statements RBRACE { 
+           $$ = newFunc($2, $3, $5, $7, yylex)
+           }
+    | CALL params RPAREN { $$ = newCallFunc($1, $2, yylex);}
     ;
 
 expr
@@ -153,7 +164,7 @@ expr
     | INT { $$ = newValue($1, yylex);}
     | TRUE { $$ = newValue(true, yylex);}
     | FALSE { $$ = newValue(false, yylex);}
-    | CALL RPAREN { $$ = newCallFunc($1, yylex);}
+    | CALL params RPAREN { $$ = newCallFunc($1, $2, yylex);}
     | IDENT { $$ = newGetVar($1, yylex);}
     | QUESTION LPAREN expr COMMA expr COMMA expr RPAREN { $$ = newQuestion($3, $5, $7, yylex);}
     | expr MUL expr { $$ = newBinary($1, $3, MUL, yylex); }
@@ -177,6 +188,16 @@ expr
 ident_list
     : IDENT { $$ = []string{$1} }
     | ident_list IDENT { $$ = append($1, $2) }
+    ;
+
+par_declaration
+    : type ident_list { $$ = newVars($1, $2)}
+    ;
+
+par_declarations
+    : /*empty*/ {$$=nil}
+    | par_declaration { $$ = $1}
+    | par_declarations COMMA par_declaration { $$ = append($1, $3...) }
     ;
 
 var_declaration

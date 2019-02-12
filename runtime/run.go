@@ -38,7 +38,7 @@ main:
 			top++
 			stack[top] = int64((uint64(code[i-1]) << 16) | uint64(code[i]&0xffff))
 		case INITVARS:
-			top = 0
+			//			top = 0
 			count := int64(code[i+1])
 			for iVar := int64(0); iVar < count; iVar++ {
 				rt.Vars = append(rt.Vars, 0)
@@ -183,9 +183,16 @@ main:
 			top -= 2
 		case CALLFUNC:
 			calls[coff] = i + 2
-			coff++
+			calls[coff+1] = int64(len(rt.Vars))
+			coff += 2
 			i += int64(int16(code[i+1]))
 			continue
+		case GETPARAMS:
+			i++
+			for k := 1; k <= int(code[i]); k++ {
+				rt.Vars[len(rt.Vars)-k] = stack[top]
+				top--
+			}
 		case RETURN:
 			switch code[i+1] {
 			case parser.VVoid: // skip result
@@ -202,9 +209,9 @@ main:
 			}
 			break main
 		case RETFUNC:
-			coff--
+			rt.Vars = rt.Vars[:calls[coff-1]]
+			coff -= 2
 			i = calls[coff]
-			fmt.Println(`RETFUNC`)
 			continue
 		case SIGNINT:
 			stack[top] = -stack[top]

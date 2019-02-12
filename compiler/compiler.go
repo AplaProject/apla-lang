@@ -3,6 +3,7 @@ package compiler
 import (
 	"fmt"
 	"math"
+	"strings"
 
 	"github.com/AplaProject/apla-lang/parser"
 	rt "github.com/AplaProject/apla-lang/runtime"
@@ -27,6 +28,7 @@ type FuncInfo struct {
 	Offset int
 	Result int
 	Name   string
+	Params []parser.NVar
 }
 
 // Contract contains information about the contract
@@ -64,6 +66,26 @@ func (cmpl *compiler) ConditionCode(node *parser.Node) (before int, after int, e
 	return
 }
 
+func (cmpl *compiler) InitVars(node *parser.Node, vars []parser.NVar) error {
+	if len(vars) == 0 {
+		return nil
+	}
+	types := make([]rt.Bcode, len(vars))
+	for i, v := range vars {
+		if _, ok := cmpl.Contract.Vars[v.Name]; ok {
+			return cmpl.ErrorParam(node, errVarExists, v.Name)
+		}
+		types[i] = rt.Bcode(v.Type)
+		cmpl.Contract.Vars[v.Name] = VarInfo{
+			Index: uint16(len(cmpl.Contract.Vars)),
+			Type:  uint16(v.Type),
+		}
+	}
+	cmpl.Append(rt.INITVARS, rt.Bcode(len(types)))
+	cmpl.Append(types...)
+	return nil
+}
+
 func nodeToCode(node *parser.Node, cmpl *compiler) error {
 	var (
 		err                error
@@ -86,7 +108,8 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 			}
 		}
 		cmpl.Blocks = cmpl.Blocks[:len(cmpl.Blocks)-1]
-		if uint16(len(cmpl.Contract.Vars)) != varsCount {
+		if uint16(len(cmpl.Contract.Vars)) != varsCount &&
+			cmpl.Contract.Code[len(cmpl.Contract.Code)-1] != rt.RETFUNC {
 			cmpl.Append(rt.DELVARS, rt.Bcode(varsCount))
 		}
 		// Remove vars
@@ -232,19 +255,9 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 			return cmpl.ErrorParam(node, errType, node.Value)
 		}
 	case parser.TVars:
-		types := make([]rt.Bcode, len(node.Value.(*parser.NVars).Vars))
-		for i, v := range node.Value.(*parser.NVars).Vars {
-			if _, ok = cmpl.Contract.Vars[v.Name]; ok {
-				return cmpl.ErrorParam(node, errVarExists, v.Name)
-			}
-			types[i] = rt.Bcode(v.Type)
-			cmpl.Contract.Vars[v.Name] = VarInfo{
-				Index: uint16(len(cmpl.Contract.Vars)),
-				Type:  uint16(v.Type),
-			}
+		if err = cmpl.InitVars(node, node.Value.(*parser.NVars).Vars); err != nil {
+			return err
 		}
-		cmpl.Append(rt.INITVARS, rt.Bcode(len(types)))
-		cmpl.Append(types...)
 	case parser.TGetVar:
 		name := node.Value.(*parser.NVarValue).Name
 		if vinfo, ok = cmpl.Contract.Vars[name]; !ok {
@@ -334,8 +347,8 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 		finfo := &FuncInfo{
 			Name:   nFunc.Name,
 			Result: nFunc.Result,
+			Params: nFunc.Params,
 		}
-		fmt.Println(`TFUNC`, nFunc.Name, cmpl.InFunc)
 		if cmpl.InFunc {
 			return cmpl.Error(node, errFuncLevel)
 		}
@@ -347,7 +360,12 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 		cmpl.Append(rt.JMP, 0)
 		finfo.Offset = start + 2
 		cmpl.InFunc = true
-		fmt.Println(`NEXT`, nFunc.Name, cmpl.InFunc)
+		if err = cmpl.InitVars(node, nFunc.Params); err != nil {
+			return err
+		}
+		if len(nFunc.Params) > 0 {
+			cmpl.Append(rt.GETPARAMS, rt.Bcode(len(nFunc.Params)))
+		}
 		if err = nodeToCode(nFunc.Body, cmpl); err != nil {
 			return err
 		}
@@ -364,12 +382,25 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 		cmpl.Contract.Code[start+1] = off
 		cmpl.Contract.Funcs = append(cmpl.Contract.Funcs, finfo)
 		(*cmpl.NameSpace)[getFuncKey(finfo)] = uint32(len(cmpl.Contract.Funcs) | (finfo.Result << 24))
-		fmt.Println(`FUNC`, finfo, getFuncKey(finfo))
 	case parser.TCallFunc:
 		nFunc := node.Value.(*parser.NCallFunc)
 		code, ftype := cmpl.findCallFunc(nFunc)
+		if nFunc.Params != nil {
+			for _, expr := range nFunc.Params.Value.(*parser.NParams).Expr {
+				if err = nodeToCode(expr, cmpl); err != nil {
+					return err
+				}
+			}
+		}
 		if code == rt.NOP {
-			return cmpl.ErrorParam(node, errFuncNotExists, nFunc.Name)
+			pars := make([]string, 0, 10)
+			if nFunc.Params != nil {
+				for _, par := range nFunc.Params.Value.(*parser.NParams).Expr {
+					pars = append(pars, Type2Str(uint32(par.Result)))
+				}
+			}
+			return cmpl.ErrorParam(node, errFuncNotExists, fmt.Sprintf("%s(%s)", nFunc.Name,
+				strings.Join(pars, `, `)))
 		}
 		node.Result = ftype
 		var off rt.Bcode
@@ -378,7 +409,6 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 			return err
 		}
 		cmpl.Append(rt.CALLFUNC, off)
-		fmt.Println(`CALLFUNC`, nFunc, off)
 	default:
 		fmt.Println(`Ooops`)
 		return cmpl.Error(node, errNodeType)
