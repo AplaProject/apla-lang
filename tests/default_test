@@ -1,3 +1,20 @@
+contract mystr3 {
+    return `stri\n\g т\""ест 123 + - /?`
+}
+==== 
+contract mystr2 {
+    return "string 
+    \t \" \\\" 123\n456"
+}
+==== 
+contract mystr1 {
+    return "string \t \" \\\""
+}
+==== 
+contract mystr {
+    return "st\king"
+}
+==== 2:12: invalid syntax
 contract myFunc1 {
     func name(int a) int {
         int b = 10

@@ -7,6 +7,7 @@ package parser
 
 import (
 	"strconv"
+	"strings"
 
 	"modernc.org/golex/lex"
 )
@@ -21,7 +22,8 @@ int				[0-9]+
 float			{int}\.[0-9]*
 identifier		{letter}({letter}|{digit})*
 call    		{identifier}\(
-string			\"({letter}|{digit})*\"
+string 			\"([^\\"]|\\.)*\"
+qstring 		`([^`])*`
 letter			[_a-zA-Z]|{unicodeLetter}
 unicodeDigit	\x81
 unicodeLetter	\x80
@@ -86,6 +88,8 @@ func			return l.char(FUNC)
 bool			return l.char(T_BOOL)
 int				return l.char(T_INT)
 hexint			return l.char(T_INT)
+string			return l.char(T_STR)
+qstring			return l.char(T_STR)
 
 {hexint}			{
 					val, _ := strconv.ParseInt(string(l.TokenBytes(nil)), 0, 64)
@@ -101,6 +105,20 @@ hexint			return l.char(T_INT)
 					lval.s = string(l.TokenBytes(nil))
 					return l.char(IDENT)
 				}
+{string}		{
+					var err error
+					s := strings.Replace( string(l.TokenBytes(nil)), "\n", `\n`, -1 )
+					lval.s, err = strconv.Unquote(`"` + s[1:len(s)-1] + `"`)
+					if err != nil  {
+						l.Error(err.Error())
+					}
+					return l.char(STRING)
+				}				
+{qstring}		{
+					s := string(l.TokenBytes(nil))
+					lval.s = s[1:len(s)-1]
+					return l.char(STRING)
+				}				
 {call}	{
 					lval.s = string(l.TokenBytes(nil))
 					lval.s = lval.s[:len(lval.s)-1]

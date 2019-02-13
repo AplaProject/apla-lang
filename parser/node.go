@@ -1,6 +1,8 @@
 package parser
 
-import ()
+import (
+	"fmt"
+)
 
 // Types of Node
 const (
@@ -27,6 +29,7 @@ const (
 	VVoid = iota
 	VInt  // int
 	VBool // bool
+	VStr  // str
 )
 
 // NVar contains type and name of variable or parameter
@@ -220,6 +223,9 @@ func newValue(value interface{}, l yyLexer) *Node {
 	switch value.(type) {
 	case int:
 		vtype = VInt
+	case string:
+		fmt.Println(`VAL`, value)
+		vtype = VStr
 	}
 	return setPos(&Node{
 		Type:   TValue,

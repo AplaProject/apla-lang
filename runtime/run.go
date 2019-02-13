@@ -196,6 +196,8 @@ main:
 		case RETURN:
 			switch code[i+1] {
 			case parser.VVoid: // skip result
+			case parser.VStr:
+				//				result = stack[top]
 			case parser.VInt:
 				result = fmt.Sprint(stack[top])
 			case parser.VBool:

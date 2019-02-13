@@ -251,6 +251,8 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 			}
 			cmpl.Append(rt.PUSH16, bcode)
 			node.Result = parser.VBool
+		case string:
+
 		default:
 			return cmpl.ErrorParam(node, errType, node.Value)
 		}

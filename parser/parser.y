@@ -21,6 +21,8 @@ func setResult(l yyLexer, v *Node) {
 %token<s> IDENT  // foobar
 %token<s> CALL  // foobar(
 %token<i> INT    // 314
+%token<s> STRING  // "string"
+%token<s> QSTRING  // `string`
 %token<b> TRUE   // true
 %token<b> FALSE  // false
 
@@ -75,6 +77,7 @@ func setResult(l yyLexer, v *Node) {
 // Types
 %token T_INT    // int
 %token T_BOOL   // bool
+%token T_STR  // str
 
 %type <i> type
 %type <i> rettype
@@ -108,6 +111,7 @@ func setResult(l yyLexer, v *Node) {
 type
     : T_BOOL {$$ = VBool}
     | T_INT {$$ = VInt}
+    | T_STR {$$ = VStr}
     ;
 
 rettype
@@ -162,6 +166,8 @@ statement
 expr
     : LPAREN expr RPAREN { $$ = $2; }
     | INT { $$ = newValue($1, yylex);}
+    | STRING { $$ = newValue($1, yylex);}
+    | QSTRING { $$ = newValue($1, yylex);}
     | TRUE { $$ = newValue(true, yylex);}
     | FALSE { $$ = newValue(false, yylex);}
     | CALL params RPAREN { $$ = newCallFunc($1, $2, yylex);}
