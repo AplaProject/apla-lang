@@ -4,6 +4,7 @@ const (
 	NOP          = iota
 	PUSH16       // + int16
 	PUSH32       // + int32
+	PUSHSTR      // + uint64 + uint16  offset + size in Data
 	INITVARS     // + uint16 (count) + ... uint16 types
 	DELVARS      // + uint16 (new count)
 	ADDINT       // int+int
@@ -38,7 +39,9 @@ const (
 	RETFUNC      // return from function
 	SIGNINT      // unary minus int
 	NOT          // unary logical not
+	ADDSTR       // str+str
 	PUSH64       // + int64
+	DATA         // +uint16 size of data + data
 )
 
 // Runtime is a runtime structure

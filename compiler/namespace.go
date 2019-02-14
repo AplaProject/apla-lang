@@ -32,6 +32,7 @@ var (
 		{rt.ASSIGNINT, parser.VVoid, parser.ASSIGN, parser.VBool, parser.VBool},      // bool = bool
 		{rt.AND, parser.VBool, parser.AND, parser.VBool, parser.VBool},               // bool && bool
 		{rt.OR, parser.VBool, parser.OR, parser.VBool, parser.VBool},                 // bool || bool
+		{rt.ADDSTR, parser.VStr, parser.ADD, parser.VStr, parser.VStr},               // str+str
 	}
 )
 
@@ -97,6 +98,8 @@ func Type2Str(vtype uint32) (ret string) {
 		ret = `int`
 	case parser.VBool:
 		ret = `bool`
+	case parser.VStr:
+		ret = `str`
 	default:
 		ret = `unknown`
 	}

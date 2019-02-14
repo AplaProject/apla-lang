@@ -19,12 +19,26 @@ func (rt *Runtime) Run(code []Bcode) (string, int64, error) {
 	var (
 		i, top, gas, coff int64
 		result            string
+		data              []byte
 	)
 	length := int64(len(code))
+	if length == 0 {
+		return result, gas, nil
+	}
 	stack := make([]int64, 100)
 	calls := make([]int64, 1000)
 	// top the latest value
-
+	if code[0] == DATA {
+		length := int64(uint64(code[1]))
+		data = make([]byte, length<<1)
+		length += 2
+		var off int
+		for i = 2; i < length; i++ {
+			data[off] = byte(code[i] >> 8)
+			data[off+1] = byte(code[i] & 0xff)
+			off += 2
+		}
+	}
 main:
 	for i < length {
 		gas++
@@ -37,6 +51,11 @@ main:
 			i += 2
 			top++
 			stack[top] = int64((uint64(code[i-1]) << 16) | uint64(code[i]&0xffff))
+		case PUSHSTR:
+			dstr := string(data[code[i+1] : code[i+1]+code[i+2]])
+			top++
+			stack[top] = int64(uintptr(unsafe.Pointer(&dstr)))
+			i += 2
 		case INITVARS:
 			//			top = 0
 			count := int64(code[i+1])
@@ -197,7 +216,7 @@ main:
 			switch code[i+1] {
 			case parser.VVoid: // skip result
 			case parser.VStr:
-				//				result = stack[top]
+				result = *(*string)(unsafe.Pointer(uintptr(stack[top])))
 			case parser.VInt:
 				result = fmt.Sprint(stack[top])
 			case parser.VBool:
@@ -223,6 +242,11 @@ main:
 			} else {
 				stack[top] = 0
 			}
+		case ADDSTR:
+			top--
+			dstr := *(*string)(unsafe.Pointer(uintptr(stack[top]))) +
+				*(*string)(unsafe.Pointer(uintptr(stack[top+1])))
+			stack[top] = int64(uintptr(unsafe.Pointer(&dstr)))
 		case PUSH64:
 			i += 4
 			top++

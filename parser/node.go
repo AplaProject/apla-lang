@@ -1,8 +1,6 @@
 package parser
 
-import (
-	"fmt"
-)
+import ()
 
 // Types of Node
 const (
@@ -224,7 +222,6 @@ func newValue(value interface{}, l yyLexer) *Node {
 	case int:
 		vtype = VInt
 	case string:
-		fmt.Println(`VAL`, value)
 		vtype = VStr
 	}
 	return setPos(&Node{

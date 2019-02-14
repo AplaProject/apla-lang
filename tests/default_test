@@ -1,16 +1,20 @@
+contract myLem {
+    return `stri\ning` + "start\nТест" + "first
+second"
+}
+==== 
 contract mystr3 {
-    return `stri\n\g т\""ест 123 + - /?`
+    return `stri\g т\""ест 123 + - /?`
 }
-==== 
+==== stri\g т\""ест 123 + - /?
 contract mystr2 {
-    return "string 
-    \t \" \\\" 123\n456"
+    return "string \t \" \\\" 123 456"
 }
-==== 
+==== string 	 " \" 123 456
 contract mystr1 {
     return "string \t \" \\\""
 }
-==== 
+==== string 	 " \"
 contract mystr {
     return "st\king"
 }

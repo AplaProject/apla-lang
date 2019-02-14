@@ -15,6 +15,7 @@ type compiler struct {
 	NameSpace *map[string]uint32
 	RetFunc   int
 	InFunc    bool
+	Data      []byte
 }
 
 // VarInfo describes a variable
@@ -252,7 +253,11 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 			cmpl.Append(rt.PUSH16, bcode)
 			node.Result = parser.VBool
 		case string:
-
+			if cmpl.Data == nil {
+				cmpl.Data = make([]byte, 0, 1024)
+			}
+			cmpl.Append(rt.PUSHSTR, rt.Bcode(len(cmpl.Data)), rt.Bcode(len(v)))
+			cmpl.Data = append(cmpl.Data, []byte(v)...)
 		default:
 			return cmpl.ErrorParam(node, errType, node.Value)
 		}
@@ -444,6 +449,21 @@ func Compile(input string, nameSpace *map[string]uint32) (*Contract, error) {
 	}()
 	if err = nodeToCode(root, cmpl); err != nil {
 		return nil, err
+	}
+	if len(cmpl.Data) > 0 {
+		if len(cmpl.Data)&0x1 == 1 {
+			cmpl.Data = append(cmpl.Data, 0)
+		}
+		length := len(cmpl.Data) >> 1
+		data := make([]rt.Bcode, length+2)
+		data[0] = rt.DATA
+		data[1] = rt.Bcode(length)
+		var off int
+		for i := 0; i < length; i++ {
+			data[i+2] = rt.Bcode(uint16(cmpl.Data[off])<<8 | uint16(cmpl.Data[off+1]))
+			off += 2
+		}
+		cmpl.Contract.Code = append(data, cmpl.Contract.Code...)
 	}
 	return cmpl.Contract, nil
 }
