@@ -16,7 +16,7 @@ type EmbedFunc struct {
 
 var (
 	StdLib = []EmbedFunc{
-		{LenStr, 1, `Len`, []uint32{parser.VStr}, parser.VInt},
+		{LenStr, 1, `Len`, []uint32{parser.VStr}, parser.VInt}, // Len(str) int
 	}
 )
 
