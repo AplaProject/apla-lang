@@ -88,8 +88,7 @@ func			return l.char(FUNC)
 bool			return l.char(T_BOOL)
 int				return l.char(T_INT)
 hexint			return l.char(T_INT)
-string			return l.char(T_STR)
-qstring			return l.char(T_STR)
+str			    return l.char(T_STR)
 
 {hexint}			{
 					val, _ := strconv.ParseInt(string(l.TokenBytes(nil)), 0, 64)

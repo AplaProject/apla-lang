@@ -27,19 +27,21 @@ const (
 	JMPREL       // + int16   jump with the offset
 	JZE          // + int16   jump if top equals zero with the offset
 	JNZ          // + int16   jump if top does not equal zero with the offset
-	ASSIGNINT    // vars = int
+	ASSIGNINT    // vars = int / vars = str
 	ASSIGNADDINT // vars += int
 	ASSIGNSUBINT // vars -= int
 	ASSIGNMULINT // vars *= int
 	ASSIGNDIVINT // vars /= int
 	ASSIGNMODINT // vars %= int
 	CALLFUNC     // + uint16 call contract function
+	EMBEDFUNC    // + uint16 call embedded function
 	GETPARAMS    // + uint16 count of parameters
 	RETURN       // return from contract + int16 (type)
 	RETFUNC      // return from function
 	SIGNINT      // unary minus int
 	NOT          // unary logical not
 	ADDSTR       // str+str
+	ASSIGNADDSTR // vars += str
 	PUSH64       // + int64
 	DATA         // +uint16 size of data + data
 )

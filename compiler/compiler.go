@@ -391,7 +391,6 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 		(*cmpl.NameSpace)[getFuncKey(finfo)] = uint32(len(cmpl.Contract.Funcs) | (finfo.Result << 24))
 	case parser.TCallFunc:
 		nFunc := node.Value.(*parser.NCallFunc)
-		code, ftype := cmpl.findCallFunc(nFunc)
 		if nFunc.Params != nil {
 			for _, expr := range nFunc.Params.Value.(*parser.NParams).Expr {
 				if err = nodeToCode(expr, cmpl); err != nil {
@@ -399,6 +398,7 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 				}
 			}
 		}
+		code, ftype := cmpl.findCallFunc(nFunc)
 		if code == rt.NOP {
 			pars := make([]string, 0, 10)
 			if nFunc.Params != nil {
@@ -410,12 +410,16 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 				strings.Join(pars, `, `)))
 		}
 		node.Result = ftype
-		var off rt.Bcode
-		if off, err = cmpl.JumpOff(node, cmpl.Contract.Funcs[code-1].Offset-
-			len(cmpl.Contract.Code)); err != nil {
-			return err
+		if code >= EMBEDDED {
+			cmpl.Append(rt.EMBEDFUNC, code-EMBEDDED)
+		} else {
+			var off rt.Bcode
+			if off, err = cmpl.JumpOff(node, cmpl.Contract.Funcs[code-1].Offset-
+				len(cmpl.Contract.Code)); err != nil {
+				return err
+			}
+			cmpl.Append(rt.CALLFUNC, off)
 		}
-		cmpl.Append(rt.CALLFUNC, off)
 	default:
 		fmt.Println(`Ooops`)
 		return cmpl.Error(node, errNodeType)
@@ -451,10 +455,15 @@ func Compile(input string, nameSpace *map[string]uint32) (*Contract, error) {
 		return nil, err
 	}
 	if len(cmpl.Data) > 0 {
-		if len(cmpl.Data)&0x1 == 1 {
-			cmpl.Data = append(cmpl.Data, 0)
+		length := len(cmpl.Data)
+		if length > 0xffff {
+			return nil, cmpl.Error(root, errData)
 		}
-		length := len(cmpl.Data) >> 1
+		if length&0x1 == 1 {
+			cmpl.Data = append(cmpl.Data, 0)
+			length++
+		}
+		length >>= 1
 		data := make([]rt.Bcode, length+2)
 		data[0] = rt.DATA
 		data[1] = rt.Bcode(length)

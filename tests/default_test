@@ -1,8 +1,20 @@
-contract myLem {
-    return `stri\ning` + "start\nТест" + "first
-second"
+contract mySVar {
+    str a
+    str s = "start" + a
+    s += ` `
+    a = `!`
+    return s + s + a
 }
-==== 
+==== start start !
+contract myLem {
+    return Len(`stri\ning` + "start\nТест" + "first
+second")
+}
+==== 36
+contract mySLem {
+    return `123` + "456"
+}
+==== 123456
 contract mystr3 {
     return `stri\g т\""ест 123 + - /?`
 }

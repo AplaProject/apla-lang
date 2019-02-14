@@ -1,12 +1,12 @@
 contract HStr {
     int i sum
-    while i < 1000 {
+    while i < 100000 {
         sum += Len("this is" + "a string")
         i+=1
     }
     return sum
 }
-====
+==== 1500000
 contract Fib {
     int a = 1
     int b = 1

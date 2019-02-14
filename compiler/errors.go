@@ -21,6 +21,7 @@ const (
 	errFuncReturn    = `Function must return a value`
 	errNotReturn     = `Function cannot return a value`
 	errReturnType    = `Function must return %s`
+	errData          = `DATA section is too big`
 )
 
 func (cmpl *compiler) Error(node *parser.Node, text string) error {

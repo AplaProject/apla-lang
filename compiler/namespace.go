@@ -7,6 +7,10 @@ import (
 	rt "github.com/AplaProject/apla-lang/runtime"
 )
 
+const (
+	EMBEDDED = 0x1000
+)
+
 var (
 	operators = [][]uint32{
 		// BCode, Result, Operator, Type of parameters...
@@ -33,6 +37,8 @@ var (
 		{rt.AND, parser.VBool, parser.AND, parser.VBool, parser.VBool},               // bool && bool
 		{rt.OR, parser.VBool, parser.OR, parser.VBool, parser.VBool},                 // bool || bool
 		{rt.ADDSTR, parser.VStr, parser.ADD, parser.VStr, parser.VStr},               // str+str
+		{rt.ASSIGNINT, parser.VVoid, parser.ASSIGN, parser.VStr, parser.VStr},        // str = str
+		{rt.ASSIGNADDSTR, parser.VVoid, parser.ADD_ASSIGN, parser.VStr, parser.VStr}, // int += int
 	}
 )
 
@@ -55,7 +61,7 @@ func (cmpl *compiler) findUnary(unary *parser.NUnary) (rt.Bcode, uint32) {
 func getFuncKey(nfunc *FuncInfo) string {
 	ret := fmt.Sprintf("$%s", nfunc.Name)
 	for _, par := range nfunc.Params {
-		ret += `$` + Type2Str(uint32(par.Type))
+		ret += fmt.Sprintf(`$%d`, par.Type)
 	}
 	return ret
 }
@@ -72,7 +78,7 @@ func (cmpl *compiler) findCallFunc(nfunc *parser.NCallFunc) (rt.Bcode, uint32) {
 	key := fmt.Sprintf("$%s", nfunc.Name)
 	if nfunc.Params != nil {
 		for _, par := range nfunc.Params.Value.(*parser.NParams).Expr {
-			key += `$` + Type2Str(uint32(par.Result))
+			key += fmt.Sprintf(`$%d`, par.Result)
 		}
 	}
 	if v, ok := (*cmpl.NameSpace)[key]; ok {
@@ -88,6 +94,14 @@ func initNameSpace(nameSpace *map[string]uint32) {
 			key += fmt.Sprintf(`#%d`, oper[i])
 		}
 		(*nameSpace)[key] = oper[0] | (oper[1] << 24)
+	}
+
+	for i, eFunc := range rt.StdLib {
+		key := fmt.Sprintf(`$%s`, eFunc.Name)
+		for _, par := range eFunc.PTypes {
+			key += fmt.Sprintf(`$%d`, par)
+		}
+		(*nameSpace)[key] = uint32(i+EMBEDDED) | (eFunc.Result << 24)
 	}
 }
 

@@ -2,6 +2,7 @@ package runtime
 
 import (
 	"fmt"
+	"reflect"
 	"unsafe"
 
 	"github.com/AplaProject/apla-lang/parser"
@@ -60,7 +61,13 @@ main:
 			//			top = 0
 			count := int64(code[i+1])
 			for iVar := int64(0); iVar < count; iVar++ {
-				rt.Vars = append(rt.Vars, 0)
+				var v int64
+				switch code[i+2+iVar] {
+				case parser.VStr:
+					dstr := ``
+					v = int64(uintptr(unsafe.Pointer(&dstr)))
+				}
+				rt.Vars = append(rt.Vars, v)
 			}
 			i += count + 1
 		case DELVARS:
@@ -206,6 +213,29 @@ main:
 			coff += 2
 			i += int64(int16(code[i+1]))
 			continue
+		case EMBEDFUNC:
+			i++
+			eFunc := StdLib[code[i]]
+			pars := make([]reflect.Value, eFunc.Params)
+			/*			if Runtime {
+						pars = append(pars, reflect.ValueOf(rt))
+					}*/
+			top -= eFunc.Params
+			for k := int64(0); k < eFunc.Params; k++ {
+				pars[k] = reflect.ValueOf(stack[top+k+1])
+			}
+			var result []reflect.Value
+			result = reflect.ValueOf(eFunc.Func).Call(pars)
+			if len(result) > 0 {
+				last := result[len(result)-1].Interface()
+				if last != nil {
+					if _, isError := last.(error); isError {
+						return ``, gas, result[len(result)-1].Interface().(error)
+					}
+				}
+				top++
+				stack[top] = result[0].Interface().(int64)
+			}
 		case GETPARAMS:
 			i++
 			for k := 1; k <= int(code[i]); k++ {
@@ -247,6 +277,10 @@ main:
 			dstr := *(*string)(unsafe.Pointer(uintptr(stack[top]))) +
 				*(*string)(unsafe.Pointer(uintptr(stack[top+1])))
 			stack[top] = int64(uintptr(unsafe.Pointer(&dstr)))
+		case ASSIGNADDSTR:
+			pvar := (*string)(unsafe.Pointer(uintptr(*(*int64)(unsafe.Pointer(uintptr(stack[top-1]))))))
+			*pvar += *(*string)(unsafe.Pointer(uintptr(stack[top])))
+			top -= 2
 		case PUSH64:
 			i += 4
 			top++
