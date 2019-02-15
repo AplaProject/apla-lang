@@ -10,35 +10,13 @@ import (
 )
 
 type compiler struct {
-	Contract  *Contract
+	Contract  *rt.Contract
 	Blocks    []*parser.Node
+	Contracts *[]*rt.Contract
 	NameSpace *map[string]uint32
 	RetFunc   int
 	InFunc    bool
 	Data      []byte
-}
-
-// VarInfo describes a variable
-type VarInfo struct {
-	Index uint16
-	Type  uint16
-}
-
-// FuncInfo describes a function
-type FuncInfo struct {
-	Offset int
-	Result int
-	Name   string
-	Params []parser.NVar
-}
-
-// Contract contains information about the contract
-type Contract struct {
-	ID    int64 // External id
-	Name  string
-	Code  []rt.Bcode
-	Vars  map[string]VarInfo
-	Funcs []*FuncInfo
 }
 
 func (cmpl *compiler) Append(codes ...rt.Bcode) {
@@ -77,7 +55,7 @@ func (cmpl *compiler) InitVars(node *parser.Node, vars []parser.NVar) error {
 			return cmpl.ErrorParam(node, errVarExists, v.Name)
 		}
 		types[i] = rt.Bcode(v.Type)
-		cmpl.Contract.Vars[v.Name] = VarInfo{
+		cmpl.Contract.Vars[v.Name] = rt.VarInfo{
 			Index: uint16(len(cmpl.Contract.Vars)),
 			Type:  uint16(v.Type),
 		}
@@ -90,7 +68,7 @@ func (cmpl *compiler) InitVars(node *parser.Node, vars []parser.NVar) error {
 func nodeToCode(node *parser.Node, cmpl *compiler) error {
 	var (
 		err                error
-		vinfo              VarInfo
+		vinfo              rt.VarInfo
 		ok                 bool
 		sizeCode, sizeCond int
 	)
@@ -351,7 +329,7 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 	case parser.TFunc:
 		var off rt.Bcode
 		nFunc := node.Value.(*parser.NFunc)
-		finfo := &FuncInfo{
+		finfo := &rt.FuncInfo{
 			Name:   nFunc.Name,
 			Result: nFunc.Result,
 			Params: nFunc.Params,
@@ -420,6 +398,26 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 			}
 			cmpl.Append(rt.CALLFUNC, off)
 		}
+	case parser.TCallContract:
+		nCallContract := node.Value.(*parser.NCallContract)
+		ind, ok := (*cmpl.NameSpace)[nCallContract.Name]
+		if !ok {
+			return cmpl.ErrorParam(node, errContractNotExists, nCallContract.Name)
+		}
+		//		cnt := (*cmpl.Contracts)[ind]
+		/*		code, ftype := cmpl.findCallFunc(nFunc)
+				if code == rt.NOP {
+					pars := make([]string, 0, 10)
+					if nFunc.Params != nil {
+						for _, par := range nFunc.Params.Value.(*parser.NParams).Expr {
+							pars = append(pars, Type2Str(uint32(par.Result)))
+						}
+					}
+					return cmpl.ErrorParam(node, errFuncNotExists, fmt.Sprintf("%s(%s)", nFunc.Name,
+						strings.Join(pars, `, `)))
+				}*/
+		cmpl.Append(rt.CALLCONTRACT, rt.Bcode(ind))
+		node.Result = parser.VStr
 	default:
 		fmt.Println(`Ooops`)
 		return cmpl.Error(node, errNodeType)
@@ -428,18 +426,19 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 }
 
 // Compile compiles contract
-func Compile(input string, nameSpace *map[string]uint32) (*Contract, error) {
+func Compile(input string, nameSpace *map[string]uint32, contracts *[]*rt.Contract) (*rt.Contract, error) {
 	var root *parser.Node
 
 	if len(*nameSpace) == 0 {
 		initNameSpace(nameSpace)
 	}
 	cmpl := &compiler{
-		Contract: &Contract{
+		Contract: &rt.Contract{
 			Code: make([]rt.Bcode, 0, 64),
-			Vars: make(map[string]VarInfo),
+			Vars: make(map[string]rt.VarInfo),
 		},
 		NameSpace: nameSpace,
+		Contracts: contracts,
 	}
 
 	root, err := parser.Parser(input)

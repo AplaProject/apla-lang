@@ -236,6 +236,15 @@ main:
 				top++
 				stack[top] = result[0].Interface().(int64)
 			}
+		case CALLCONTRACT:
+			i++
+			top++
+			result, cgas, cerr := rt.Run((*rt.Contracts)[code[i]].Code)
+			gas -= cgas
+			if cerr != nil {
+				return ``, gas, cerr
+			}
+			stack[top] = int64(uintptr(unsafe.Pointer(&result)))
 		case GETPARAMS:
 			i++
 			for k := 1; k <= int(code[i]); k++ {

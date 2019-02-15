@@ -20,6 +20,7 @@ func setResult(l yyLexer, v *Node) {
 // Identifiers + literals
 %token<s> IDENT  // foobar
 %token<s> CALL  // foobar(
+%token<s> CALLCONTRACT  // @foobar(
 %token<i> INT    // 314
 %token<s> STRING  // "string"
 %token<s> QSTRING  // `string`
@@ -161,6 +162,7 @@ statement
            $$ = newFunc($2, $3, $5, $7, yylex)
            }
     | CALL params RPAREN { $$ = newCallFunc($1, $2, yylex);}
+    | CALLCONTRACT RPAREN { $$ = newCallContract($1, yylex);}
     ;
 
 expr
@@ -171,6 +173,7 @@ expr
     | TRUE { $$ = newValue(true, yylex);}
     | FALSE { $$ = newValue(false, yylex);}
     | CALL params RPAREN { $$ = newCallFunc($1, $2, yylex);}
+    | CALLCONTRACT RPAREN { $$ = newCallContract($1, yylex);}
     | IDENT { $$ = newGetVar($1, yylex);}
     | QUESTION LPAREN expr COMMA expr COMMA expr RPAREN { $$ = newQuestion($3, $5, $7, yylex);}
     | expr MUL expr { $$ = newBinary($1, $3, MUL, yylex); }

@@ -1,3 +1,11 @@
+contract myCall {
+    return @mySLem() + @mySLem()
+}
+==== 123456123456
+contract myCall {
+    @mySLem2()
+}
+==== myCall 2:14: Contract mySLem2 hasn't been found
 contract mySVar {
     str a
     str s = "start" + a

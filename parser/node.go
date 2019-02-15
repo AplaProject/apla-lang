@@ -1,7 +1,5 @@
 package parser
 
-import ()
-
 // Types of Node
 const (
 	TContract = iota + 1 // contract
@@ -21,6 +19,7 @@ const (
 	TFunc
 	TCallFunc
 	TParams
+	TCallContract
 )
 
 const (
@@ -59,6 +58,12 @@ type NFunc struct {
 type NCallFunc struct {
 	Name   string
 	Params *Node
+}
+
+// NCallContract - call contract
+type NCallContract struct {
+	Name string
+	//	Params *Node
 }
 
 // NIf - if statement
@@ -359,6 +364,15 @@ func newCallFunc(name string, params *Node, l yyLexer) *Node {
 		Value: &NCallFunc{
 			Name:   name,
 			Params: params,
+		},
+	}, l)
+}
+
+func newCallContract(name string, l yyLexer) *Node {
+	return setPos(&Node{
+		Type: TCallContract,
+		Value: &NCallContract{
+			Name: name[1:],
 		},
 	}, l)
 }

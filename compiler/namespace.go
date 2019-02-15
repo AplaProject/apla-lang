@@ -38,7 +38,7 @@ var (
 		{rt.OR, parser.VBool, parser.OR, parser.VBool, parser.VBool},                 // bool || bool
 		{rt.ADDSTR, parser.VStr, parser.ADD, parser.VStr, parser.VStr},               // str+str
 		{rt.ASSIGNINT, parser.VVoid, parser.ASSIGN, parser.VStr, parser.VStr},        // str = str
-		{rt.ASSIGNADDSTR, parser.VVoid, parser.ADD_ASSIGN, parser.VStr, parser.VStr}, // int += int
+		{rt.ASSIGNADDSTR, parser.VVoid, parser.ADD_ASSIGN, parser.VStr, parser.VStr}, // str += str
 	}
 )
 
@@ -58,7 +58,7 @@ func (cmpl *compiler) findUnary(unary *parser.NUnary) (rt.Bcode, uint32) {
 	return rt.NOP, 0
 }
 
-func getFuncKey(nfunc *FuncInfo) string {
+func getFuncKey(nfunc *rt.FuncInfo) string {
 	ret := fmt.Sprintf("$%s", nfunc.Name)
 	for _, par := range nfunc.Params {
 		ret += fmt.Sprintf(`$%d`, par.Type)
@@ -66,7 +66,7 @@ func getFuncKey(nfunc *FuncInfo) string {
 	return ret
 }
 
-func (cmpl *compiler) findFunc(nfunc *FuncInfo) (rt.Bcode, uint32) {
+func (cmpl *compiler) findFunc(nfunc *rt.FuncInfo) (rt.Bcode, uint32) {
 	key := getFuncKey(nfunc)
 	if v, ok := (*cmpl.NameSpace)[key]; ok {
 		return rt.Bcode(v & 0xffff), v >> 24

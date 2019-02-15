@@ -14,25 +14,25 @@ const (
 
 // VM is a virtual machine structure
 type VM struct {
-	Contracts []*compiler.Contract
+	Contracts []*runtime.Contract
 	NameSpace map[string]uint32 // common namespace
 }
 
 // NewVM creates a new virtual machine
 func NewVM() *VM {
 	return &VM{
-		Contracts: make([]*compiler.Contract, 0, 1000),
+		Contracts: make([]*runtime.Contract, 0, 1000),
 		NameSpace: make(map[string]uint32),
 	}
 }
 
 // Compile compiles the contract and returns its structure
-func (vm *VM) Compile(input string) (cnt *compiler.Contract, err error) {
-	return compiler.Compile(input, &vm.NameSpace)
+func (vm *VM) Compile(input string) (cnt *runtime.Contract, err error) {
+	return compiler.Compile(input, &vm.NameSpace, &vm.Contracts)
 }
 
 // GetContract returns the contract by its name
-func (vm *VM) GetContract(name string) *compiler.Contract {
+func (vm *VM) GetContract(name string) *runtime.Contract {
 	if ind, ok := vm.NameSpace[name]; ok {
 		return vm.Contracts[ind]
 	}
@@ -40,7 +40,7 @@ func (vm *VM) GetContract(name string) *compiler.Contract {
 }
 
 // Link links the compiled contract to VM
-func (vm *VM) Link(cnt *compiler.Contract, reload bool) error {
+func (vm *VM) Link(cnt *runtime.Contract, reload bool) error {
 	var (
 		ind uint32
 		ok  bool
@@ -74,8 +74,8 @@ func (vm *VM) LoadContract(input string, id int64) error {
 }
 
 // Run executes the contract
-func (vm *VM) Run(cnt *compiler.Contract) (string, int64, error) {
-	rt := runtime.NewRuntime()
+func (vm *VM) Run(cnt *runtime.Contract) (string, int64, error) {
+	rt := runtime.NewRuntime(&vm.Contracts)
 	return rt.Run(cnt.Code)
 }
 

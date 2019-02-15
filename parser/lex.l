@@ -21,6 +21,7 @@ digit			[0-9]|{unicodeDigit}
 int				[0-9]+
 float			{int}\.[0-9]*
 identifier		{letter}({letter}|{digit})*
+callcontract    @{identifier}\(
 call    		{identifier}\(
 string 			\"([^\\"]|\\.)*\"
 qstring 		`([^`])*`
@@ -122,6 +123,11 @@ str			    return l.char(T_STR)
 					lval.s = string(l.TokenBytes(nil))
 					lval.s = lval.s[:len(lval.s)-1]
 					return l.char(CALL)
+				}
+{callcontract}	{
+					lval.s = string(l.TokenBytes(nil))
+					lval.s = lval.s[:len(lval.s)-1]
+					return l.char(CALLCONTRACT)
 				}
 
 %%

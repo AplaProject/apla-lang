@@ -1,5 +1,9 @@
 package runtime
 
+import (
+	"github.com/AplaProject/apla-lang/parser"
+)
+
 const (
 	NOP          = iota
 	PUSH16       // + int16
@@ -35,6 +39,7 @@ const (
 	ASSIGNMODINT // vars %= int
 	CALLFUNC     // + uint16 call contract function
 	EMBEDFUNC    // + uint16 call embedded function
+	CALLCONTRACT // + uint16 call contract
 	GETPARAMS    // + uint16 count of parameters
 	RETURN       // return from contract + int16 (type)
 	RETFUNC      // return from function
@@ -46,14 +51,39 @@ const (
 	DATA         // +uint16 size of data + data
 )
 
+// VarInfo describes a variable
+type VarInfo struct {
+	Index uint16
+	Type  uint16
+}
+
+// FuncInfo describes a function
+type FuncInfo struct {
+	Offset int
+	Result int
+	Name   string
+	Params []parser.NVar
+}
+
+// Contract contains information about the contract
+type Contract struct {
+	ID    int64 // External id
+	Name  string
+	Code  []Bcode
+	Vars  map[string]VarInfo
+	Funcs []*FuncInfo
+}
+
 // Runtime is a runtime structure
 type Runtime struct {
-	Vars []int64
+	Vars      []int64
+	Contracts *[]*Contract
 }
 
 // NewRuntime creates a new runtime
-func NewRuntime() *Runtime {
+func NewRuntime(Contracts *[]*Contract) *Runtime {
 	return &Runtime{
-		Vars: make([]int64, 0, 100),
+		Vars:      make([]int64, 0, 100),
+		Contracts: Contracts,
 	}
 }
