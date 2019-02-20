@@ -77,13 +77,17 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 	}
 	switch node.Type {
 	case parser.TBlock:
-		//		startSize := len(cmpl.Contract.Code)
 		varsCount := uint16(len(cmpl.Contract.Vars))
 		funcsCount := len(cmpl.Contract.Funcs)
 		cmpl.Blocks = append(cmpl.Blocks, node)
-		if len(node.Value.(*parser.NBlock).Params) > 0 {
-			if err = cmpl.InitVars(node, node.Value.(*parser.NBlock).Params); err != nil {
+		pars := node.Value.(*parser.NBlock).Params
+		if len(pars) > 0 {
+			if err = cmpl.InitVars(node, pars); err != nil {
 				return err
+			}
+			cmpl.Contract.Params = make(map[string]int)
+			for _, ipar := range pars {
+				cmpl.Contract.Params[ipar.Name] = ipar.Type
 			}
 		}
 		for _, child := range node.Value.(*parser.NBlock).Statements {

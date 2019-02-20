@@ -95,6 +95,7 @@ func setResult(l yyLexer, v *Node) {
 %type <n> else
 %type <n> statement
 %type <n> statements
+%type <n> cntparams
 %type <n> contract_body
 %type <n> contract_declaration
 
@@ -132,6 +133,12 @@ params
     | params COMMA expr { $$ = addParam($1, $3)}
     ;
 
+cntparams
+    : /*empty*/ { $$ = nil }
+    | IDENT COLON expr { $$ = newContractParam( $1, $3, yylex ) }
+    | cntparams COMMA IDENT COLON expr { $$ = addContractParam($1, $3, $5)}
+    ;
+
 var 
     : IDENT { $$ = newVarValue($1, yylex); }
 
@@ -162,7 +169,7 @@ statement
            $$ = newFunc($2, $3, $5, $7, yylex)
            }
     | CALL params RPAREN { $$ = newCallFunc($1, $2, yylex);}
-    | CALLCONTRACT RPAREN { $$ = newCallContract($1, yylex);}
+    | CALLCONTRACT cntparams RPAREN { $$ = newCallContract($1, $2, yylex);}
     ;
 
 expr
@@ -173,7 +180,7 @@ expr
     | TRUE { $$ = newValue(true, yylex);}
     | FALSE { $$ = newValue(false, yylex);}
     | CALL params RPAREN { $$ = newCallFunc($1, $2, yylex);}
-    | CALLCONTRACT RPAREN { $$ = newCallContract($1, yylex);}
+    | CALLCONTRACT cntparams RPAREN { $$ = newCallContract($1, $2, yylex);}
     | IDENT { $$ = newGetVar($1, yylex);}
     | QUESTION LPAREN expr COMMA expr COMMA expr RPAREN { $$ = newQuestion($3, $5, $7, yylex);}
     | expr MUL expr { $$ = newBinary($1, $3, MUL, yylex); }

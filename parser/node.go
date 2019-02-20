@@ -20,6 +20,7 @@ const (
 	TCallFunc
 	TParams
 	TCallContract
+	TContractParams
 )
 
 const (
@@ -62,8 +63,8 @@ type NCallFunc struct {
 
 // NCallContract - call contract
 type NCallContract struct {
-	Name string
-	//	Params *Node
+	Name   string
+	Params []ContractParam
 }
 
 // NIf - if statement
@@ -94,6 +95,16 @@ type NBlock struct {
 // NParams contains param expressions
 type NParams struct {
 	Expr []*Node
+}
+
+type ContractParam struct {
+	Name string
+	Expr *Node
+}
+
+// NContractParams contains contract param expressions
+type NContractParams struct {
+	Params []ContractParam
 }
 
 // NBinary contains binary operator
@@ -183,6 +194,29 @@ func newParam(expr *Node, l yyLexer) *Node {
 func addParam(node *Node, expr *Node) *Node {
 	node.Value.(*NParams).Expr = append(node.Value.(*NParams).Expr, expr)
 	return node
+}
+
+func newContractParam(name string, expr *Node, l yyLexer) *Node {
+	return setPos(&Node{
+		Type: TContractParams,
+		Value: &NContractParams{
+			Params: []ContractParam{
+				{
+					Name: name,
+					Expr: expr,
+				},
+			},
+		},
+	}, l)
+}
+
+func addContractParam(params *Node, name string, expr *Node) *Node {
+	params.Value.(*NContractParams).Params = append(params.Value.(*NContractParams).Params,
+		ContractParam{
+			Name: name,
+			Expr: expr,
+		})
+	return params
 }
 
 func newReturn(expr *Node, l yyLexer) *Node {
@@ -368,11 +402,16 @@ func newCallFunc(name string, params *Node, l yyLexer) *Node {
 	}, l)
 }
 
-func newCallContract(name string, l yyLexer) *Node {
+func newCallContract(name string, params *Node, l yyLexer) *Node {
+	var list []ContractParam
+	if params != nil {
+		list = params.Value.(*NContractParams).Params
+	}
 	return setPos(&Node{
 		Type: TCallContract,
 		Value: &NCallContract{
-			Name: name[1:],
+			Name:   name[1:],
+			Params: list,
 		},
 	}, l)
 }

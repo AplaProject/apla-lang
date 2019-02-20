@@ -1,3 +1,7 @@
+contract callData { 
+    return @myData(Name: "My Data", Value: 50)
+}
+==== Empty name 9
 contract myData { 
     data { 
         int Value

@@ -67,11 +67,12 @@ type FuncInfo struct {
 
 // Contract contains information about the contract
 type Contract struct {
-	ID    int64 // External id
-	Name  string
-	Code  []Bcode
-	Vars  map[string]VarInfo
-	Funcs []*FuncInfo
+	ID     int64 // External id
+	Name   string
+	Code   []Bcode
+	Vars   map[string]VarInfo
+	Funcs  []*FuncInfo
+	Params map[string]int
 }
 
 // Runtime is a runtime structure
