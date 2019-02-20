@@ -40,6 +40,8 @@ const (
 	CALLFUNC     // + uint16 call contract function
 	EMBEDFUNC    // + uint16 call embedded function
 	CALLCONTRACT // + uint16 call contract
+	LOADPARS     // load contract parameters
+	PARCONTRACT  // + uint16 index of parameter
 	GETPARAMS    // + uint16 count of parameters
 	RETURN       // return from contract + int16 (type)
 	RETFUNC      // return from function
@@ -72,19 +74,19 @@ type Contract struct {
 	Code   []Bcode
 	Vars   map[string]VarInfo
 	Funcs  []*FuncInfo
-	Params map[string]int
+	Params map[string]VarInfo
 }
 
 // Runtime is a runtime structure
 type Runtime struct {
-	Vars      []int64
+	//	Vars      []int64
 	Contracts *[]*Contract
 }
 
 // NewRuntime creates a new runtime
 func NewRuntime(Contracts *[]*Contract) *Runtime {
 	return &Runtime{
-		Vars:      make([]int64, 0, 100),
+		//		Vars:      make([]int64, 0, 100),
 		Contracts: Contracts,
 	}
 }

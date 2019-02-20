@@ -16,7 +16,7 @@ const (
 )
 
 // Run executes a bytecode
-func (rt *Runtime) Run(code []Bcode) (string, int64, error) {
+func (rt *Runtime) Run(code []Bcode, params []int64) (string, int64, error) {
 	var (
 		i, top, gas, coff int64
 		result            string
@@ -26,7 +26,9 @@ func (rt *Runtime) Run(code []Bcode) (string, int64, error) {
 	if length == 0 {
 		return result, gas, nil
 	}
+	Vars := make([]int64, 0, 32)
 	stack := make([]int64, 100)
+	pars := make([]int64, 0, 32)
 	calls := make([]int64, 1000)
 	// top the latest value
 	if code[0] == DATA {
@@ -67,13 +69,13 @@ main:
 					dstr := ``
 					v = int64(uintptr(unsafe.Pointer(&dstr)))
 				}
-				rt.Vars = append(rt.Vars, v)
+				Vars = append(Vars, v)
 			}
 			i += count + 1
 		case DELVARS:
 			i++
 			count := int64(code[i])
-			rt.Vars = rt.Vars[:count]
+			Vars = Vars[:count]
 		case ADDINT:
 			top--
 			stack[top] += stack[top+1]
@@ -157,11 +159,11 @@ main:
 		case GETVAR:
 			i++
 			top++
-			stack[top] = rt.Vars[code[i]]
+			stack[top] = Vars[code[i]]
 		case SETVAR:
 			i++
 			top++
-			stack[top] = int64(uintptr(unsafe.Pointer(&rt.Vars[code[i]])))
+			stack[top] = int64(uintptr(unsafe.Pointer(&Vars[code[i]])))
 		case JMP:
 			i += int64(int16(code[i+1]))
 			top = 0
@@ -209,7 +211,7 @@ main:
 			top -= 2
 		case CALLFUNC:
 			calls[coff] = i + 2
-			calls[coff+1] = int64(len(rt.Vars))
+			calls[coff+1] = int64(len(Vars))
 			coff += 2
 			i += int64(int16(code[i+1]))
 			continue
@@ -239,16 +241,25 @@ main:
 		case CALLCONTRACT:
 			i++
 			top++
-			result, cgas, cerr := rt.Run((*rt.Contracts)[code[i]].Code)
+			result, cgas, cerr := rt.Run((*rt.Contracts)[code[i]].Code, pars)
+			pars = pars[:0]
 			gas -= cgas
 			if cerr != nil {
 				return ``, gas, cerr
 			}
 			stack[top] = int64(uintptr(unsafe.Pointer(&result)))
+		case LOADPARS:
+			for j := 0; j < (len(params) >> 1); j++ {
+				Vars[params[j<<1]] = params[(j<<1)+1]
+			}
+		case PARCONTRACT:
+			i++
+			pars = append(pars, int64(code[i]), stack[top])
+			top--
 		case GETPARAMS:
 			i++
 			for k := 1; k <= int(code[i]); k++ {
-				rt.Vars[len(rt.Vars)-k] = stack[top]
+				Vars[len(Vars)-k] = stack[top]
 				top--
 			}
 		case RETURN:
@@ -269,7 +280,7 @@ main:
 			}
 			break main
 		case RETFUNC:
-			rt.Vars = rt.Vars[:calls[coff-1]]
+			Vars = Vars[:calls[coff-1]]
 			coff -= 2
 			i = calls[coff]
 			continue

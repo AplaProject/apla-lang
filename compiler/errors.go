@@ -23,6 +23,9 @@ const (
 	errReturnType        = `Function must return %s`
 	errData              = `DATA section is too big`
 	errContractNotExists = `Contract %s hasn't been found`
+	errContractNoParams  = `Contract %s doesn't have parameters`
+	errContractNoParam   = `Contract doesn't have %s parameter`
+	errParamType         = `Unexpected type of the parameter; expecting %s`
 )
 
 func (cmpl *compiler) Error(node *parser.Node, text string) error {

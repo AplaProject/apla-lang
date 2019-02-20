@@ -85,10 +85,11 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 			if err = cmpl.InitVars(node, pars); err != nil {
 				return err
 			}
-			cmpl.Contract.Params = make(map[string]int)
-			for _, ipar := range pars {
-				cmpl.Contract.Params[ipar.Name] = ipar.Type
+			cmpl.Contract.Params = make(map[string]rt.VarInfo)
+			for k, ipar := range pars {
+				cmpl.Contract.Params[ipar.Name] = rt.VarInfo{Index: uint16(k), Type: uint16(ipar.Type)}
 			}
+			cmpl.Append(rt.LOADPARS)
 		}
 		for _, child := range node.Value.(*parser.NBlock).Statements {
 			if err = nodeToCode(child, cmpl); err != nil {
@@ -413,18 +414,28 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 		if !ok {
 			return cmpl.ErrorParam(node, errContractNotExists, nCallContract.Name)
 		}
-		//		cnt := (*cmpl.Contracts)[ind]
-		/*		code, ftype := cmpl.findCallFunc(nFunc)
-				if code == rt.NOP {
-					pars := make([]string, 0, 10)
-					if nFunc.Params != nil {
-						for _, par := range nFunc.Params.Value.(*parser.NParams).Expr {
-							pars = append(pars, Type2Str(uint32(par.Result)))
-						}
-					}
-					return cmpl.ErrorParam(node, errFuncNotExists, fmt.Sprintf("%s(%s)", nFunc.Name,
-						strings.Join(pars, `, `)))
-				}*/
+		cnt := (*cmpl.Contracts)[ind]
+		if len(nCallContract.Params) > 0 {
+			if cnt.Params == nil {
+				return cmpl.ErrorParam(node, errContractNoParams, nCallContract.Name)
+			}
+			for _, ipar := range nCallContract.Params {
+				var (
+					vinfo rt.VarInfo
+					vok   bool
+				)
+				if vinfo, vok = cnt.Params[ipar.Name]; !vok {
+					return cmpl.ErrorParam(node, errContractNoParam, ipar.Name)
+				}
+				if uint32(vinfo.Type) != ipar.Expr.Result {
+					return cmpl.ErrorParam(node, errParamType, Type2Str(uint32(vinfo.Type)))
+				}
+				if err = nodeToCode(ipar.Expr, cmpl); err != nil {
+					return err
+				}
+				cmpl.Append(rt.PARCONTRACT, rt.Bcode(vinfo.Index))
+			}
+		}
 		cmpl.Append(rt.CALLCONTRACT, rt.Bcode(ind))
 		node.Result = parser.VStr
 	default:

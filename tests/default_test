@@ -1,17 +1,35 @@
+contract callName { 
+    str s = `ok`
+    return @myData(Name: "Only Name") + s + @myData(Value: 17)
+}
+==== Only Name 0okEmpty name 9
 contract callData { 
     return @myData(Name: "My Data", Value: 50)
 }
-==== Empty name 9
+==== My Data 50
+contract callData { 
+    return @myData(Name: "My Data", Value: "string")
+}
+==== callData 2:52: Unexpected type of the parameter; expecting int
+contract callData { 
+    return @myData(Name: "My Data", Value2: 50)
+}
+==== callData 2:47: Contract doesn't have Value2 parameter
+contract callData { 
+    return @myDIV(Name: "My Data", Value: 50)
+}
+==== callData 2:45: Contract myDIV doesn't have parameters
 contract myData { 
     data { 
         int Value
         str Name 
     }
+    str s = ` `
     if Len(Name) == 0 {
         Name = `Empty name`
         Value = 9
     }
-    return Name + ` ` + str(Value)
+    return Name + s + str(Value)
 }
 ==== Empty name 9
 contract myCallDIV {

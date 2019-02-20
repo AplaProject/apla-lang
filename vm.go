@@ -76,7 +76,7 @@ func (vm *VM) LoadContract(input string, id int64) error {
 // Run executes the contract
 func (vm *VM) Run(cnt *runtime.Contract) (string, int64, error) {
 	rt := runtime.NewRuntime(&vm.Contracts)
-	return rt.Run(cnt.Code)
+	return rt.Run(cnt.Code, nil)
 }
 
 // RunByName executes the contract
