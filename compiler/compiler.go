@@ -81,6 +81,11 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 		varsCount := uint16(len(cmpl.Contract.Vars))
 		funcsCount := len(cmpl.Contract.Funcs)
 		cmpl.Blocks = append(cmpl.Blocks, node)
+		if len(node.Value.(*parser.NBlock).Params) > 0 {
+			if err = cmpl.InitVars(node, node.Value.(*parser.NBlock).Params); err != nil {
+				return err
+			}
+		}
 		for _, child := range node.Value.(*parser.NBlock).Statements {
 			if err = nodeToCode(child, cmpl); err != nil {
 				return err

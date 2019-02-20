@@ -1,3 +1,19 @@
+contract myData { 
+    data { 
+        int Value
+        str Name 
+    }
+    if Len(Name) == 0 {
+        Name = `Empty name`
+        Value = 9
+    }
+    return Name + ` ` + str(Value)
+}
+==== Empty name 9
+contract myCallDIV {
+    @myDIV()
+}
+==== integer divide by zero
 contract myCall {
     return @mySLem() + @mySLem()
 }

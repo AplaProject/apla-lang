@@ -1,6 +1,7 @@
 package runtime
 
 import (
+	"fmt"
 	"unsafe"
 
 	"github.com/AplaProject/apla-lang/parser"
@@ -17,9 +18,18 @@ type EmbedFunc struct {
 var (
 	StdLib = []EmbedFunc{
 		{LenStr, 1, `Len`, []uint32{parser.VStr}, parser.VInt}, // Len(str) int
+		{StrInt, 1, `str`, []uint32{parser.VInt}, parser.VStr}, // str(int) str
 	}
 )
 
+// LenStr returns the length of the string
 func LenStr(ptr int64) int64 {
 	return int64(len(*(*string)(unsafe.Pointer(uintptr(ptr)))))
+}
+
+// StrInt converts the integer number to the string
+func StrInt(ptr int64) int64 {
+	var ret string
+	ret = fmt.Sprint(ptr)
+	return int64(uintptr(unsafe.Pointer(&ret)))
 }

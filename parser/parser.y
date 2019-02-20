@@ -220,7 +220,7 @@ var_declarations
 
 contract_data 
     : /*empty*/ { $$ = nil }
-    | DATA LBRACE var_declarations NEWLINE RBRACE NEWLINE { $$ = $3 }
+    | DATA LBRACE NEWLINE var_declarations NEWLINE RBRACE NEWLINE { $$ = $4 }
     ;
 
 contract_body 
@@ -230,8 +230,8 @@ contract_body
     ;
 
 contract_declaration 
-    : CONTRACT IDENT LBRACE contract_body RBRACE { 
-        $$ = newContract($2, $4, yylex)
+    : CONTRACT IDENT LBRACE NEWLINE contract_body RBRACE { 
+        $$ = newContract($2, $5, yylex)
         setResult(yylex, $$)
         }
     | contract_declaration NEWLINE

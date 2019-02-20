@@ -53,6 +53,24 @@ func TestGrammar(t *testing.T) {
 		in  string
 		err error
 	}{
+		{`contract myData { 
+			data { 
+				int Value
+				str Name 
+			}
+		//    return Name + str(Value)
+		}`,
+			nil,
+		},
+		{
+			`contract Test {
+				data { 
+					int my
+				} /* wswsws
+				*/
+						}`,
+			nil,
+		},
 		{
 			`contract Test {
 				int b = 0x10bFA
@@ -70,15 +88,6 @@ func TestGrammar(t *testing.T) {
 			`contract {
 				}`,
 			syntaxErr("file:1:10: syntax error: unexpected LBRACE, expecting IDENT"),
-		},
-		{
-			`contract Test {
-				data { 
-					int my
-				} /* wswsws
-				*/
-						}`,
-			nil,
 		},
 		{
 			`contract Тест { data { int My My2

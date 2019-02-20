@@ -166,7 +166,7 @@ func newBlock(vars []NVar, block *Node, l yyLexer) *Node {
 		}, l)
 	}
 	if len(vars) > 0 {
-		block.Value.(*NBlock).Params = append(vars, block.Value.(*NBlock).Params...)
+		block.Value.(*NBlock).Params = vars
 	}
 	return block
 }
