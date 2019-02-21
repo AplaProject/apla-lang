@@ -8,21 +8,32 @@ import (
 )
 
 const (
+	DEFAULT_GAS_LIMIT = 2000000000
+
 	errCntExists    = `Contract %s has already been defined`
 	errCntNotExists = `Contract %s doesn't exists`
 )
+
+type VMSettings struct {
+	GasLimit int64
+}
 
 // VM is a virtual machine structure
 type VM struct {
 	Contracts []*runtime.Contract
 	NameSpace map[string]uint32 // common namespace
+	Settings  VMSettings
 }
 
 // NewVM creates a new virtual machine
-func NewVM() *VM {
+func NewVM(settings VMSettings) *VM {
+	if settings.GasLimit == 0 {
+		settings.GasLimit = DEFAULT_GAS_LIMIT
+	}
 	return &VM{
 		Contracts: make([]*runtime.Contract, 0, 1000),
 		NameSpace: make(map[string]uint32),
+		Settings:  settings,
 	}
 }
 
@@ -76,7 +87,7 @@ func (vm *VM) LoadContract(input string, id int64) error {
 // Run executes the contract
 func (vm *VM) Run(cnt *runtime.Contract) (string, int64, error) {
 	rt := runtime.NewRuntime(&vm.Contracts)
-	return rt.Run(cnt.Code, nil)
+	return rt.Run(cnt.Code, nil, vm.Settings.GasLimit)
 }
 
 // RunByName executes the contract

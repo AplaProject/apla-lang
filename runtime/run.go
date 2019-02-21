@@ -11,12 +11,13 @@ import (
 type Bcode uint16
 
 const (
-	errDivZero = `integer divide by zero`
-	errCommand = `unknown command %d`
+	errDivZero  = `integer divide by zero`
+	errCommand  = `unknown command %d`
+	errGasLimit = `gas is over`
 )
 
 // Run executes a bytecode
-func (rt *Runtime) Run(code []Bcode, params []int64) (string, int64, error) {
+func (rt *Runtime) Run(code []Bcode, params []int64, gasLimit int64) (string, int64, error) {
 	var (
 		i, top, gas, coff int64
 		result            string
@@ -45,6 +46,9 @@ func (rt *Runtime) Run(code []Bcode, params []int64) (string, int64, error) {
 main:
 	for i < length {
 		gas++
+		if gas > gasLimit {
+			return ``, gas, fmt.Errorf(errGasLimit)
+		}
 		switch code[i] {
 		case PUSH16:
 			i++
@@ -218,16 +222,16 @@ main:
 		case EMBEDFUNC:
 			i++
 			eFunc := StdLib[code[i]]
-			pars := make([]reflect.Value, eFunc.Params)
+			parsFunc := make([]reflect.Value, eFunc.Params)
 			/*			if Runtime {
 						pars = append(pars, reflect.ValueOf(rt))
 					}*/
 			top -= eFunc.Params
 			for k := int64(0); k < eFunc.Params; k++ {
-				pars[k] = reflect.ValueOf(stack[top+k+1])
+				parsFunc[k] = reflect.ValueOf(stack[top+k+1])
 			}
 			var result []reflect.Value
-			result = reflect.ValueOf(eFunc.Func).Call(pars)
+			result = reflect.ValueOf(eFunc.Func).Call(parsFunc)
 			if len(result) > 0 {
 				last := result[len(result)-1].Interface()
 				if last != nil {
@@ -241,7 +245,7 @@ main:
 		case CALLCONTRACT:
 			i++
 			top++
-			result, cgas, cerr := rt.Run((*rt.Contracts)[code[i]].Code, pars)
+			result, cgas, cerr := rt.Run((*rt.Contracts)[code[i]].Code, pars, gasLimit-gas)
 			pars = pars[:0]
 			gas -= cgas
 			if cerr != nil {

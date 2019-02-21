@@ -82,7 +82,9 @@ func loadTest(filename string) (ret []*contract, err error) {
 }
 
 func testFile(filename string) error {
-	vm := simvolio.NewVM()
+	vm := simvolio.NewVM(simvolio.VMSettings{
+		GasLimit: 200000000,
+	})
 	contracts, err := loadTest(filename)
 	if err != nil {
 		return err
