@@ -46,6 +46,7 @@ unicodeLetter	\x80
 
 ,[ \t]*\n?		return l.char(COMMA)
 :				return l.char(COLON)
+\.				return l.char(DOT)
 \?         	    return l.char(QUESTION)
 \([ \t]*\n?     return l.char(LPAREN)
 \n[ \t]*\)		return l.char(RPAREN)
@@ -90,15 +91,17 @@ bool			return l.char(T_BOOL)
 int				return l.char(T_INT)
 hexint			return l.char(T_INT)
 str			    return l.char(T_STR)
+arr			    return l.char(T_ARR)
 
 {hexint}			{
 					val, _ := strconv.ParseInt(string(l.TokenBytes(nil)), 0, 64)
-					lval.i = int(val)
+					lval.i = int64(val)
 					return l.char(INT)
 				}
 
 {int}			{
-					lval.i, _ = strconv.Atoi(string(l.TokenBytes(nil)))
+					ai, _ := strconv.Atoi(string(l.TokenBytes(nil)))
+					lval.i = int64(ai)
 					return l.char(INT)
 				}
 {identifier}	{

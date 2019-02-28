@@ -1,5 +1,7 @@
 package parser
 
+import "fmt"
+
 // Types of Node
 const (
 	TContract = iota + 1 // contract
@@ -21,6 +23,7 @@ const (
 	TParams
 	TCallContract
 	TContractParams
+	TType
 )
 
 const (
@@ -28,12 +31,18 @@ const (
 	VInt  // int
 	VBool // bool
 	VStr  // str
+	VArr  // arr
 )
 
 // NVar contains type and name of variable or parameter
 type NVar struct {
-	Type int
+	Type int64
 	Name string
+}
+
+// NType contains the type
+type NType struct {
+	Type int64
 }
 
 // NVarValue contains the name of variable
@@ -50,7 +59,7 @@ type NWhile struct {
 // NFunc - function
 type NFunc struct {
 	Name   string
-	Result int
+	Result int64
 	Params []NVar
 	Body   *Node
 }
@@ -191,6 +200,27 @@ func newParam(expr *Node, l yyLexer) *Node {
 	}, l)
 }
 
+func addSubtype(itype int64, ichild int64) int64 {
+	var i int
+	fmt.Println(`ADD`, itype, ichild)
+	if (itype >> 12) != 0 {
+		return VVoid
+	}
+	for i = 1; i < 4; i++ {
+		shift := uint64(i * 4)
+		if itype&(0xf<<shift) == 0 {
+			if (itype >> (shift - 4)) != VArr {
+				itype = VVoid
+			} else {
+				itype |= ichild << shift
+			}
+			break
+		}
+	}
+	fmt.Println(`RETADD`, itype)
+	return itype
+}
+
 func addParam(node *Node, expr *Node) *Node {
 	node.Value.(*NParams).Expr = append(node.Value.(*NParams).Expr, expr)
 	return node
@@ -228,7 +258,7 @@ func newReturn(expr *Node, l yyLexer) *Node {
 	}, l)
 }
 
-func newVars(vtype int, vars []string) []NVar {
+func newVars(vtype int64, vars []string) []NVar {
 	va := make([]NVar, len(vars))
 	for i, name := range vars {
 		va[i] = NVar{
@@ -258,7 +288,7 @@ func addStatement(statements *Node, statement *Node, l yyLexer) *Node {
 func newValue(value interface{}, l yyLexer) *Node {
 	var vtype uint32
 	switch value.(type) {
-	case int:
+	case int64:
 		vtype = VInt
 	case string:
 		vtype = VStr
@@ -270,7 +300,7 @@ func newValue(value interface{}, l yyLexer) *Node {
 	}, l)
 }
 
-func newVarDecl(itype int, vars []string, l yyLexer) *Node {
+func newVarDecl(itype int64, vars []string, l yyLexer) *Node {
 	list := make([]NVar, len(vars))
 	for i, v := range vars {
 		list[i] = NVar{
@@ -380,7 +410,7 @@ func newQuestion(cond *Node, left *Node, right *Node, l yyLexer) *Node {
 	}, l)
 }
 
-func newFunc(name string, pars []NVar, retType int, body *Node, l yyLexer) *Node {
+func newFunc(name string, pars []NVar, retType int64, body *Node, l yyLexer) *Node {
 	return setPos(&Node{
 		Type: TFunc,
 		Value: &NFunc{
@@ -407,6 +437,7 @@ func newCallContract(name string, params *Node, l yyLexer) *Node {
 	if params != nil {
 		list = params.Value.(*NContractParams).Params
 	}
+	fmt.Println(`CALL CONTRACT`, list)
 	return setPos(&Node{
 		Type: TCallContract,
 		Value: &NCallContract{

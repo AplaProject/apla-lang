@@ -10,7 +10,7 @@ func setResult(l yyLexer, v *Node) {
 %union {
     n       *Node
     b       bool
-    i       int
+    i       int64
     f       float64
     s       string
     sa      []string
@@ -38,6 +38,7 @@ func setResult(l yyLexer, v *Node) {
 %token LBRAKET // [
 %token RBRAKET // ]
 %token QUESTION // ?
+%token DOT   // .
 
 // Operators
 %token ADD // +
@@ -79,9 +80,11 @@ func setResult(l yyLexer, v *Node) {
 %token T_INT    // int
 %token T_BOOL   // bool
 %token T_STR  // str
+%token T_ARR  // arr
 
-%type <i> type
-%type <i> rettype
+%type <i> ordinaltype
+%type <n> type
+%type <n> rettype
 %type <sa> ident_list
 %type <va> var_declaration
 %type <va> var_declarations
@@ -110,14 +113,20 @@ func setResult(l yyLexer, v *Node) {
 
 %%
 
-type
+ordinaltype
     : T_BOOL {$$ = VBool}
     | T_INT {$$ = VInt}
     | T_STR {$$ = VStr}
+    | T_ARR {$$ = VArr}    
+    ;
+
+type
+    : ordinaltype {$$ = newType($1, yylex)}
+    | type DOT ordinaltype {$$ = addSubtype($1, $3, yylex)}
     ;
 
 rettype
-    : /*empty*/ { $$ = VVoid }
+    : /*empty*/ { $$ = newType(VVoid, yylex) }
     | type { $$ = $1 }
     ;
 

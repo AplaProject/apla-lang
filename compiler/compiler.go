@@ -14,7 +14,7 @@ type compiler struct {
 	Blocks    []*parser.Node
 	Contracts *[]*rt.Contract
 	NameSpace *map[string]uint32
-	RetFunc   int
+	RetFunc   int64
 	InFunc    bool
 	Data      []byte
 }
@@ -53,6 +53,9 @@ func (cmpl *compiler) InitVars(node *parser.Node, vars []parser.NVar) error {
 	for i, v := range vars {
 		if _, ok := cmpl.Contract.Vars[v.Name]; ok {
 			return cmpl.ErrorParam(node, errVarExists, v.Name)
+		}
+		if v.Type == parser.VVoid {
+			return cmpl.Error(node, errInvalidType)
 		}
 		types[i] = rt.Bcode(v.Type)
 		cmpl.Contract.Vars[v.Name] = rt.VarInfo{
@@ -221,7 +224,7 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 		node.Result = nQuestion.Left.Result
 	case parser.TValue:
 		switch v := node.Value.(type) {
-		case int:
+		case int64:
 			if v <= math.MaxInt16 && v >= math.MinInt16 {
 				cmpl.Append(rt.PUSH16, rt.Bcode(v))
 			} else if v <= math.MaxInt32 && v >= math.MinInt32 {
@@ -376,7 +379,7 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 		}
 		cmpl.Contract.Code[start+1] = off
 		cmpl.Contract.Funcs = append(cmpl.Contract.Funcs, finfo)
-		(*cmpl.NameSpace)[getFuncKey(finfo)] = uint32(len(cmpl.Contract.Funcs) | (finfo.Result << 24))
+		(*cmpl.NameSpace)[getFuncKey(finfo)] = uint32(len(cmpl.Contract.Funcs) | int(finfo.Result<<24))
 	case parser.TCallFunc:
 		nFunc := node.Value.(*parser.NCallFunc)
 		if nFunc.Params != nil {
@@ -427,6 +430,7 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 				if vinfo, vok = cnt.Params[ipar.Name]; !vok {
 					return cmpl.ErrorParam(node, errContractNoParam, ipar.Name)
 				}
+				fmt.Println(`errParamType`, vinfo.Type, ipar.Expr.Result)
 				if uint32(vinfo.Type) != ipar.Expr.Result {
 					return cmpl.ErrorParam(node, errParamType, Type2Str(uint32(vinfo.Type)))
 				}

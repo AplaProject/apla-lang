@@ -62,7 +62,7 @@ type VarInfo struct {
 // FuncInfo describes a function
 type FuncInfo struct {
 	Offset int
-	Result int
+	Result int64
 	Name   string
 	Params []parser.NVar
 }

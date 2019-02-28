@@ -1,3 +1,22 @@
+contract arrCNT { 
+    arr.arr.arr.arr.arr.arr.arr.int a
+}
+==== Only Name 0okEmpty name 9
+contract arrInt { 
+    func a(int.int b) {
+    }
+}
+==== Only Name 0okEmpty name 9
+contract arrInt { 
+    data {
+        int.int b
+    }
+}
+==== Only Name 0okEmpty name 9
+contract arrInt { 
+    int.int b
+}
+==== arrInt 2:15: Invalid type
 contract callName { 
     str s = `ok`
     return @myData(Name: "Only Name") + s + @myData(Value: 17)
