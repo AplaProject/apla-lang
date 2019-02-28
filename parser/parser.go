@@ -671,25 +671,25 @@ yydefault:
 		yyDollar = yyS[yypt-1 : yypt+1]
 //line parser.y:124
 		{
-			yyVAL.i = yyDollar[1].i
+			yyVAL.n = newType(yyDollar[1].i, yylex)
 		}
 	case 6:
 		yyDollar = yyS[yypt-3 : yypt+1]
 //line parser.y:125
 		{
-			yyVAL.i = addSubtype(yyDollar[1].i, yyDollar[3].i)
+			yyVAL.n = addSubtype(yyDollar[1].n, yyDollar[3].i, yylex)
 		}
 	case 7:
 		yyDollar = yyS[yypt-0 : yypt+1]
 //line parser.y:129
 		{
-			yyVAL.i = VVoid
+			yyVAL.n = nil
 		}
 	case 8:
 		yyDollar = yyS[yypt-1 : yypt+1]
 //line parser.y:130
 		{
-			yyVAL.i = yyDollar[1].i
+			yyVAL.n = yyDollar[1].n
 		}
 	case 9:
 		yyDollar = yyS[yypt-0 : yypt+1]
@@ -815,13 +815,13 @@ yydefault:
 		yyDollar = yyS[yypt-4 : yypt+1]
 //line parser.y:171
 		{
-			yyVAL.n = newBinary(newVarDecl(yyDollar[1].i, []string{yyDollar[2].s}, yylex), yyDollar[4].n, ASSIGN, yylex)
+			yyVAL.n = newBinary(newVarDecl(yyDollar[1].n, []string{yyDollar[2].s}, yylex), yyDollar[4].n, ASSIGN, yylex)
 		}
 	case 30:
 		yyDollar = yyS[yypt-2 : yypt+1]
 //line parser.y:172
 		{
-			yyVAL.n = newVarDecl(yyDollar[1].i, yyDollar[2].sa, yylex)
+			yyVAL.n = newVarDecl(yyDollar[1].n, yyDollar[2].sa, yylex)
 		}
 	case 31:
 		yyDollar = yyS[yypt-7 : yypt+1]
@@ -851,7 +851,7 @@ yydefault:
 		yyDollar = yyS[yypt-8 : yypt+1]
 //line parser.y:177
 		{
-			yyVAL.n = newFunc(yyDollar[2].s, yyDollar[3].va, yyDollar[5].i, yyDollar[7].n, yylex)
+			yyVAL.n = newFunc(yyDollar[2].s, yyDollar[3].va, yyDollar[5].n, yyDollar[7].n, yylex)
 		}
 	case 36:
 		yyDollar = yyS[yypt-3 : yypt+1]
@@ -1031,7 +1031,7 @@ yydefault:
 		yyDollar = yyS[yypt-2 : yypt+1]
 //line parser.y:219
 		{
-			yyVAL.va = newVars(yyDollar[1].i, yyDollar[2].sa)
+			yyVAL.va = newVars(yyDollar[1].n, yyDollar[2].sa)
 		}
 	case 66:
 		yyDollar = yyS[yypt-0 : yypt+1]
@@ -1055,7 +1055,7 @@ yydefault:
 		yyDollar = yyS[yypt-2 : yypt+1]
 //line parser.y:229
 		{
-			yyVAL.va = newVars(yyDollar[1].i, yyDollar[2].sa)
+			yyVAL.va = newVars(yyDollar[1].n, yyDollar[2].sa)
 		}
 	case 70:
 		yyDollar = yyS[yypt-1 : yypt+1]

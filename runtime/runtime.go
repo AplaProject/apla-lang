@@ -1,9 +1,5 @@
 package runtime
 
-import (
-	"github.com/AplaProject/apla-lang/parser"
-)
-
 const (
 	NOP          = iota
 	PUSH16       // + int16
@@ -59,12 +55,17 @@ type VarInfo struct {
 	Type  uint16
 }
 
+type Var struct {
+	Type int64
+	Name string
+}
+
 // FuncInfo describes a function
 type FuncInfo struct {
 	Offset int
 	Result int64
 	Name   string
-	Params []parser.NVar
+	Params []Var
 }
 
 // Contract contains information about the contract

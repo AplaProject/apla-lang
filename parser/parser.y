@@ -126,7 +126,7 @@ type
     ;
 
 rettype
-    : /*empty*/ { $$ = newType(VVoid, yylex) }
+    : /*empty*/ { $$ = nil }
     | type { $$ = $1 }
     ;
 

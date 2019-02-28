@@ -54,13 +54,14 @@ func (cmpl *compiler) InitVars(node *parser.Node, vars []parser.NVar) error {
 		if _, ok := cmpl.Contract.Vars[v.Name]; ok {
 			return cmpl.ErrorParam(node, errVarExists, v.Name)
 		}
-		if v.Type == parser.VVoid {
-			return cmpl.Error(node, errInvalidType)
+		vType := v.Type.Value.(*parser.NType).Type
+		if vType == parser.VVoid {
+			return cmpl.Error(v.Type, errInvalidType)
 		}
-		types[i] = rt.Bcode(v.Type)
+		types[i] = rt.Bcode(vType)
 		cmpl.Contract.Vars[v.Name] = rt.VarInfo{
 			Index: uint16(len(cmpl.Contract.Vars)),
-			Type:  uint16(v.Type),
+			Type:  uint16(vType),
 		}
 	}
 	cmpl.Append(rt.INITVARS, rt.Bcode(len(types)))
@@ -90,7 +91,8 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 			}
 			cmpl.Contract.Params = make(map[string]rt.VarInfo)
 			for k, ipar := range pars {
-				cmpl.Contract.Params[ipar.Name] = rt.VarInfo{Index: uint16(k), Type: uint16(ipar.Type)}
+				cmpl.Contract.Params[ipar.Name] = rt.VarInfo{Index: uint16(k),
+					Type: uint16(ipar.Type.Value.(*parser.NType).Type)}
 			}
 			cmpl.Append(rt.LOADPARS)
 		}
@@ -340,17 +342,30 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 			cmpl.Contract.Code[end+1] = off
 		}
 	case parser.TFunc:
-		var off rt.Bcode
+		var (
+			off rt.Bcode
+		)
+		retType := int64(parser.VVoid)
 		nFunc := node.Value.(*parser.NFunc)
+		if nFunc.Result != nil {
+			retType = nFunc.Result.Value.(*parser.NType).Type
+			if retType == parser.VVoid {
+				return cmpl.Error(nFunc.Result, errInvalidType)
+			}
+		}
 		finfo := &rt.FuncInfo{
 			Name:   nFunc.Name,
-			Result: nFunc.Result,
-			Params: nFunc.Params,
+			Result: retType,
+			Params: make([]rt.Var, len(nFunc.Params)),
+		}
+		for ipar, v := range nFunc.Params {
+			finfo.Params[ipar] = rt.Var{Type: v.Type.Value.(*parser.NType).Type, Name: v.Name}
 		}
 		if cmpl.InFunc {
 			return cmpl.Error(node, errFuncLevel)
 		}
-		cmpl.RetFunc = nFunc.Result
+		cmpl.RetFunc = retType
+
 		if code, _ := cmpl.findFunc(finfo); code != rt.NOP {
 			return cmpl.ErrorParam(node, errFuncExists, nFunc.Name)
 		}
@@ -430,7 +445,6 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 				if vinfo, vok = cnt.Params[ipar.Name]; !vok {
 					return cmpl.ErrorParam(node, errContractNoParam, ipar.Name)
 				}
-				fmt.Println(`errParamType`, vinfo.Type, ipar.Expr.Result)
 				if uint32(vinfo.Type) != ipar.Expr.Result {
 					return cmpl.ErrorParam(node, errParamType, Type2Str(uint32(vinfo.Type)))
 				}
