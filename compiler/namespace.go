@@ -107,14 +107,27 @@ func initNameSpace(nameSpace *map[string]uint32) {
 
 // Type2Str return a name of the type
 func Type2Str(vtype uint32) (ret string) {
-	switch vtype {
-	case parser.VInt:
-		ret = `int`
-	case parser.VBool:
-		ret = `bool`
-	case parser.VStr:
-		ret = `str`
-	default:
+main:
+	for i := 0; i < 4; i++ {
+		itype := vtype & 0xf
+		if i > 0 && itype != parser.VVoid {
+			ret += `.`
+		}
+		switch itype {
+		case parser.VInt:
+			ret += `int`
+		case parser.VBool:
+			ret += `bool`
+		case parser.VStr:
+			ret += `str`
+		case parser.VArr:
+			ret += `arr`
+		default:
+			break main
+		}
+		vtype >>= 4
+	}
+	if len(ret) == 0 {
 		ret = `unknown`
 	}
 	return

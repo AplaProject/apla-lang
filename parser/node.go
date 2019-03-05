@@ -41,6 +41,7 @@ type NVar struct {
 // NType contains the type
 type NType struct {
 	Type int64
+	Def  bool
 }
 
 // NVarValue contains the name of variable
@@ -199,10 +200,16 @@ func newParam(expr *Node, l yyLexer) *Node {
 }
 
 func newType(itype int64, l yyLexer) *Node {
+	var def bool
+	if itype == VArr {
+		def = true
+		itype |= VStr << 4
+	}
 	return setPos(&Node{
 		Type: TType,
 		Value: &NType{
 			Type: itype,
+			Def:  def,
 		},
 	}, l)
 }
@@ -212,6 +219,10 @@ func addSubtype(tNode *Node, ichild int64, l yyLexer) *Node {
 	var i int
 	if (itype >> 12) == 0 {
 		for i = 1; i < 4; i++ {
+			if tNode.Value.(*NType).Def {
+				itype &= 0xf
+				tNode.Value.(*NType).Def = false
+			}
 			shift := uint64(i * 4)
 			if itype&(0xf<<shift) == 0 {
 				if (itype >> (shift - 4)) != VArr {

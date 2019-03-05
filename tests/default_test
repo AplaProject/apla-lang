@@ -1,3 +1,24 @@
+contract arrInt { 
+    arr.int a
+    func dfunc(arr e) {}
+    dfunc(a)
+}
+==== arrInt 4:12: Function dfunc(arr.int) hasn't been defined
+contract arrStr { 
+    data {
+        arr Par
+    }
+    arr a
+    arr.str d
+    func dfunc(arr e) {}
+    func b(arr.str c) str { 
+        return "OK"
+    }
+    b(a)
+    dfunc(d)
+    return b(Par)
+}
+==== OK
 contract arrCNT { 
     arr.arr.arr.int a
 }
