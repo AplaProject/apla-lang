@@ -42,10 +42,31 @@ var (
 	}
 )
 
+func parseType(intype uint32) (outtype, subtype uint32) {
+	if intype > 0xf {
+		subtype = intype >> 4
+		outtype = intype & 0xf
+		/*		for i := uint(12); i > 0; i -= 4 {
+				if (intype & (0xf << i)) != 0 {
+					subtype = intype >> i
+					outtype = intype & ^(0xf << i)
+					break
+				}
+			}*/
+	}
+	return
+}
+
 func (cmpl *compiler) findBinary(binary *parser.NBinary) (rt.Bcode, uint32) {
 	key := fmt.Sprintf("#%d#%d#%d", binary.Oper, binary.Left.Result, binary.Right.Result)
 	if v, ok := (*cmpl.NameSpace)[key]; ok {
 		return rt.Bcode(v & 0xffff), v >> 24
+	}
+	if binary.Oper == parser.ADD_ASSIGN {
+		outtype, subtype := parseType(binary.Left.Result)
+		if outtype&0xf == parser.VArr && subtype == binary.Right.Result {
+			return rt.APPENDARR, parser.VVoid
+		}
 	}
 	return rt.NOP, 0
 }
@@ -76,13 +97,25 @@ func (cmpl *compiler) findFunc(nfunc *rt.FuncInfo) (rt.Bcode, uint32) {
 
 func (cmpl *compiler) findCallFunc(nfunc *parser.NCallFunc) (rt.Bcode, uint32) {
 	key := fmt.Sprintf("$%s", nfunc.Name)
+	softkey := key
 	if nfunc.Params != nil {
 		for _, par := range nfunc.Params.Value.(*parser.NParams).Expr {
-			key += fmt.Sprintf(`$%d`, par.Result)
+			parkey := fmt.Sprintf(`$%d`, par.Result)
+			if par.Result > 0xf {
+				outtype, _ := parseType(par.Result)
+				softkey += fmt.Sprintf(`$%d`, outtype)
+			} else {
+				softkey += parkey
+			}
+			key += parkey
 		}
 	}
 	if v, ok := (*cmpl.NameSpace)[key]; ok {
 		return rt.Bcode(v & 0xffff), v >> 24
+	} else if len(softkey) > 0 {
+		if v, ok := (*cmpl.NameSpace)[softkey]; ok {
+			return rt.Bcode(v & 0xffff), v >> 24
+		}
 	}
 	return rt.NOP, 0
 }

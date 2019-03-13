@@ -1,3 +1,27 @@
+contract arrStr1 { 
+    arr a
+    a += "10"
+    a += "123"
+    a += str(Len(a))
+    return a
+}
+==== [10 123 2]
+contract arrInt { 
+    arr.int a
+    a += 10
+    a += 123
+    a += Len(a)
+    return a
+}
+==== [10 123 2]
+contract arrLen { 
+    arr.int a
+    arr b
+    a += 10
+    b += "my str"
+    return Len(a) + Len(b)
+}
+==== 2
 contract arrInt { 
     arr.int a
     func dfunc(arr e) {}

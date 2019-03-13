@@ -16,21 +16,46 @@ const (
 	errGasLimit = `gas is over`
 )
 
+type objCount struct {
+	Strings int
+	Objects int
+}
+
 // Run executes a bytecode
 func (rt *Runtime) Run(code []Bcode, params []int64, gasLimit int64) (string, int64, error) {
 	var (
 		i, top, gas, coff int64
 		result            string
 		data              []byte
+		counts            []objCount
 	)
 	length := int64(len(code))
 	if length == 0 {
 		return result, gas, nil
 	}
+	newCount := func() {
+		counts = append(counts, objCount{
+			Strings: len(rt.Strings),
+			Objects: len(rt.Objects),
+		})
+	}
+	delCount := func(full bool) {
+		var last int
+		if !full {
+			last = len(counts) - 1
+		}
+		ocount := counts[last]
+		rt.Strings = rt.Strings[:ocount.Strings]
+		rt.Objects = rt.Objects[:ocount.Objects]
+		counts = counts[:last]
+	}
+	newCount()
+	defer delCount(true)
 	Vars := make([]int64, 0, 32)
 	stack := make([]int64, 100)
 	pars := make([]int64, 0, 32)
 	calls := make([]int64, 1000)
+
 	// top the latest value
 	if code[0] == DATA {
 		length := int64(uint64(code[1]))
@@ -59,19 +84,22 @@ main:
 			top++
 			stack[top] = int64((uint64(code[i-1]) << 16) | uint64(code[i]&0xffff))
 		case PUSHSTR:
-			dstr := string(data[code[i+1] : code[i+1]+code[i+2]])
+			rt.Strings = append(rt.Strings, string(data[code[i+1]:code[i+1]+code[i+2]]))
 			top++
-			stack[top] = int64(uintptr(unsafe.Pointer(&dstr)))
+			stack[top] = int64(len(rt.Strings) - 1)
 			i += 2
 		case INITVARS:
-			//			top = 0
 			count := int64(code[i+1])
+			newCount()
 			for iVar := int64(0); iVar < count; iVar++ {
 				var v int64
-				switch code[i+2+iVar] {
+				switch code[i+2+iVar] & 0xf {
 				case parser.VStr:
-					dstr := ``
-					v = int64(uintptr(unsafe.Pointer(&dstr)))
+					rt.Strings = append(rt.Strings, ``)
+					v = int64(len(rt.Strings) - 1)
+				case parser.VArr:
+					rt.Objects = append(rt.Objects, []int64{})
+					v = int64(len(rt.Objects) - 1)
 				}
 				Vars = append(Vars, v)
 			}
@@ -80,6 +108,7 @@ main:
 			i++
 			count := int64(code[i])
 			Vars = Vars[:count]
+			delCount(false)
 		case ADDINT:
 			top--
 			stack[top] += stack[top+1]
@@ -222,13 +251,13 @@ main:
 		case EMBEDFUNC:
 			i++
 			eFunc := StdLib[code[i]]
-			parsFunc := make([]reflect.Value, eFunc.Params)
-			/*			if Runtime {
-						pars = append(pars, reflect.ValueOf(rt))
-					}*/
+			parsFunc := make([]reflect.Value, eFunc.Params+1)
+			//			if Runtime {
+			parsFunc[0] = reflect.ValueOf(rt)
+			//		}*/
 			top -= eFunc.Params
 			for k := int64(0); k < eFunc.Params; k++ {
-				parsFunc[k] = reflect.ValueOf(stack[top+k+1])
+				parsFunc[k+1] = reflect.ValueOf(stack[top+k+1])
 			}
 			var result []reflect.Value
 			result = reflect.ValueOf(eFunc.Func).Call(parsFunc)
@@ -251,7 +280,8 @@ main:
 			if cerr != nil {
 				return ``, gas, cerr
 			}
-			stack[top] = int64(uintptr(unsafe.Pointer(&result)))
+			rt.Strings = append(rt.Strings, result)
+			stack[top] = int64(len(rt.Strings) - 1)
 		case LOADPARS:
 			for j := 0; j < (len(params) >> 1); j++ {
 				Vars[params[j<<1]] = params[(j<<1)+1]
@@ -267,10 +297,10 @@ main:
 				top--
 			}
 		case RETURN:
-			switch code[i+1] {
+			switch code[i+1] & 0xf {
 			case parser.VVoid: // skip result
 			case parser.VStr:
-				result = *(*string)(unsafe.Pointer(uintptr(stack[top])))
+				result = rt.Strings[stack[top]]
 			case parser.VInt:
 				result = fmt.Sprint(stack[top])
 			case parser.VBool:
@@ -279,8 +309,10 @@ main:
 				} else {
 					result = `true`
 				}
+			case parser.VArr:
+				result = fmt.Sprintf(`%x`, code[i+1]) + fmt.Sprint(rt.Objects[stack[top]])
 			default:
-				result = fmt.Sprint(stack[top])
+				result = fmt.Sprint(rt.Objects[stack[top]])
 			}
 			break main
 		case RETFUNC:
@@ -298,12 +330,15 @@ main:
 			}
 		case ADDSTR:
 			top--
-			dstr := *(*string)(unsafe.Pointer(uintptr(stack[top]))) +
-				*(*string)(unsafe.Pointer(uintptr(stack[top+1])))
-			stack[top] = int64(uintptr(unsafe.Pointer(&dstr)))
+			rt.Strings = append(rt.Strings, rt.Strings[stack[top]]+rt.Strings[stack[top+1]])
+			stack[top] = int64(len(rt.Strings) - 1)
 		case ASSIGNADDSTR:
-			pvar := (*string)(unsafe.Pointer(uintptr(*(*int64)(unsafe.Pointer(uintptr(stack[top-1]))))))
-			*pvar += *(*string)(unsafe.Pointer(uintptr(stack[top])))
+			ind := *(*int64)(unsafe.Pointer(uintptr(stack[top-1])))
+			rt.Strings[ind] += rt.Strings[stack[top]]
+			top -= 2
+		case APPENDARR:
+			ind := *(*int64)(unsafe.Pointer(uintptr(stack[top-1])))
+			rt.Objects[ind] = append(rt.Objects[ind].([]int64), stack[top])
 			top -= 2
 		case PUSH64:
 			i += 4

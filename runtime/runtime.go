@@ -45,6 +45,7 @@ const (
 	NOT          // unary logical not
 	ADDSTR       // str+str
 	ASSIGNADDSTR // vars += str
+	APPENDARR    // arr += item
 	PUSH64       // + int64
 	DATA         // +uint16 size of data + data
 )
@@ -82,6 +83,8 @@ type Contract struct {
 type Runtime struct {
 	//	Vars      []int64
 	Contracts *[]*Contract
+	Strings   []string
+	Objects   []interface{}
 }
 
 // NewRuntime creates a new runtime
@@ -89,5 +92,7 @@ func NewRuntime(Contracts *[]*Contract) *Runtime {
 	return &Runtime{
 		//		Vars:      make([]int64, 0, 100),
 		Contracts: Contracts,
+		Strings:   make([]string, 0, 8),
+		Objects:   make([]interface{}, 0, 8),
 	}
 }
