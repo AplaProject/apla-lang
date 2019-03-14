@@ -53,6 +53,7 @@ const (
 	ADDSTR       // str+str
 	ASSIGNADDSTR // vars += str
 	APPENDARR    // arr += item
+	GETINDEX     // var[]
 	PUSH64       // + int64
 	DATA         // +uint16 size of data + data
 )

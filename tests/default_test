@@ -1,3 +1,54 @@
+contract arrArrInt { 
+    arr.int b
+    b += 3
+    b += 4
+    arr.arr.int c 
+    c += b
+    c += b
+    b += 5
+    return c[0][0] + 2*c[0][1] + 3*c[1][0] + 4*c[1][1] + c[0][2] +  c[1][2]
+}
+==== 46
+contract arrArrStrOut { 
+    arr.int bip
+    bip += 1
+    return bip[0] + bip[1]
+}
+==== index out of range 1 >= 1
+contract arrArrIND { 
+    func get() arr {
+        arr b
+        b += `q`
+        b += `w`
+        return b
+    }
+    arr c = get()
+    return c[1] + c[0] + c[1]
+}
+==== wqw
+contract arrArrStrb { 
+    arr.int bip
+    return bip[true]
+}
+==== arrArrStrb 3:20: Unexpected type bool of expression; expecting int
+contract arrArrStrb { 
+    arr.int b
+    return b[0][1]
+}
+==== arrArrStrb 3:15: Type int doesn't support indexing
+contract arrArrStra { 
+    int b
+    return b[0]
+}
+==== arrArrStra 3:15: Type int doesn't support indexing
+contract arrArrStra { 
+    return a[1]
+}
+==== arrArrStra 2:15: Variable a hasn't been defined
+contract arrArrStrz { 
+    arr.arr.arr.arr a
+}
+==== arrArrStrz 2:5: Invalid type
 contract arrArrStr { 
     arr.arr a
     int i

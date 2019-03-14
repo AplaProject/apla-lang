@@ -22,6 +22,7 @@ const (
 	TCallContract
 	TContractParams
 	TType
+	TGetIndex
 )
 
 const (
@@ -53,6 +54,12 @@ type NVarValue struct {
 type NWhile struct {
 	Cond *Node
 	Body *Node
+}
+
+// NGetIndex - getting index
+type NGetIndex struct {
+	Name    string
+	Indexes []*Node
 }
 
 // NFunc - function
@@ -325,6 +332,8 @@ func newValue(value interface{}, l yyLexer) *Node {
 		vtype = VInt
 	case string:
 		vtype = VStr
+	case bool:
+		vtype = VBool
 	}
 	return setPos(&Node{
 		Type:   TValue,
@@ -376,6 +385,21 @@ func newGetVar(name string, l yyLexer) *Node {
 			Name: name,
 		},
 	}, l)
+}
+
+func newIndex(name string, index *Node, l yyLexer) *Node {
+	return setPos(&Node{
+		Type: TGetIndex,
+		Value: &NGetIndex{
+			Name:    name,
+			Indexes: []*Node{index},
+		},
+	}, l)
+}
+
+func addIndex(left *Node, index *Node, l yyLexer) *Node {
+	left.Value.(*NGetIndex).Indexes = append(left.Value.(*NGetIndex).Indexes, index)
+	return left
 }
 
 func newUnary(operand *Node, oper int, l yyLexer) *Node {

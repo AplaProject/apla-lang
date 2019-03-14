@@ -21,6 +21,7 @@ func setResult(l yyLexer, v *Node) {
 %token<s> IDENT  // foobar
 %token<s> CALL  // foobar(
 %token<s> CALLCONTRACT  // @foobar(
+%token<s> INDEX  // foobar[
 %token<i> INT    // 314
 %token<s> STRING  // "string"
 %token<s> QSTRING  // `string`
@@ -35,8 +36,8 @@ func setResult(l yyLexer, v *Node) {
 %token RPAREN  // )
 %token LBRACE  // {
 %token RBRACE  // }
-%token LBRAKET // [
-%token RBRAKET // ]
+%token LBRACKET // [
+%token RBRACKET // ]
 %token QUESTION // ?
 %token DOT   // .
 
@@ -101,6 +102,8 @@ func setResult(l yyLexer, v *Node) {
 %type <n> cntparams
 %type <n> contract_body
 %type <n> contract_declaration
+%type <n> index
+
 
 %left AND 
 %left OR
@@ -151,6 +154,10 @@ cntparams
 var 
     : IDENT { $$ = newVarValue($1, yylex); }
 
+index 
+    : INDEX expr RBRACKET { $$ = newIndex($1, $2, yylex);}
+    | index LBRACKET expr RBRACKET { $$ = addIndex($1, $3, yylex);}
+
 else 
    : /*empty*/ {$$ = nil}
    | ELSE LBRACE statements RBRACE { $$ = $3 }
@@ -190,6 +197,7 @@ expr
     | FALSE { $$ = newValue(false, yylex);}
     | CALL params RPAREN { $$ = newCallFunc($1, $2, yylex);}
     | CALLCONTRACT cntparams RPAREN { $$ = newCallContract($1, $2, yylex);}
+    | index { $$ = $1}
     | IDENT { $$ = newGetVar($1, yylex);}
     | QUESTION LPAREN expr COMMA expr COMMA expr RPAREN { $$ = newQuestion($3, $5, $7, yylex);}
     | expr MUL expr { $$ = newBinary($1, $3, MUL, yylex); }

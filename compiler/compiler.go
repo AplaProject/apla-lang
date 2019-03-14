@@ -456,6 +456,32 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 		}
 		cmpl.Append(rt.CALLCONTRACT, rt.Bcode(ind))
 		node.Result = parser.VStr
+	case parser.TGetIndex:
+		nGetIndex := node.Value.(*parser.NGetIndex)
+		name := nGetIndex.Name
+		if vinfo, ok = cmpl.Contract.Vars[name]; !ok {
+			return cmpl.ErrorParam(node, errVarUnknown, name)
+		}
+		cmpl.Append(rt.GETVAR, rt.Bcode(vinfo.Index))
+		itype := uint32(vinfo.Type)
+		var outtype, subtype uint32
+		for _, item := range nGetIndex.Indexes {
+			outtype, subtype = parseType(itype)
+			switch outtype {
+			case parser.VArr:
+				if item.Result != parser.VInt {
+					return cmpl.ErrorParam(node, errIndexInt, Type2Str(item.Result))
+				}
+			default:
+				return cmpl.ErrorParam(node, errIndexType, Type2Str(itype))
+			}
+			if err = nodeToCode(item, cmpl); err != nil {
+				return err
+			}
+			cmpl.Append(rt.GETINDEX)
+			itype = subtype
+		}
+		node.Result = itype
 	default:
 		fmt.Println(`Ooops`)
 		return cmpl.Error(node, errNodeType)

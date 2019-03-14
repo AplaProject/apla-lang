@@ -46,13 +46,6 @@ func parseType(intype uint32) (outtype, subtype uint32) {
 	if intype > 0xf {
 		subtype = intype >> 4
 		outtype = intype & 0xf
-		/*		for i := uint(12); i > 0; i -= 4 {
-				if (intype & (0xf << i)) != 0 {
-					subtype = intype >> i
-					outtype = intype & ^(0xf << i)
-					break
-				}
-			}*/
 	}
 	return
 }
@@ -66,6 +59,11 @@ func (cmpl *compiler) findBinary(binary *parser.NBinary) (rt.Bcode, uint32) {
 		outtype, subtype := parseType(binary.Left.Result)
 		if outtype&0xf == parser.VArr && subtype == binary.Right.Result {
 			return rt.APPENDARR, parser.VVoid
+		}
+	}
+	if binary.Oper == parser.ASSIGN && (binary.Left.Result&0xf == parser.VArr) {
+		if binary.Left.Result == binary.Right.Result {
+			return rt.ASSIGNINT, parser.VVoid
 		}
 	}
 	return rt.NOP, 0

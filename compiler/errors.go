@@ -27,6 +27,8 @@ const (
 	errContractNoParam   = `Contract doesn't have %s parameter`
 	errParamType         = `Unexpected type of the parameter; expecting %s`
 	errInvalidType       = `Invalid type`
+	errIndexType         = `Type %s doesn't support indexing`
+	errIndexInt          = `Unexpected type %s of expression; expecting int`
 )
 
 func (cmpl *compiler) Error(node *parser.Node, text string) error {

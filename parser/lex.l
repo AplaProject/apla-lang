@@ -23,6 +23,7 @@ float			{int}\.[0-9]*
 identifier		{letter}({letter}|{digit})*
 callcontract    @{identifier}\(
 call    		{identifier}\(
+index           {identifier}\[
 string 			\"([^\\"]|\\.)*\"
 qstring 		`([^`])*`
 letter			[_a-zA-Z]|{unicodeLetter}
@@ -53,8 +54,8 @@ unicodeLetter	\x80
 \)				return l.char(RPAREN)
 \{[ \t]*\n?  	return l.char(LBRACE)
 \}		return l.char(RBRACE)
-\[[ \t]*\n?		return l.char(LBRAKET)
-\]				return l.char(RBRAKET)
+\[[ \t]*\n?		return l.char(LBRACKET)
+\]				return l.char(RBRACKET)
 \n				return l.char(NEWLINE)
 ;				return l.char(NEWLINE)
 
@@ -131,6 +132,11 @@ arr			    return l.char(T_ARR)
 					lval.s = string(l.TokenBytes(nil))
 					lval.s = lval.s[:len(lval.s)-1]
 					return l.char(CALLCONTRACT)
+				}
+{index}	{
+					lval.s = string(l.TokenBytes(nil))
+					lval.s = lval.s[:len(lval.s)-1]
+					return l.char(INDEX)
 				}
 
 %%
