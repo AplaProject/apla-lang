@@ -1,5 +1,12 @@
 package runtime
 
+import (
+	"fmt"
+	"strings"
+
+	"github.com/AplaProject/apla-lang/parser"
+)
+
 const (
 	NOP          = iota
 	PUSH16       // + int16
@@ -95,4 +102,31 @@ func NewRuntime(Contracts *[]*Contract) *Runtime {
 		Strings:   make([]string, 0, 8),
 		Objects:   make([]interface{}, 0, 8),
 	}
+}
+
+func print(rt *Runtime, val int64, vtype int64) string {
+	var result string
+	switch vtype & 0xf {
+	case parser.VVoid: // skip result
+	case parser.VStr:
+		result = rt.Strings[val]
+	case parser.VInt:
+		result = fmt.Sprint(val)
+	case parser.VBool:
+		if val == 0 {
+			result = `false`
+		} else {
+			result = `true`
+		}
+	case parser.VArr:
+		items := make([]string, len(rt.Objects[val].([]int64)))
+		result = `[`
+		for i, item := range rt.Objects[val].([]int64) {
+			items[i] = print(rt, item, vtype>>4)
+		}
+		result += strings.Join(items, ` `) + `]`
+	default:
+		result = fmt.Sprint(val)
+	}
+	return result
 }

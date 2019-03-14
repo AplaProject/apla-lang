@@ -216,25 +216,39 @@ func newType(itype int64, l yyLexer) *Node {
 
 func addSubtype(tNode *Node, ichild int64, l yyLexer) *Node {
 	itype := tNode.Value.(*NType).Type
-	var i int
-	if (itype >> 12) == 0 {
-		for i = 1; i < 4; i++ {
-			if tNode.Value.(*NType).Def {
-				itype &= 0xf
-				tNode.Value.(*NType).Def = false
+	var (
+		i uint64
+	)
+	if tNode.Value.(*NType).Def {
+		for i = 12; i > 0; i -= 4 {
+			if (itype >> i) != 0 {
+				itype &= ^(0xf << i)
+				break
 			}
-			shift := uint64(i * 4)
-			if itype&(0xf<<shift) == 0 {
-				if (itype >> (shift - 4)) != VArr {
+		}
+		tNode.Value.(*NType).Def = false
+	}
+	if (itype >> 12) == 0 {
+		for i = 4; i < 16; i += 4 {
+			if itype&(0xf<<i) == 0 {
+				if (itype >> (i - 4)) != VArr {
 					itype = VVoid
 				} else {
-					itype |= ichild << shift
+					itype |= ichild << i
 				}
 				break
 			}
 		}
 	} else {
 		itype = VVoid
+	}
+	if itype != VVoid && ichild == VArr {
+		if itype&0xf000 != 0 {
+			itype = VVoid
+		} else {
+			tNode.Value.(*NType).Def = true
+			itype |= VStr << (i + 4)
+		}
 	}
 	tNode.Value.(*NType).Type = itype
 	return tNode

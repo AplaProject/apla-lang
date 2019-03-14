@@ -90,7 +90,7 @@ main:
 			i += 2
 		case INITVARS:
 			count := int64(code[i+1])
-			newCount()
+			//			newCount()
 			for iVar := int64(0); iVar < count; iVar++ {
 				var v int64
 				switch code[i+2+iVar] & 0xf {
@@ -108,7 +108,7 @@ main:
 			i++
 			count := int64(code[i])
 			Vars = Vars[:count]
-			delCount(false)
+			//delCount(false)
 		case ADDINT:
 			top--
 			stack[top] += stack[top+1]
@@ -297,23 +297,7 @@ main:
 				top--
 			}
 		case RETURN:
-			switch code[i+1] & 0xf {
-			case parser.VVoid: // skip result
-			case parser.VStr:
-				result = rt.Strings[stack[top]]
-			case parser.VInt:
-				result = fmt.Sprint(stack[top])
-			case parser.VBool:
-				if stack[top] == 0 {
-					result = `false`
-				} else {
-					result = `true`
-				}
-			case parser.VArr:
-				result = fmt.Sprintf(`%x`, code[i+1]) + fmt.Sprint(rt.Objects[stack[top]])
-			default:
-				result = fmt.Sprint(rt.Objects[stack[top]])
-			}
+			result = print(rt, stack[top], int64(code[i+1]))
 			break main
 		case RETFUNC:
 			Vars = Vars[:calls[coff-1]]

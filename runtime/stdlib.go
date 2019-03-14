@@ -30,7 +30,6 @@ func LenArr(rt *Runtime, i int64) int64 {
 // LenStr returns the length of the string
 func LenStr(rt *Runtime, i int64) int64 {
 	return int64(len(rt.Strings[i]))
-	//	return int64(len(*(*string)(unsafe.Pointer(uintptr(ptr)))))
 }
 
 // StrInt converts the integer number to the string

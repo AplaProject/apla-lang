@@ -1,11 +1,27 @@
+contract arrArrStr { 
+    arr.arr a
+    int i
+    while i < 3 {
+        arr b
+        int j
+        while j < 3 {
+            b += str(j+7+i)
+            j += 1
+        }
+        a += b
+        i += 1
+    }
+    return a
+}
+==== [[7 8 9] [8 9 10] [9 10 11]]
 contract arrStr1 { 
     arr a
-    a += "10"
-    a += "123"
+    a += "17"
+    a += "AXв"
     a += str(Len(a))
     return a
 }
-==== [10 123 2]
+==== [17 AXв 2]
 contract arrInt { 
     arr.int a
     a += 10
