@@ -1,3 +1,84 @@
+contract arrArrtOut { 
+    arr bip
+    str s = `Ooops`
+    str a = `x`
+    bip += s
+    bip += a
+    bip[0] = `0`
+    s = `1`
+    a = s
+    return bip[0] + bip[1] + s + a
+}
+==== 0x11
+contract arrArrArrOut { 
+    arr.arr bip
+    arr a1 a2
+    bip += a1
+    a1 += `qqq`
+    a2 += `fff`
+    bip += a2
+    a2 += `zzz`
+    bip[1][1] = `finish`
+    bip[0][0] = `start`
+    a1 += `ok`
+    return bip
+}
+==== [[start ok] [fff finish]]
+contract arrArrISOut { 
+    arr bip
+    str s = `123`
+    bip += `ppp`
+    bip += `qqq`
+    bip[0] = bip[0] + `22`
+    bip[1] = s
+    return bip
+}
+==== [ppp22 123]
+contract arrArrIndaOutes { 
+    arr.int bip
+    bip[-3] = 2
+}
+==== index out of range index:-3 len:0
+contract arrArrIndaOutzz { 
+    arr.int bip
+    return bip[-5]
+}
+==== index out of range index:-5 len:0
+contract arrArrIndaOut { 
+    arr.int bip
+    int ind = 0
+    bip += 10
+    return bip[ind]
+}
+==== 10
+contract arrArrIndOut { 
+    arr.int bip
+    bip += 1
+    bip[10] = 2
+}
+==== index out of range index:10 len:1
+contract assignIndex { 
+    arr.int iarr
+    iarr += 1
+    iarr += 2
+    iarr[0] = 3
+    iarr[1] = 4
+    return iarr
+}
+==== [3 4]
+contract arrArrs { 
+    arr iarr
+    str b = `zxcv`
+    str a = `asdf`
+    iarr += a
+    iarr += b
+    a = `rtyu`
+    b = a
+    a = `qwer`
+    iarr += b
+    return iarr
+}
+==== [asdf zxcv rtyu]
 contract arrArrInt { 
     arr.int b
     b += 3
@@ -14,7 +95,7 @@ contract arrArrStrOut {
     bip += 1
     return bip[0] + bip[1]
 }
-==== index out of range 1 >= 1
+==== index out of range index:1 len:1
 contract arrArrIND { 
     func get() arr {
         arr b

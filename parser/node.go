@@ -23,6 +23,7 @@ const (
 	TContractParams
 	TType
 	TGetIndex
+	TSetIndex
 )
 
 const (

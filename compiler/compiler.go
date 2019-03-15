@@ -149,6 +149,9 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 		}
 	case parser.TBinary:
 		nBinary := node.Value.(*parser.NBinary)
+		if nBinary.Left.Type == parser.TGetIndex && nBinary.Oper == parser.ASSIGN {
+			nBinary.Left.Type = parser.TSetIndex
+		}
 		if err = nodeToCode(nBinary.Left, cmpl); err != nil {
 			return err
 		}
@@ -467,6 +470,9 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 		var outtype, subtype uint32
 		for _, item := range nGetIndex.Indexes {
 			outtype, subtype = parseType(itype)
+			if err = nodeToCode(item, cmpl); err != nil {
+				return err
+			}
 			switch outtype {
 			case parser.VArr:
 				if item.Result != parser.VInt {
@@ -475,10 +481,37 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 			default:
 				return cmpl.ErrorParam(node, errIndexType, Type2Str(itype))
 			}
+			cmpl.Append(rt.GETINDEX)
+			itype = subtype
+		}
+		node.Result = itype
+	case parser.TSetIndex:
+		nGetIndex := node.Value.(*parser.NGetIndex)
+		name := nGetIndex.Name
+		if vinfo, ok = cmpl.Contract.Vars[name]; !ok {
+			return cmpl.ErrorParam(node, errVarUnknown, name)
+		}
+		cmpl.Append(rt.GETVAR, rt.Bcode(vinfo.Index))
+		itype := uint32(vinfo.Type)
+		var outtype, subtype uint32
+		for i, item := range nGetIndex.Indexes {
+			outtype, subtype = parseType(itype)
 			if err = nodeToCode(item, cmpl); err != nil {
 				return err
 			}
-			cmpl.Append(rt.GETINDEX)
+			switch outtype {
+			case parser.VArr:
+				if item.Result != parser.VInt {
+					return cmpl.ErrorParam(node, errIndexInt, Type2Str(item.Result))
+				}
+			default:
+				return cmpl.ErrorParam(node, errIndexType, Type2Str(itype))
+			}
+			if i == len(nGetIndex.Indexes)-1 {
+				cmpl.Append(rt.SETINDEX)
+			} else {
+				cmpl.Append(rt.GETINDEX)
+			}
 			itype = subtype
 		}
 		node.Result = itype

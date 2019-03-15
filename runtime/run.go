@@ -14,7 +14,7 @@ const (
 	errDivZero  = `integer divide by zero`
 	errCommand  = `unknown command %d`
 	errGasLimit = `gas is over`
-	errIndexOut = `index out of range %d >= %d`
+	errIndexOut = `index out of range index:%d len:%d`
 )
 
 type objCount struct {
@@ -327,10 +327,17 @@ main:
 			top -= 2
 		case GETINDEX:
 			arr := rt.Objects[stack[top-1]].([]int64)
-			if stack[top] >= int64(len(arr)) {
+			if stack[top] >= int64(len(arr)) || stack[top] < 0 {
 				return ``, gas, fmt.Errorf(errIndexOut, stack[top], len(arr))
 			}
 			stack[top-1] = rt.Objects[stack[top-1]].([]int64)[stack[top]]
+			top--
+		case SETINDEX:
+			arr := rt.Objects[stack[top-1]].([]int64)
+			if stack[top] >= int64(len(arr)) || stack[top] < 0 {
+				return ``, gas, fmt.Errorf(errIndexOut, stack[top], len(arr))
+			}
+			stack[top-1] = int64(uintptr(unsafe.Pointer(&rt.Objects[stack[top-1]].([]int64)[stack[top]])))
 			top--
 		case PUSH64:
 			i += 4

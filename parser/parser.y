@@ -175,6 +175,7 @@ statement
     | var MUL_ASSIGN expr { $$ = newBinary($1, $3, MUL_ASSIGN, yylex); }
     | var DIV_ASSIGN expr { $$ = newBinary($1, $3, DIV_ASSIGN, yylex); }
     | var MOD_ASSIGN expr { $$ = newBinary($1, $3, MOD_ASSIGN, yylex); } 
+    | index ASSIGN expr { $$ = newBinary($1, $3, ASSIGN, yylex) }
     | type IDENT ASSIGN expr { $$ = newBinary( newVarDecl( $1, []string{$2}, yylex ), $4, ASSIGN, yylex) }
     | type ident_list { $$ = newVarDecl( $1, $2, yylex )}
     | IF expr LBRACE statements RBRACE elif else { $$ = newIf( $2, $4, $6, $7, yylex )}
