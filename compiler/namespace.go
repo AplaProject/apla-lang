@@ -37,7 +37,7 @@ var (
 		{rt.AND, parser.VBool, parser.AND, parser.VBool, parser.VBool},               // bool && bool
 		{rt.OR, parser.VBool, parser.OR, parser.VBool, parser.VBool},                 // bool || bool
 		{rt.ADDSTR, parser.VStr, parser.ADD, parser.VStr, parser.VStr},               // str+str
-		{rt.ASSIGNINT, parser.VVoid, parser.ASSIGN, parser.VStr, parser.VStr},        // str = str
+		{rt.ASSIGNSTR, parser.VVoid, parser.ASSIGN, parser.VStr, parser.VStr},        // str = str
 		{rt.ASSIGNADDSTR, parser.VVoid, parser.ADD_ASSIGN, parser.VStr, parser.VStr}, // str += str
 	}
 )

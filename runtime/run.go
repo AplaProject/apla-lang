@@ -223,6 +223,10 @@ main:
 		case ASSIGNINT:
 			*(*int64)(unsafe.Pointer(uintptr(stack[top-1]))) = stack[top]
 			top -= 2
+		case ASSIGNSTR:
+			rt.Strings = append(rt.Strings, rt.Strings[stack[top]])
+			*(*int64)(unsafe.Pointer(uintptr(stack[top-1]))) = int64(len(rt.Strings) - 1)
+			top -= 2
 		case ASSIGNADDINT:
 			*(*int64)(unsafe.Pointer(uintptr(stack[top-1]))) += stack[top]
 			top -= 2

@@ -35,6 +35,7 @@ const (
 	JZE          // + int16   jump if top equals zero with the offset
 	JNZ          // + int16   jump if top does not equal zero with the offset
 	ASSIGNINT    // vars = int / vars = str
+	ASSIGNSTR    // vars = str
 	ASSIGNADDINT // vars += int
 	ASSIGNSUBINT // vars -= int
 	ASSIGNMULINT // vars *= int

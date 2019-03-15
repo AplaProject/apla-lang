@@ -1,3 +1,20 @@
+contract myeqCall { 
+    arr bipq
+    str s = `>>`
+    bipq += `000`
+    bipq[0] = s
+    s += `<<`
+    bipq += s
+    return bipq
+}
+==== [>> >><<]
+contract myStrCall { 
+    str s = `>>`
+    str a = s
+    s += `===`
+    return a + s
+}
+==== >>>>===
 contract myArrCall { 
     arr bipq
     str s = `>>`
