@@ -448,13 +448,13 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 				if vinfo, vok = cnt.Params[ipar.Name]; !vok {
 					return cmpl.ErrorParam(node, errContractNoParam, ipar.Name)
 				}
-				if uint32(vinfo.Type) != ipar.Expr.Result {
-					return cmpl.ErrorParam(node, errParamType, Type2Str(uint32(vinfo.Type)))
-				}
 				if err = nodeToCode(ipar.Expr, cmpl); err != nil {
 					return err
 				}
-				cmpl.Append(rt.PARCONTRACT, rt.Bcode(vinfo.Index))
+				if uint32(vinfo.Type) != ipar.Expr.Result {
+					return cmpl.ErrorParam(node, errParamType, Type2Str(uint32(vinfo.Type)))
+				}
+				cmpl.Append(rt.PARCONTRACT, rt.Bcode(vinfo.Index), rt.Bcode(vinfo.Type))
 			}
 		}
 		cmpl.Append(rt.CALLCONTRACT, rt.Bcode(ind))

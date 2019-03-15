@@ -1,3 +1,26 @@
+contract myArrCall { 
+    arr bipq
+    str s = `>>`
+    bipq += `000`
+    bipq += `111`
+    bipq += @myArr(bip: bipq, S: s)
+    bipq += s
+    return bipq
+}
+==== [000 111 6 >>]
+contract myArr { 
+    data {
+       arr bip
+       str S
+    }
+    if Len(bip) > 0 {
+        bip[0] = `checked`
+    }
+    S += `<<`
+    bip += `sent`
+    return 2*Len(bip)
+}
+==== 2
 contract arrArrtOut { 
     arr bip
     str s = `Ooops`

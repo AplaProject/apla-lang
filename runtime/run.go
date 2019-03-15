@@ -29,6 +29,7 @@ func (rt *Runtime) Run(code []Bcode, params []int64, gasLimit int64) (string, in
 		result            string
 		data              []byte
 		counts            []objCount
+		isParContract     bool
 	)
 	length := int64(len(code))
 	if length == 0 {
@@ -276,6 +277,11 @@ main:
 			i++
 			top++
 			result, cgas, cerr := rt.Run((*rt.Contracts)[code[i]].Code, pars, gasLimit-gas)
+			if isParContract {
+				delCount(false)
+				isParContract = false
+			}
+
 			pars = pars[:0]
 			gas -= cgas
 			if cerr != nil {
@@ -288,8 +294,15 @@ main:
 				Vars[params[j<<1]] = params[(j<<1)+1]
 			}
 		case PARCONTRACT:
-			i++
-			pars = append(pars, int64(code[i]), stack[top])
+			if !isParContract {
+				newCount()
+				isParContract = true
+			}
+			i += 2
+			if code[i]&0xf == parser.VArr || code[i]&0xf == parser.VStr { // Create a copy of the object
+				stack[top] = copy(rt, int64(code[i]), stack[top])
+			}
+			pars = append(pars, int64(code[i-1]), stack[top])
 			top--
 		case GETPARAMS:
 			i++

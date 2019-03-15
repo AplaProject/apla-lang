@@ -132,3 +132,21 @@ func print(rt *Runtime, val int64, vtype int64) string {
 	}
 	return result
 }
+
+func copy(rt *Runtime, vtype int64, index int64) int64 {
+	switch vtype & 0xf {
+	case parser.VStr:
+		rt.Strings = append(rt.Strings, rt.Strings[index])
+		return int64(len(rt.Strings) - 1)
+	case parser.VArr:
+		subtype := (vtype >> 4) & 0xf
+		src := rt.Objects[index].([]int64)
+		iarr := make([]int64, len(src))
+		for i, val := range src {
+			iarr[i] = copy(rt, subtype, val)
+		}
+		rt.Objects = append(rt.Objects, iarr)
+		return int64(len(rt.Objects) - 1)
+	}
+	return index
+}
