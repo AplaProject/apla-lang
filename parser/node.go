@@ -32,6 +32,7 @@ const (
 	VBool // bool
 	VStr  // str
 	VArr  // arr
+	VMap  // map
 )
 
 // NVar contains type and name of variable or parameter
@@ -209,7 +210,7 @@ func newParam(expr *Node, l yyLexer) *Node {
 
 func newType(itype int64, l yyLexer) *Node {
 	var def bool
-	if itype == VArr {
+	if itype == VArr || itype == VMap {
 		def = true
 		itype |= VStr << 4
 	}
@@ -239,7 +240,7 @@ func addSubtype(tNode *Node, ichild int64, l yyLexer) *Node {
 	if (itype >> 12) == 0 {
 		for i = 4; i < 16; i += 4 {
 			if itype&(0xf<<i) == 0 {
-				if (itype >> (i - 4)) != VArr {
+				if (itype>>(i-4)) != VArr && (itype>>(i-4)) != VMap {
 					itype = VVoid
 				} else {
 					itype |= ichild << i
@@ -250,7 +251,7 @@ func addSubtype(tNode *Node, ichild int64, l yyLexer) *Node {
 	} else {
 		itype = VVoid
 	}
-	if itype != VVoid && ichild == VArr {
+	if itype != VVoid && (ichild == VArr || ichild == VMap) {
 		if itype&0xf000 != 0 {
 			itype = VVoid
 		} else {

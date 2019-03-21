@@ -61,9 +61,14 @@ func (cmpl *compiler) findBinary(binary *parser.NBinary) (rt.Bcode, uint32) {
 			return rt.APPENDARR, parser.VVoid
 		}
 	}
-	if binary.Oper == parser.ASSIGN && (binary.Left.Result&0xf == parser.VArr) {
+	if binary.Oper == parser.ASSIGN && (binary.Left.Result&0xf == parser.VArr ||
+		binary.Left.Result&0xf == parser.VMap) {
 		if binary.Left.Result == binary.Right.Result {
 			return rt.ASSIGNINT, parser.VVoid
+		}
+		outtype, subtype := parseType(binary.Left.Result)
+		if outtype&0xf == parser.VMap && subtype == binary.Right.Result {
+			return rt.ASSIGNSETMAP, parser.VVoid
 		}
 	}
 	return rt.NOP, 0
@@ -153,6 +158,8 @@ main:
 			ret += `str`
 		case parser.VArr:
 			ret += `arr`
+		case parser.VMap:
+			ret += `map`
 		default:
 			break main
 		}

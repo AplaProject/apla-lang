@@ -2,6 +2,7 @@ package runtime
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 
 	"github.com/AplaProject/apla-lang/parser"
@@ -56,6 +57,9 @@ const (
 	APPENDARR    // arr += item
 	GETINDEX     // var[]
 	SETINDEX     // var[]
+	GETMAP       // var[key]
+	SETMAP       // var[key]
+	ASSIGNSETMAP // var[key] = value
 	PUSH64       // + int64
 	DATA         // +uint16 size of data + data
 )
@@ -128,6 +132,21 @@ func print(rt *Runtime, val int64, vtype int64) string {
 			items[i] = print(rt, item, vtype>>4)
 		}
 		result += strings.Join(items, ` `) + `]`
+	case parser.VMap:
+		imap := rt.Objects[val].(map[string]int64)
+		items := make([]string, len(imap))
+		result = `[`
+		keys := make([]string, len(imap))
+		i := 0
+		for key := range imap {
+			keys[i] = key
+			i++
+		}
+		sort.Strings(keys)
+		for i, key := range keys {
+			items[i] = key + `: ` + print(rt, imap[key], vtype>>4)
+		}
+		result += strings.Join(items, ` `) + `]`
 	default:
 		result = fmt.Sprint(val)
 	}
@@ -147,6 +166,15 @@ func copy(rt *Runtime, vtype int64, index int64) int64 {
 			iarr[i] = copy(rt, subtype, val)
 		}
 		rt.Objects = append(rt.Objects, iarr)
+		return int64(len(rt.Objects) - 1)
+	case parser.VMap:
+		subtype := (vtype >> 4) & 0xf
+		src := rt.Objects[index].(map[string]int64)
+		imap := make(map[string]int64)
+		for key, val := range src {
+			imap[key] = copy(rt, subtype, val)
+		}
+		rt.Objects = append(rt.Objects, imap)
 		return int64(len(rt.Objects) - 1)
 	}
 	return index

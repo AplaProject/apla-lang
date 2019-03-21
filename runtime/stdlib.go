@@ -17,6 +17,7 @@ type EmbedFunc struct {
 var (
 	StdLib = []EmbedFunc{
 		{LenArr, 1, `Len`, []uint32{parser.VArr}, parser.VInt}, // Len(arr) int
+		{LenMap, 1, `Len`, []uint32{parser.VMap}, parser.VInt}, // Len(map) int
 		{LenStr, 1, `Len`, []uint32{parser.VStr}, parser.VInt}, // Len(str) int
 		{StrInt, 1, `str`, []uint32{parser.VInt}, parser.VStr}, // str(int) str
 	}
@@ -25,6 +26,11 @@ var (
 // LenArr returns the length of the array
 func LenArr(rt *Runtime, i int64) int64 {
 	return int64(len(rt.Objects[i].([]int64)))
+}
+
+// LenMap returns the length of the map
+func LenMap(rt *Runtime, i int64) int64 {
+	return int64(len(rt.Objects[i].(map[string]int64)))
 }
 
 // LenStr returns the length of the string

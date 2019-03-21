@@ -473,15 +473,21 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 			if err = nodeToCode(item, cmpl); err != nil {
 				return err
 			}
+			cmdInd := rt.Bcode(rt.GETINDEX)
 			switch outtype {
 			case parser.VArr:
 				if item.Result != parser.VInt {
 					return cmpl.ErrorParam(node, errIndexInt, Type2Str(item.Result))
 				}
+			case parser.VMap:
+				if item.Result != parser.VStr {
+					return cmpl.ErrorParam(node, errIndexStr, Type2Str(item.Result))
+				}
+				cmdInd = rt.GETMAP
 			default:
 				return cmpl.ErrorParam(node, errIndexType, Type2Str(itype))
 			}
-			cmpl.Append(rt.GETINDEX)
+			cmpl.Append(cmdInd)
 			itype = subtype
 		}
 		node.Result = itype
@@ -499,22 +505,28 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 			if err = nodeToCode(item, cmpl); err != nil {
 				return err
 			}
+			var formap rt.Bcode
 			switch outtype {
 			case parser.VArr:
 				if item.Result != parser.VInt {
 					return cmpl.ErrorParam(node, errIndexInt, Type2Str(item.Result))
 				}
+			case parser.VMap:
+				if item.Result != parser.VStr {
+					return cmpl.ErrorParam(node, errIndexStr, Type2Str(item.Result))
+				}
+				formap = 2
 			default:
 				return cmpl.ErrorParam(node, errIndexType, Type2Str(itype))
 			}
 			if i == len(nGetIndex.Indexes)-1 {
-				cmpl.Append(rt.SETINDEX)
+				cmpl.Append(rt.SETINDEX + formap)
 			} else {
-				cmpl.Append(rt.GETINDEX)
+				cmpl.Append(rt.GETINDEX + formap)
 			}
 			itype = subtype
 		}
-		node.Result = itype
+		node.Result = uint32(vinfo.Type) //itype
 	default:
 		fmt.Println(`Ooops`)
 		return cmpl.Error(node, errNodeType)

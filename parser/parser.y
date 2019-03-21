@@ -82,6 +82,7 @@ func setResult(l yyLexer, v *Node) {
 %token T_BOOL   // bool
 %token T_STR  // str
 %token T_ARR  // arr
+%token T_MAP  // map
 
 %type <i> ordinaltype
 %type <n> type
@@ -121,6 +122,7 @@ ordinaltype
     | T_INT {$$ = VInt}
     | T_STR {$$ = VStr}
     | T_ARR {$$ = VArr}    
+    | T_MAP {$$ = VMap}    
     ;
 
 type

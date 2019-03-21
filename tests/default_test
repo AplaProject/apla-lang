@@ -1,5 +1,5 @@
 contract myeqCall { 
-    arr bipq
+    map bipq
     str s = `>>`
     bipq += `000`
     bipq[0] = s
@@ -16,7 +16,7 @@ contract myStrCall {
 }
 ==== >>>>===
 contract myArrCall { 
-    arr bipq
+    map bipq
     str s = `>>`
     bipq += `000`
     bipq += `111`
@@ -27,7 +27,7 @@ contract myArrCall {
 ==== [000 111 6 >>]
 contract myArr { 
     data {
-       arr bip
+       map bip
        str S
     }
     if Len(bip) > 0 {
@@ -38,8 +38,8 @@ contract myArr {
     return 2*Len(bip)
 }
 ==== 2
-contract arrArrtOut { 
-    arr bip
+contract mapArrtOut { 
+    map bip
     str s = `Ooops`
     str a = `x`
     bip += s
@@ -50,9 +50,9 @@ contract arrArrtOut {
     return bip[0] + bip[1] + s + a
 }
 ==== 0x11
-contract arrArrArrOut { 
-    arr.arr bip
-    arr a1 a2
+contract mapArrArrOut { 
+    map.map bip
+    map a1 a2
     bip += a1
     a1 += `qqq`
     a2 += `fff`
@@ -64,8 +64,8 @@ contract arrArrArrOut {
     return bip
 }
 ==== [[start ok] [fff finish]]
-contract arrArrISOut { 
-    arr bip
+contract mapArrISOut { 
+    map bip
     str s = `123`
     bip += `ppp`
     bip += `qqq`
@@ -74,107 +74,107 @@ contract arrArrISOut {
     return bip
 }
 ==== [ppp22 123]
-contract arrArrIndaOutes { 
-    arr.int bip
+contract mapArrIndaOutes { 
+    map.int bip
     bip[-3] = 2
 }
 ==== index out of range index:-3 len:0
-contract arrArrIndaOutzz { 
-    arr.int bip
+contract mapArrIndaOutzz { 
+    map.int bip
     return bip[-5]
 }
 ==== index out of range index:-5 len:0
-contract arrArrIndaOut { 
-    arr.int bip
+contract mapArrIndaOut { 
+    map.int bip
     int ind = 0
     bip += 10
     return bip[ind]
 }
 ==== 10
-contract arrArrIndOut { 
-    arr.int bip
+contract mapArrIndOut { 
+    map.int bip
     bip += 1
     bip[10] = 2
 }
 ==== index out of range index:10 len:1
 contract assignIndex { 
-    arr.int iarr
-    iarr += 1
-    iarr += 2
-    iarr[0] = 3
-    iarr[1] = 4
-    return iarr
+    map.int imap
+    imap += 1
+    imap += 2
+    imap[0] = 3
+    imap[1] = 4
+    return imap
 }
 ==== [3 4]
-contract arrArrs { 
-    arr iarr
+contract mapArrs { 
+    map imap
     str b = `zxcv`
     str a = `asdf`
-    iarr += a
-    iarr += b
+    imap += a
+    imap += b
     a = `rtyu`
     b = a
     a = `qwer`
-    iarr += b
-    return iarr
+    imap += b
+    return imap
 }
 ==== [asdf zxcv rtyu]
-contract arrArrInt { 
-    arr.int b
+contract mapArrInt { 
+    map.int b
     b += 3
     b += 4
-    arr.arr.int c 
+    map.map.int c 
     c += b
     c += b
     b += 5
     return c[0][0] + 2*c[0][1] + 3*c[1][0] + 4*c[1][1] + c[0][2] +  c[1][2]
 }
 ==== 46
-contract arrArrStrOut { 
-    arr.int bip
+contract mapArrStrOut { 
+    map.int bip
     bip += 1
     return bip[0] + bip[1]
 }
 ==== index out of range index:1 len:1
-contract arrArrIND { 
-    func get() arr {
-        arr b
+contract mapArrIND { 
+    func get() map {
+        map b
         b += `q`
         b += `w`
         return b
     }
-    arr c = get()
+    map c = get()
     return c[1] + c[0] + c[1]
 }
 ==== wqw
-contract arrArrStrb { 
-    arr.int bip
+contract mapArrStrb { 
+    map.int bip
     return bip[true]
 }
-==== arrArrStrb 3:20: Unexpected type bool of expression; expecting int
-contract arrArrStrb { 
-    arr.int b
+==== mapArrStrb 3:20: Unexpected type bool of expression; expecting int
+contract mapArrStrb { 
+    map.int b
     return b[0][1]
 }
-==== arrArrStrb 3:15: Type int doesn't support indexing
-contract arrArrStra { 
+==== mapArrStrb 3:15: Type int doesn't support indexing
+contract mapArrStra { 
     int b
     return b[0]
 }
-==== arrArrStra 3:15: Type int doesn't support indexing
-contract arrArrStra { 
+==== mapArrStra 3:15: Type int doesn't support indexing
+contract mapArrStra { 
     return a[1]
 }
-==== arrArrStra 2:15: Variable a hasn't been defined
-contract arrArrStrz { 
-    arr.arr.arr.arr a
+==== mapArrStra 2:15: Variable a hasn't been defined
+contract mapArrStrz { 
+    map.map.map.map a
 }
-==== arrArrStrz 2:5: Invalid type
-contract arrArrStr { 
-    arr.arr a
+==== mapArrStrz 2:5: Invalid type
+contract mapArrStr { 
+    map.map a
     int i
     while i < 3 {
-        arr b
+        map b
         int j
         while j < 3 {
             b += str(j+7+i)
@@ -186,44 +186,44 @@ contract arrArrStr {
     return a
 }
 ==== [[7 8 9] [8 9 10] [9 10 11]]
-contract arrStr1 { 
-    arr a
+contract mapStr1 { 
+    map a
     a += "17"
     a += "AXв"
     a += str(Len(a))
     return a
 }
 ==== [17 AXв 2]
-contract arrInt { 
-    arr.int a
+contract mapInt { 
+    map.int a
     a += 10
     a += 123
     a += Len(a)
     return a
 }
 ==== [10 123 2]
-contract arrLen { 
-    arr.int a
-    arr b
+contract mapLen { 
+    map.int a
+    map b
     a += 10
     b += "my str"
     return Len(a) + Len(b)
 }
 ==== 2
-contract arrInt { 
-    arr.int a
-    func dfunc(arr e) {}
+contract mapInt { 
+    map.int a
+    func dfunc(map e) {}
     dfunc(a)
 }
-==== arrInt 4:12: Function dfunc(arr.int) hasn't been defined
-contract arrStr { 
+==== mapInt 4:12: Function dfunc(map.int) hasn't been defined
+contract mapStr { 
     data {
-        arr Par
+        map Par
     }
-    arr a
-    arr.str d
-    func dfunc(arr e) {}
-    func b(arr.str c) str { 
+    map a
+    map.str d
+    func dfunc(map e) {}
+    func b(map.str c) str { 
         return "OK"
     }
     b(a)
@@ -231,34 +231,34 @@ contract arrStr {
     return b(Par)
 }
 ==== OK
-contract arrCNT { 
-    arr.arr.arr.int a
+contract mapCNT { 
+    map.map.map.int a
 }
 ==== 
-contract arrCNT { 
-    arr.arr.arr.arr.int a
+contract mapCNT { 
+    map.map.map.map.int a
 }
-==== arrCNT 2:5: Invalid type
-contract arrInt { 
+==== mapCNT 2:5: Invalid type
+contract mapInt { 
     func a() int.int {
     }
 }
-==== arrInt 2:14: Invalid type
-contract arrInt { 
+==== mapInt 2:14: Invalid type
+contract mapInt { 
     func a(int.int b) {
     }
 }
-==== arrInt 2:12: Invalid type
-contract arrInt { 
+==== mapInt 2:12: Invalid type
+contract mapInt { 
     data {
         int.int b
     }
 }
-==== arrInt 3:9: Invalid type
-contract arrInt { 
+==== mapInt 3:9: Invalid type
+contract mapInt { 
     int.int b
 }
-==== arrInt 2:5: Invalid type
+==== mapInt 2:5: Invalid type
 contract callName { 
     str s = `ok`
     return @myData(Name: "Only Name") + s + @myData(Value: 17)
@@ -759,3 +759,244 @@ contract {
    ==== gas $ expecting result or error text
 */
 ==== 4:3: syntax error: unexpected $end, expecting CONTRACT
+contract myeqCall { 
+    map bipq
+    str s = `>>`
+    bipq += `000`
+    bipq[0] = s
+    s += `<<`
+    bipq += s
+    return bipq
+}
+==== [>> >><<]
+contract myStrCall { 
+    str s = `>>`
+    str a = s
+    s += `===`
+    return a + s
+}
+==== >>>>===
+contract myArrCall { 
+    map bipq
+    str s = `>>`
+    bipq += `000`
+    bipq += `111`
+    bipq += @myArr(bip: bipq, S: s)
+    bipq += s
+    return bipq
+}
+==== [000 111 6 >>]
+contract myArr { 
+    data {
+       map bip
+       str S
+    }
+    if Len(bip) > 0 {
+        bip[0] = `checked`
+    }
+    S += `<<`
+    bip += `sent`
+    return 2*Len(bip)
+}
+==== 2
+contract mapArrtOut { 
+    map bip
+    str s = `Ooops`
+    str a = `x`
+    bip += s
+    bip += a
+    bip[0] = `0`
+    s = `1`
+    a = s
+    return bip[0] + bip[1] + s + a
+}
+==== 0x11
+contract mapArrArrOut { 
+    map.map bip
+    map a1 a2
+    bip += a1
+    a1 += `qqq`
+    a2 += `fff`
+    bip += a2
+    a2 += `zzz`
+    bip[1][1] = `finish`
+    bip[0][0] = `start`
+    a1 += `ok`
+    return bip
+}
+==== [[start ok] [fff finish]]
+contract mapArrISOut { 
+    map bip
+    str s = `123`
+    bip += `ppp`
+    bip += `qqq`
+    bip[0] = bip[0] + `22`
+    bip[1] = s
+    return bip
+}
+==== [ppp22 123]
+contract mapArrIndaOutes { 
+    map.int bip
+    bip[-3] = 2
+}
+==== index out of range index:-3 len:0
+contract mapArrIndaOutzz { 
+    map.int bip
+    return bip[-5]
+}
+==== index out of range index:-5 len:0
+contract mapArrIndaOut { 
+    map.int bip
+    int ind = 0
+    bip += 10
+    return bip[ind]
+}
+==== 10
+contract mapArrIndOut { 
+    map.int bip
+    bip += 1
+    bip[10] = 2
+}
+==== index out of range index:10 len:1
+contract assignIndex { 
+    map.int imap
+    imap += 1
+    imap += 2
+    imap[0] = 3
+    imap[1] = 4
+    return imap
+}
+==== [3 4]
+contract mapArrs { 
+    map imap
+    str b = `zxcv`
+    str a = `asdf`
+    imap += a
+    imap += b
+    a = `rtyu`
+    b = a
+    a = `qwer`
+    imap += b
+    return imap
+}
+==== [asdf zxcv rtyu]
+contract mapArrInt { 
+    map.int b
+    b += 3
+    b += 4
+    map.map.int c 
+    c += b
+    c += b
+    b += 5
+    return c[0][0] + 2*c[0][1] + 3*c[1][0] + 4*c[1][1] + c[0][2] +  c[1][2]
+}
+==== 46
+contract mapArrStrOut { 
+    map.int bip
+    bip[`a`] = 7
+    return bip[`a`] + bip[`b`]
+}
+==== 7
+contract mapArrIND { 
+    func get() map {
+        map b
+        b[`0`] = `q`
+        b[`1`] = `w`
+        return b
+    }
+    map c = get()
+    return c[`1`] + c[`0`] + c[`1`]
+}
+==== wqw
+contract mapArrStrb { 
+    map.int bip
+    return bip[true]
+}
+==== mapArrStrb 3:20: Unexpected type bool of expression; expecting str
+contract mapArrStrb { 
+    map.int b
+    return b["my"][1]
+}
+==== mapArrStrb 3:18: Type int doesn't support indexing
+contract mapArrStra { 
+    int b
+    return b[0]
+}
+==== mapArrStra 3:15: Type int doesn't support indexing
+contract mapArrStra { 
+    return a[1]
+}
+==== mapArrStra 2:15: Variable a hasn't been defined
+contract mapArrStrz { 
+    map.map.map.map a
+}
+==== mapArrStrz 2:5: Invalid type
+contract mapArrStr { 
+    map.map a
+    int i
+    while i < 3 {
+        map b
+        int j
+        while j < 3 {
+            b[str(j)]= str(j+7+i)
+            j += 1
+        }
+        a[str(i)] = b
+        i += 1
+    }
+    return a
+}
+==== [0: [0: 7 1: 8 2: 9] 1: [0: 8 1: 9 2: 10] 2: [0: 9 1: 10 2: 11]]
+contract mapStr1 { 
+    map a
+    a[`a`] = "17"
+    a[`b`]= "AXв"
+    a[`c`] = str(Len(a))
+    return a
+}
+==== [a: 17 b: AXв c: 2]
+contract mapInt { 
+    map.int a
+    a[`a`] = 10
+    a[`b`]= 123
+    a[`a`] = Len(a)
+    return a
+}
+==== [a: 2 b: 123]
+contract mapLen { 
+    map.int a
+    map b
+    a[`0`]= 10
+    b[`1`]= "my str"
+    return Len(a) + Len(b)
+}
+==== 2
+contract mapInt { 
+    map.int a
+    func dfunc(map e) {}
+    dfunc(a)
+}
+==== mapInt 4:12: Function dfunc(map.int) hasn't been defined
+contract mapStr { 
+    data {
+        map Par
+    }
+    map a
+    map.str d
+    func dfunc(map e) {}
+    func b(map.str c) str { 
+        return "OK"
+    }
+    b(a)
+    dfunc(d)
+    return b(Par)
+}
+==== OK
+contract mapCNT { 
+    map.map.map.int a
+}
+==== 
+contract mapCNT { 
+    map.map.map.map.int a
+}
+==== mapCNT 2:5: Invalid type

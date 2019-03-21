@@ -29,6 +29,7 @@ const (
 	errInvalidType       = `Invalid type`
 	errIndexType         = `Type %s doesn't support indexing`
 	errIndexInt          = `Unexpected type %s of expression; expecting int`
+	errIndexStr          = `Unexpected type %s of expression; expecting str`
 )
 
 func (cmpl *compiler) Error(node *parser.Node, text string) error {

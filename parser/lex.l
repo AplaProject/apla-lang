@@ -93,6 +93,7 @@ int				return l.char(T_INT)
 hexint			return l.char(T_INT)
 str			    return l.char(T_STR)
 arr			    return l.char(T_ARR)
+map			    return l.char(T_MAP)
 
 {hexint}			{
 					val, _ := strconv.ParseInt(string(l.TokenBytes(nil)), 0, 64)

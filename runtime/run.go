@@ -102,6 +102,9 @@ main:
 				case parser.VArr:
 					rt.Objects = append(rt.Objects, []int64{})
 					v = int64(len(rt.Objects) - 1)
+				case parser.VMap:
+					rt.Objects = append(rt.Objects, map[string]int64{})
+					v = int64(len(rt.Objects) - 1)
 				}
 				Vars = append(Vars, v)
 			}
@@ -303,7 +306,8 @@ main:
 				isParContract = true
 			}
 			i += 2
-			if code[i]&0xf == parser.VArr || code[i]&0xf == parser.VStr { // Create a copy of the object
+			switch code[i] & 0xf {
+			case parser.VArr, parser.VMap, parser.VStr: // Create a copy of the object
 				stack[top] = copy(rt, int64(code[i]), stack[top])
 			}
 			pars = append(pars, int64(code[i-1]), stack[top])
@@ -356,6 +360,21 @@ main:
 			}
 			stack[top-1] = int64(uintptr(unsafe.Pointer(&rt.Objects[stack[top-1]].([]int64)[stack[top]])))
 			top--
+		case GETMAP:
+			imap := rt.Objects[stack[top-1]].(map[string]int64)
+			if stack[top] >= int64(len(rt.Strings)) || stack[top] < 0 {
+				return ``, gas, fmt.Errorf(errIndexOut, stack[top], len(rt.Strings))
+			}
+			stack[top-1] = imap[rt.Strings[stack[top]]]
+			top--
+		case SETMAP:
+			if stack[top] >= int64(len(rt.Strings)) || stack[top] < 0 {
+				return ``, gas, fmt.Errorf(errIndexOut, stack[top], len(rt.Strings))
+			}
+		case ASSIGNSETMAP:
+			imap := rt.Objects[stack[top-2]].(map[string]int64)
+			imap[rt.Strings[stack[top-1]]] = stack[top]
+			top -= 3
 		case PUSH64:
 			i += 4
 			top++
