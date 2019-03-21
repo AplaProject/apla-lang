@@ -97,6 +97,7 @@ func testFile(filename string) error {
 			}
 			continue
 		}
+		//		fmt.Println(`I`, cnt.Line)
 		result, gas, err := vm.Run(vm.Contracts[len(vm.Contracts)-1])
 		if err != nil {
 			if err = cnt.checkError(err); err != nil {

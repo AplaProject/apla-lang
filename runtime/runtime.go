@@ -60,6 +60,7 @@ const (
 	GETMAP       // var[key]
 	SETMAP       // var[key]
 	ASSIGNSETMAP // var[key] = value
+	ASSIGNSETARR // var[] = value
 	PUSH64       // + int64
 	DATA         // +uint16 size of data + data
 )

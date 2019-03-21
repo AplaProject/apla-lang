@@ -15,6 +15,7 @@ const (
 	errCommand  = `unknown command %d`
 	errGasLimit = `gas is over`
 	errIndexOut = `index out of range index:%d len:%d`
+	errIndexMap = `Key %s doesn't exist`
 )
 
 type objCount struct {
@@ -358,14 +359,18 @@ main:
 			if stack[top] >= int64(len(arr)) || stack[top] < 0 {
 				return ``, gas, fmt.Errorf(errIndexOut, stack[top], len(arr))
 			}
-			stack[top-1] = int64(uintptr(unsafe.Pointer(&rt.Objects[stack[top-1]].([]int64)[stack[top]])))
-			top--
+			//			stack[top-1] = int64(uintptr(unsafe.Pointer(&rt.Objects[stack[top-1]].([]int64)[stack[top]])))
+			//			top--
 		case GETMAP:
 			imap := rt.Objects[stack[top-1]].(map[string]int64)
 			if stack[top] >= int64(len(rt.Strings)) || stack[top] < 0 {
 				return ``, gas, fmt.Errorf(errIndexOut, stack[top], len(rt.Strings))
 			}
-			stack[top-1] = imap[rt.Strings[stack[top]]]
+			if val, ok := imap[rt.Strings[stack[top]]]; ok {
+				stack[top-1] = val
+			} else {
+				return ``, gas, fmt.Errorf(errIndexMap, rt.Strings[stack[top]])
+			}
 			top--
 		case SETMAP:
 			if stack[top] >= int64(len(rt.Strings)) || stack[top] < 0 {
@@ -374,6 +379,10 @@ main:
 		case ASSIGNSETMAP:
 			imap := rt.Objects[stack[top-2]].(map[string]int64)
 			imap[rt.Strings[stack[top-1]]] = stack[top]
+			top -= 3
+		case ASSIGNSETARR:
+			iarr := rt.Objects[stack[top-2]].([]int64)
+			iarr[stack[top-1]] = stack[top]
 			top -= 3
 		case PUSH64:
 			i += 4

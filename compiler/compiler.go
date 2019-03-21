@@ -499,6 +499,7 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 		}
 		cmpl.Append(rt.GETVAR, rt.Bcode(vinfo.Index))
 		itype := uint32(vinfo.Type)
+		retType := itype
 		var outtype, subtype uint32
 		for i, item := range nGetIndex.Indexes {
 			outtype, subtype = parseType(itype)
@@ -524,9 +525,12 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 			} else {
 				cmpl.Append(rt.GETINDEX + formap)
 			}
+			if i > 0 {
+				retType = itype
+			}
 			itype = subtype
 		}
-		node.Result = uint32(vinfo.Type) //itype
+		node.Result = retType //uint32(vinfo.Type) //itype
 	default:
 		fmt.Println(`Ooops`)
 		return cmpl.Error(node, errNodeType)
