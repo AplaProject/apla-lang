@@ -24,6 +24,7 @@ const (
 	TType
 	TGetIndex
 	TSetIndex
+	TFor
 )
 
 const (
@@ -56,6 +57,14 @@ type NVarValue struct {
 type NWhile struct {
 	Cond *Node
 	Body *Node
+}
+
+// NFor - for statement
+type NFor struct {
+	VarName string
+	KeyName string
+	Expr    *Node
+	Body    *Node
 }
 
 // NGetIndex - getting index
@@ -422,6 +431,26 @@ func newWhile(cond *Node, body *Node, l yyLexer) *Node {
 			Body: body,
 		},
 	}, l)
+}
+
+func newFor(ivar string, expr *Node, body *Node, l yyLexer) *Node {
+	return setPos(&Node{
+		Type: TFor,
+		Value: &NFor{
+			VarName: ivar,
+			KeyName: ``,
+			Expr:    expr,
+			Body:    body,
+		},
+	}, l)
+}
+
+func newForAll(ivar, ikey string, expr *Node, body *Node, l yyLexer) *Node {
+	return nil
+}
+
+func newForInt(ivar string, from *Node, to *Node, body *Node, l yyLexer) *Node {
+	return nil
 }
 
 func newIf(cond *Node, ifbody *Node, elif *Node, elsebody *Node, l yyLexer) *Node {

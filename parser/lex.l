@@ -47,6 +47,7 @@ unicodeLetter	\x80
 
 ,[ \t]*\n?		return l.char(COMMA)
 :				return l.char(COLON)
+\.\.			return l.char(DOUBLEDOT)
 \.				return l.char(DOT)
 \?         	    return l.char(QUESTION)
 \([ \t]*\n?     return l.char(LPAREN)
@@ -87,6 +88,8 @@ return			return l.char(RETURN)
 true			return l.char(TRUE)
 false			return l.char(FALSE)
 func			return l.char(FUNC)
+for				return l.char(FOR)
+in				return l.char(IN)
 
 bool			return l.char(T_BOOL)
 int				return l.char(T_INT)

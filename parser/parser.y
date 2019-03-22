@@ -39,6 +39,7 @@ func setResult(l yyLexer, v *Node) {
 %token LBRACKET // [
 %token RBRACKET // ]
 %token QUESTION // ?
+%token DOUBLEDOT   // ..
 %token DOT   // .
 
 // Operators
@@ -76,6 +77,8 @@ func setResult(l yyLexer, v *Node) {
 %token RETURN   // return
 %token WHILE   // while
 %token FUNC    // func
+%token FOR    // for
+%token IN     // in
 
 // Types
 %token T_INT    // int
@@ -189,6 +192,9 @@ statement
            }
     | CALL params RPAREN { $$ = newCallFunc($1, $2, yylex);}
     | CALLCONTRACT cntparams RPAREN { $$ = newCallContract($1, $2, yylex);}
+    | FOR IDENT IN expr LBRACE statements RBRACE { $$ = newFor( $2, $4, $6, yylex )}
+    | FOR IDENT COMMA IDENT IN expr LBRACE statements RBRACE { $$ = newForAll( $2, $4, $6, $8, yylex )}
+    | FOR IDENT IN expr DOUBLEDOT expr LBRACE statements RBRACE { $$ = newForInt( $2, $4, $6, $8, yylex )}
     ;
 
 expr
