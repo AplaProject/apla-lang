@@ -20,7 +20,7 @@ contract myeqmapCall {
     bipq[`b`] = s
     return bipq
 }
-==== [a: >><< b: >><<]
+==== [a: >> b: >><<]
 contract myMapCall { 
     map bipq
     str s = `>>`
@@ -243,7 +243,7 @@ contract myeqCall {
     bipq += s
     return bipq
 }
-==== [>><< >><<]
+==== [>> >><<]
 contract myStrCall { 
     str s = `>>`
     str a = s

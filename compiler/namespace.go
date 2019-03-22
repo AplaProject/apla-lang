@@ -68,6 +68,9 @@ func (cmpl *compiler) findBinary(binary *parser.NBinary) (rt.Bcode, uint32) {
 		}
 		outtype, subtype := parseType(binary.Left.Result)
 		if subtype == binary.Right.Result {
+			if binary.Right.Result == parser.VStr {
+				cmpl.Append(rt.COPYSTR)
+			}
 			if outtype&0xf == parser.VMap {
 				return rt.ASSIGNSETMAP, parser.VVoid
 			}

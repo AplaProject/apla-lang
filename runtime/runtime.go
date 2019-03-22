@@ -59,6 +59,7 @@ const (
 	SETINDEX     // var[]
 	GETMAP       // var[key]
 	SETMAP       // var[key]
+	COPYSTR      // copy str
 	ASSIGNSETMAP // var[key] = value
 	ASSIGNSETARR // var[] = value
 	PUSH64       // + int64

@@ -376,6 +376,8 @@ main:
 			if stack[top] >= int64(len(rt.Strings)) || stack[top] < 0 {
 				return ``, gas, fmt.Errorf(errIndexOut, stack[top], len(rt.Strings))
 			}
+		case COPYSTR:
+			stack[top] = copy(rt, int64(parser.VStr), stack[top])
 		case ASSIGNSETMAP:
 			imap := rt.Objects[stack[top-2]].(map[string]int64)
 			imap[rt.Strings[stack[top-1]]] = stack[top]
