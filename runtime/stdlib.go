@@ -2,6 +2,7 @@ package runtime
 
 import (
 	"fmt"
+	"sort"
 
 	"github.com/AplaProject/apla-lang/parser"
 )
@@ -16,12 +17,32 @@ type EmbedFunc struct {
 
 var (
 	StdLib = []EmbedFunc{
-		{LenArr, 1, `Len`, []uint32{parser.VArr}, parser.VInt}, // Len(arr) int
-		{LenMap, 1, `Len`, []uint32{parser.VMap}, parser.VInt}, // Len(map) int
-		{LenStr, 1, `Len`, []uint32{parser.VStr}, parser.VInt}, // Len(str) int
-		{StrInt, 1, `str`, []uint32{parser.VInt}, parser.VStr}, // str(int) str
+		{KeysMap, 1, `Keys`, []uint32{parser.VMap}, (parser.VStr << 4) | parser.VArr}, // Keys(map) arr
+		{LenArr, 1, `Len`, []uint32{parser.VArr}, parser.VInt},                        // Len(arr) int
+		{LenMap, 1, `Len`, []uint32{parser.VMap}, parser.VInt},                        // Len(map) int
+		{LenStr, 1, `Len`, []uint32{parser.VStr}, parser.VInt},                        // Len(str) int
+		{StrInt, 1, `str`, []uint32{parser.VInt}, parser.VStr},                        // str(int) str
 	}
 )
+
+// KeysMap returns the array of map keys
+func KeysMap(rt *Runtime, i int64) int64 {
+
+	out := make([]string, len(rt.Objects[i].(map[string]int64)))
+	var j int64
+	for key := range rt.Objects[i].(map[string]int64) {
+		out[j] = key
+		j++
+	}
+	sort.Strings(out)
+	ret := make([]int64, len(out))
+	for i, val := range out {
+		rt.Strings = append(rt.Strings, val)
+		ret[i] = int64(len(rt.Strings) - 1)
+	}
+	rt.Objects = append(rt.Objects, ret)
+	return int64(len(rt.Objects) - 1)
+}
 
 // LenArr returns the length of the array
 func LenArr(rt *Runtime, i int64) int64 {

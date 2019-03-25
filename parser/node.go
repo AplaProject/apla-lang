@@ -1,5 +1,10 @@
 package parser
 
+import (
+	"math/rand"
+	"time"
+)
+
 // Types of Node
 const (
 	TContract = iota + 1 // contract
@@ -176,6 +181,20 @@ type Node struct {
 	Column uint32
 	Result uint32
 	Value  interface{}
+}
+
+func init() {
+	rand.Seed(time.Now().UnixNano())
+}
+
+func RandName() string {
+	alpha := []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+	length := len(alpha)
+	b := make([]rune, 16)
+	for i := range b {
+		b[i] = alpha[rand.Intn(length)]
+	}
+	return string(b)
 }
 
 func setPos(node *Node, l yyLexer) *Node {
@@ -446,7 +465,15 @@ func newFor(ivar string, expr *Node, body *Node, l yyLexer) *Node {
 }
 
 func newForAll(ivar, ikey string, expr *Node, body *Node, l yyLexer) *Node {
-	return nil
+	return setPos(&Node{
+		Type: TFor,
+		Value: &NFor{
+			VarName: ivar,
+			KeyName: ikey,
+			Expr:    expr,
+			Body:    body,
+		},
+	}, l)
 }
 
 func newForInt(ivar string, from *Node, to *Node, body *Node, l yyLexer) *Node {

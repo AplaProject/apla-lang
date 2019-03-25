@@ -1,3 +1,77 @@
+contract myformapCall { 
+    map.int ai
+    int sum
+    ai[`5`] = 10
+    ai[`7`] = 20
+/*    for i in ai {       
+        sum += i
+    }
+/*    ai += 3
+    for i, j in ai {       
+        sum += i + j
+    }*/
+    return sum
+}
+==== 0
+contract myKeysmapCall { 
+    map.int ai
+    ai[`z`] = 20
+    ai[`a`] = 20
+    ai[`тест`] = 20
+    ai[`5`] = 10
+    str out
+
+    for v, i in Keys(ai) {       
+        if i > 0 {
+            out += ` `
+        }
+        out += v
+    }
+    return out
+}
+==== 5 a z тест
+contract myKeyseCall { 
+    map.str ai
+    return Keys(ai)
+}
+==== []
+contract myforCall { 
+    arr.int ai
+    int sum
+    ai += 10
+    ai += 20
+    for i in ai {       
+        sum += i
+    }
+    ai += 3
+    for i, j in ai {       
+        sum += i + j
+    }
+    return sum
+}
+==== 66
+contract myforCall { 
+    arr.int ai
+    int sum i
+    for i in ai {       
+    }
+}
+==== myforCall 5:5: Variable i has already been defined
+contract myfCall { 
+    for my in 10 {       
+    }
+}
+==== myfCall 2:15: Unexpected type int of expression; expecting array or map
+contract myfCall { 
+    for my {       
+    }
+}
+==== 2:12: syntax error: unexpected LBRACE, expecting COMMA or IN
+contract myfCall { 
+    for 10 {       
+    }
+}
+==== 2:9: syntax error: unexpected INT, expecting IDENT
 contract myeCall { 
     map bipq
     arr a

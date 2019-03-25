@@ -531,6 +531,10 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 			itype = subtype
 		}
 		node.Result = retType //uint32(vinfo.Type) //itype
+	case parser.TFor:
+		if err = forCode(node, cmpl); err != nil {
+			return err
+		}
 	default:
 		fmt.Println(`Ooops`)
 		return cmpl.Error(node, errNodeType)
