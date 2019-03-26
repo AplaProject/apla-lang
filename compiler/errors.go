@@ -31,6 +31,7 @@ const (
 	errIndexInt          = `Unexpected type %s of expression; expecting int`
 	errIndexStr          = `Unexpected type %s of expression; expecting str`
 	errForType           = `Unexpected type %s of expression; expecting array or map`
+	errBreak             = `break is outside of while or for`
 )
 
 func (cmpl *compiler) Error(node *parser.Node, text string) error {

@@ -1,3 +1,42 @@
+contract myBrw {
+    int sum
+    int i
+    while  i<10 {
+        int j
+        while j < 20 {
+            sum += j
+            if j + i == 3 {
+                break
+            }
+            j+=1
+        }
+        sum += i
+        if i == 3 {
+            break
+        }
+        i += 1
+    }
+    return sum
+} 
+==== 16
+contract myBr {
+    int sum
+    for i in 0..20 {
+        sum += i
+        if i == 10 {
+            break
+        }
+    }
+    return sum
+} 
+==== 55
+contract myBr {
+    int i
+    if i == 10 {
+        break
+    }
+} 
+==== myBr 4:9: break is outside of while or for
 contract myForCall { 
     int sum
     for i in sum..11-1 {

@@ -69,6 +69,7 @@ func setResult(l yyLexer, v *Node) {
 %token GTE    // >=
 
 // Keywords
+%token BREAK      // break
 %token DATA       // data
 %token CONTRACT   // contract
 %token IF       // if
@@ -184,6 +185,7 @@ statement
     | type IDENT ASSIGN expr { $$ = newBinary( newVarDecl( $1, []string{$2}, yylex ), $4, ASSIGN, yylex) }
     | type ident_list { $$ = newVarDecl( $1, $2, yylex )}
     | IF expr LBRACE statements RBRACE elif else { $$ = newIf( $2, $4, $6, $7, yylex )}
+    | BREAK { $$ = newBreak(yylex); }
     | RETURN { $$ = newReturn(nil, yylex); }
     | RETURN expr { $$ = newReturn($2, yylex); }
     | WHILE expr LBRACE statements RBRACE { $$ = newWhile( $2, $4, yylex )}

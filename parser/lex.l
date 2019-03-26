@@ -78,6 +78,7 @@ unicodeLetter	\x80
 \<[ \t]*\n?		return l.char(LT)
 >[ \t]*\n?  	return l.char(GT)
 
+break    		return l.char(BREAK)
 data    		return l.char(DATA)
 contract		return l.char(CONTRACT)
 while           return l.char(WHILE)

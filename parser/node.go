@@ -31,6 +31,7 @@ const (
 	TSetIndex
 	TFor
 	TForInt
+	TBreak
 )
 
 const (
@@ -211,6 +212,12 @@ func setPos(node *Node, l yyLexer) *Node {
 	node.Line = pos.Line
 	node.Column = uint32(pos.Column)
 	return node
+}
+
+func newBreak(l yyLexer) *Node {
+	return setPos(&Node{
+		Type: TBreak,
+	}, l)
 }
 
 func newContract(name string, block *Node, l yyLexer) *Node {

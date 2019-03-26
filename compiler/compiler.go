@@ -9,6 +9,11 @@ import (
 	rt "github.com/AplaProject/apla-lang/runtime"
 )
 
+type jumps struct {
+	Breaks    []int
+	Continues []int
+}
+
 type compiler struct {
 	Contract  *rt.Contract
 	Blocks    []*parser.Node
@@ -17,6 +22,7 @@ type compiler struct {
 	RetFunc   int64
 	InFunc    bool
 	Data      []byte
+	Jumps     []*jumps
 }
 
 func (cmpl *compiler) Append(codes ...rt.Bcode) {
@@ -277,6 +283,7 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 		node.Result = uint32(vinfo.Type)
 	case parser.TWhile:
 		nWhile := node.Value.(*parser.NWhile)
+		cmpl.Jumps = append(cmpl.Jumps, &jumps{})
 		sizeCode, sizeCond, err = cmpl.ConditionCode(nWhile.Cond)
 		if err != nil {
 			return err
@@ -295,6 +302,10 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 			return err
 		}
 		cmpl.Contract.Code[sizeCond+1] = off
+		for _, b := range cmpl.Jumps[len(cmpl.Jumps)-1].Breaks {
+			cmpl.Contract.Code[b] = rt.Bcode(len(cmpl.Contract.Code) - b + 1)
+		}
+		cmpl.Jumps = cmpl.Jumps[:len(cmpl.Jumps)-1]
 	case parser.TIf:
 		ends := make([]int, 0, 16)
 		nIf := node.Value.(*parser.NIf)
@@ -539,6 +550,13 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 		if err = forInt(node, cmpl); err != nil {
 			return err
 		}
+	case parser.TBreak:
+		if len(cmpl.Jumps) == 0 {
+			return cmpl.Error(node, errBreak)
+		}
+		cmpl.Append(rt.JMP, 0)
+		cmpl.Jumps[len(cmpl.Jumps)-1].Breaks = append(cmpl.Jumps[len(cmpl.Jumps)-1].Breaks,
+			len(cmpl.Contract.Code)-1)
 	default:
 		fmt.Println(`Ooops`)
 		return cmpl.Error(node, errNodeType)
