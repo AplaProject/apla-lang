@@ -16,6 +16,7 @@ const (
 	errGasLimit = `gas is over`
 	errIndexOut = `index out of range index:%d len:%d`
 	errIndexMap = `Key %s doesn't exist`
+	errStr2Int  = `cannot convert %s to int`
 )
 
 type objCount struct {

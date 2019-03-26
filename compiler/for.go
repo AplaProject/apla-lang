@@ -16,6 +16,50 @@ func newNVar(vtype uint32, name string) parser.NVar {
 	}
 }
 
+func newGetVar(name string) *parser.Node {
+	return &parser.Node{
+		Type: parser.TGetVar,
+		Value: &parser.NVarValue{
+			Name: name,
+		},
+	}
+}
+
+func newSetVar(name string) *parser.Node {
+	return &parser.Node{
+		Type: parser.TSetVar,
+		Value: &parser.NVarValue{
+			Name: name,
+		},
+	}
+}
+
+func newCallFunc(name string, param *parser.Node) *parser.Node {
+	return &parser.Node{
+		Type: parser.TCallFunc,
+		Value: &parser.NCallFunc{
+			Name: name,
+			Params: &parser.Node{
+				Type: parser.TParams,
+				Value: &parser.NParams{
+					Expr: []*parser.Node{param},
+				},
+			},
+		},
+	}
+}
+
+func newBinary(oper int, left, right *parser.Node) *parser.Node {
+	return &parser.Node{
+		Type: parser.TBinary,
+		Value: &parser.NBinary{
+			Oper:  oper,
+			Left:  left,
+			Right: right,
+		},
+	}
+}
+
 func forCode(node *parser.Node, cmpl *compiler) error {
 	var (
 		err      error
@@ -61,139 +105,89 @@ func forCode(node *parser.Node, cmpl *compiler) error {
 			},
 		}
 	}
-	before := []*parser.Node{&parser.Node{
-		Type: parser.TBinary,
-		Value: &parser.NBinary{
-			Oper: parser.ASSIGN,
-			Left: &parser.Node{
-				Type: parser.TSetVar,
-				Value: &parser.NVarValue{
-					Name: nFor.VarName,
-				},
-			},
-			Right: &parser.Node{
+	var code, before []*parser.Node
+
+	if maintype == parser.VMap {
+		before = []*parser.Node{newBinary(parser.ASSIGN, newSetVar(nFor.KeyName),
+			&parser.Node{
 				Type: parser.TGetIndex,
 				Value: &parser.NGetIndex{
-					Name: objName,
-					Indexes: []*parser.Node{
-						&parser.Node{
-							Type: parser.TGetVar,
-							Value: &parser.NVarValue{
-								Name: iKey,
-							},
-						},
-					},
+					Name:    keysName,
+					Indexes: []*parser.Node{newGetVar(iKey)},
 				},
-			},
-		},
-	}}
-	if isKey {
-		before = append(before, &parser.Node{
-			Type: parser.TBinary,
-			Value: &parser.NBinary{
-				Oper: parser.ASSIGN,
-				Left: &parser.Node{
-					Type: parser.TSetVar,
-					Value: &parser.NVarValue{
-						Name: nFor.KeyName,
+			}),
+			newBinary(parser.ASSIGN, newSetVar(nFor.VarName),
+				&parser.Node{
+					Type: parser.TGetIndex,
+					Value: &parser.NGetIndex{
+						Name:    objName,
+						Indexes: []*parser.Node{newGetVar(nFor.KeyName)},
 					},
+				}),
+		}
+	} else {
+		before = []*parser.Node{newBinary(parser.ASSIGN, newSetVar(nFor.VarName),
+			&parser.Node{
+				Type: parser.TGetIndex,
+				Value: &parser.NGetIndex{
+					Name:    objName,
+					Indexes: []*parser.Node{newGetVar(iKey)},
 				},
-				Right: &parser.Node{
-					Type: parser.TGetVar,
-					Value: &parser.NVarValue{
-						Name: iKey,
-					},
-				},
-			},
-		})
+			}),
+		}
+		if isKey {
+			before = append(before, newBinary(parser.ASSIGN, newSetVar(nFor.KeyName), newGetVar(iKey)))
+		}
 	}
 	nFor.Body.Value.(*parser.NBlock).Statements = append(before, nFor.Body.Value.(*parser.NBlock).Statements...)
 
 	nFor.Body.Value.(*parser.NBlock).Statements = append(nFor.Body.Value.(*parser.NBlock).Statements,
-		&parser.Node{
-			Type: parser.TBinary,
-			Value: &parser.NBinary{
-				Oper: parser.ADD_ASSIGN,
-				Left: &parser.Node{
-					Type: parser.TSetVar,
-					Value: &parser.NVarValue{
-						Name: iKey,
-					},
-				},
-				Right: &parser.Node{
-					Type:   parser.TValue,
-					Value:  int64(1),
-					Result: parser.VInt,
-				},
-			},
-		})
+		newBinary(parser.ADD_ASSIGN, newSetVar(iKey), &parser.Node{
+			Type:   parser.TValue,
+			Value:  int64(1),
+			Result: parser.VInt,
+		}))
 
-	code := &parser.Node{
-		Type: parser.TBlock,
-		Value: &parser.NBlock{
-			Statements: []*parser.Node{&parser.Node{
+	initVars := &parser.Node{
+		Line:   node.Line,
+		Column: node.Column,
+		Type:   parser.TVars,
+		Value: &parser.NVars{
+			Vars: vars,
+		},
+	}
+	if maintype == parser.VMap {
+		code = []*parser.Node{initVars,
+			newBinary(parser.ASSIGN, newSetVar(objName), nFor.Expr),
+			newBinary(parser.ASSIGN, newSetVar(keysName), newCallFunc(`Keys`, newGetVar(objName))),
+			&parser.Node{
 				Line:   node.Line,
 				Column: node.Column,
-				Type:   parser.TVars,
-				Value: &parser.NVars{
-					Vars: vars,
+				Type:   parser.TWhile,
+				Value: &parser.NWhile{
+					Cond: newBinary(parser.LT, newGetVar(iKey),
+						newCallFunc(`Len`, newGetVar(keysName))),
+					Body: nFor.Body,
 				},
 			},
-				&parser.Node{
-					Line:   node.Line,
-					Column: node.Column,
-					Type:   parser.TBinary,
-					Value: &parser.NBinary{
-						Oper: parser.ASSIGN,
-						Left: &parser.Node{
-							Type: parser.TSetVar,
-							Value: &parser.NVarValue{
-								Name: objName,
-							},
-						},
-						Right: nFor.Expr,
-					},
-				},
-				&parser.Node{
-					Line:   node.Line,
-					Column: node.Column,
-					Type:   parser.TWhile,
-					Value: &parser.NWhile{
-						Cond: &parser.Node{
-							Type: parser.TBinary,
-							Value: &parser.NBinary{
-								Oper: parser.LT,
-								Left: &parser.Node{
-									Type: parser.TGetVar,
-									Value: &parser.NVarValue{
-										Name: iKey,
-									},
-								},
-								Right: &parser.Node{
-									Type: parser.TCallFunc,
-									Value: &parser.NCallFunc{
-										Name: `Len`,
-										Params: &parser.Node{
-											Type: parser.TParams,
-											Value: &parser.NParams{
-												Expr: []*parser.Node{
-													&parser.Node{
-														Type: parser.TGetVar,
-														Value: &parser.NVarValue{
-															Name: objName,
-														},
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-						Body: nFor.Body,
-					},
+		}
+	} else {
+		code = []*parser.Node{initVars,
+			newBinary(parser.ASSIGN, newSetVar(objName), nFor.Expr),
+			&parser.Node{
+				Line:   node.Line,
+				Column: node.Column,
+				Type:   parser.TWhile,
+				Value: &parser.NWhile{
+					Cond: newBinary(parser.LT, newGetVar(iKey),
+						newCallFunc(`Len`, newGetVar(objName))),
+					Body: nFor.Body,
 				},
 			},
-		}}
-	return nodeToCode(code, cmpl)
+		}
+	}
+	return nodeToCode(&parser.Node{
+		Type: parser.TBlock,
+		Value: &parser.NBlock{
+			Statements: code}}, cmpl)
 }

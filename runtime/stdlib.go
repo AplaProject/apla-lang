@@ -3,6 +3,7 @@ package runtime
 import (
 	"fmt"
 	"sort"
+	"strconv"
 
 	"github.com/AplaProject/apla-lang/parser"
 )
@@ -22,6 +23,7 @@ var (
 		{LenMap, 1, `Len`, []uint32{parser.VMap}, parser.VInt},                        // Len(map) int
 		{LenStr, 1, `Len`, []uint32{parser.VStr}, parser.VInt},                        // Len(str) int
 		{StrInt, 1, `str`, []uint32{parser.VInt}, parser.VStr},                        // str(int) str
+		{IntStr, 1, `int`, []uint32{parser.VStr}, parser.VInt},                        // int(str) int
 	}
 )
 
@@ -57,6 +59,15 @@ func LenMap(rt *Runtime, i int64) int64 {
 // LenStr returns the length of the string
 func LenStr(rt *Runtime, i int64) int64 {
 	return int64(len(rt.Strings[i]))
+}
+
+// IntStr converts a string to the integer number
+func IntStr(rt *Runtime, i int64) (int64, error) {
+	val, err := strconv.ParseInt(rt.Strings[i], 0, 64)
+	if err != nil {
+		err = fmt.Errorf(errStr2Int, rt.Strings[i])
+	}
+	return int64(val), err
 }
 
 // StrInt converts the integer number to the string

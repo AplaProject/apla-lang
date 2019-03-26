@@ -1,18 +1,23 @@
+contract myKeyserCall { 
+    return int(`45ght`)
+}
+==== cannot convert 45ght to int
 contract myformapCall { 
     map.int ai
-    int sum
-    ai[`5`] = 10
+    int sum k
+    ai[`4`] = 10
     ai[`7`] = 20
-/*    for i in ai {       
+    for i in ai {       
         sum += i
     }
-/*    ai += 3
+    ai[`11`] = 3
     for i, j in ai {       
-        sum += i + j
-    }*/
+        k += 1
+        sum += i + int(j)*k
+    }
     return sum
 }
-==== 0
+==== 103
 contract myKeysmapCall { 
     map.int ai
     ai[`z`] = 20
@@ -32,6 +37,9 @@ contract myKeysmapCall {
 ==== 5 a z тест
 contract myKeyseCall { 
     map.str ai
+    for i, j in ai {
+        int k = 1/0
+    }
     return Keys(ai)
 }
 ==== []
