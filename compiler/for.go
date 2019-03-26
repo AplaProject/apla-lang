@@ -191,3 +191,71 @@ func forCode(node *parser.Node, cmpl *compiler) error {
 		Value: &parser.NBlock{
 			Statements: code}}, cmpl)
 }
+
+func forInt(node *parser.Node, cmpl *compiler) error {
+	var (
+		err error
+	)
+	nFor := node.Value.(*parser.NForInt)
+	curLen := len(cmpl.Contract.Code)
+	if err = nodeToCode(nFor.From, cmpl); err != nil {
+		return err
+	}
+	if nFor.From.Result != parser.VInt {
+		return cmpl.ErrorParam(nFor.From, errIndexInt, Type2Str(nFor.From.Result))
+	}
+	if err = nodeToCode(nFor.To, cmpl); err != nil {
+		return err
+	}
+	if nFor.To.Result != parser.VInt {
+		return cmpl.ErrorParam(nFor.To, errIndexInt, Type2Str(nFor.To.Result))
+	}
+	cmpl.Contract.Code = cmpl.Contract.Code[:curLen]
+	maxName := parser.RandName()
+	vars := []parser.NVar{
+		newNVar(parser.VInt, nFor.VarName),
+		newNVar(parser.VInt, maxName),
+	}
+	if nFor.Body == nil {
+		nFor.Body = &parser.Node{
+			Type: parser.TBlock,
+			Value: &parser.NBlock{
+				Statements: make([]*parser.Node, 0, 10),
+			},
+		}
+	}
+	var code []*parser.Node
+
+	nFor.Body.Value.(*parser.NBlock).Statements = append(nFor.Body.Value.(*parser.NBlock).Statements,
+		newBinary(parser.ADD_ASSIGN, newSetVar(nFor.VarName), &parser.Node{
+			Type:   parser.TValue,
+			Value:  int64(1),
+			Result: parser.VInt,
+		}))
+
+	initVars := &parser.Node{
+		Line:   node.Line,
+		Column: node.Column,
+		Type:   parser.TVars,
+		Value: &parser.NVars{
+			Vars: vars,
+		},
+	}
+	code = []*parser.Node{initVars,
+		newBinary(parser.ASSIGN, newSetVar(nFor.VarName), nFor.From),
+		newBinary(parser.ASSIGN, newSetVar(maxName), nFor.To),
+		&parser.Node{
+			Line:   node.Line,
+			Column: node.Column,
+			Type:   parser.TWhile,
+			Value: &parser.NWhile{
+				Cond: newBinary(parser.LTE, newGetVar(nFor.VarName), newGetVar(maxName)),
+				Body: nFor.Body,
+			},
+		},
+	}
+	return nodeToCode(&parser.Node{
+		Type: parser.TBlock,
+		Value: &parser.NBlock{
+			Statements: code}}, cmpl)
+}

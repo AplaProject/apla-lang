@@ -30,6 +30,7 @@ const (
 	TGetIndex
 	TSetIndex
 	TFor
+	TForInt
 )
 
 const (
@@ -69,6 +70,14 @@ type NFor struct {
 	VarName string
 	KeyName string
 	Expr    *Node
+	Body    *Node
+}
+
+// NForInt - for statement
+type NForInt struct {
+	VarName string
+	From    *Node
+	To      *Node
 	Body    *Node
 }
 
@@ -477,7 +486,15 @@ func newForAll(ivar, ikey string, expr *Node, body *Node, l yyLexer) *Node {
 }
 
 func newForInt(ivar string, from *Node, to *Node, body *Node, l yyLexer) *Node {
-	return nil
+	return setPos(&Node{
+		Type: TForInt,
+		Value: &NForInt{
+			VarName: ivar,
+			From:    from,
+			To:      to,
+			Body:    body,
+		},
+	}, l)
 }
 
 func newIf(cond *Node, ifbody *Node, elif *Node, elsebody *Node, l yyLexer) *Node {

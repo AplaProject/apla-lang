@@ -1,3 +1,22 @@
+contract myForCall { 
+    int sum
+    for i in sum..11-1 {
+        sum += i
+    }
+    return sum
+}
+==== 55
+contract myForCall {
+    arr a 
+    for i in a..20 {
+    }
+}
+==== myForCall 3:14: Unexpected type arr.str of expression; expecting int
+contract myForCall { 
+    for i in 0..`10` {
+    }
+}
+==== myForCall 2:17: Unexpected type str of expression; expecting int
 contract myKeyserCall { 
     return int(`45ght`)
 }

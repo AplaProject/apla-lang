@@ -535,6 +535,10 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 		if err = forCode(node, cmpl); err != nil {
 			return err
 		}
+	case parser.TForInt:
+		if err = forInt(node, cmpl); err != nil {
+			return err
+		}
 	default:
 		fmt.Println(`Ooops`)
 		return cmpl.Error(node, errNodeType)
