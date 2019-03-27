@@ -32,6 +32,8 @@ const (
 	TFor
 	TForInt
 	TBreak
+	TContinue
+	TEndLabel
 )
 
 const (
@@ -217,6 +219,12 @@ func setPos(node *Node, l yyLexer) *Node {
 func newBreak(l yyLexer) *Node {
 	return setPos(&Node{
 		Type: TBreak,
+	}, l)
+}
+
+func newContinue(l yyLexer) *Node {
+	return setPos(&Node{
+		Type: TContinue,
 	}, l)
 }
 

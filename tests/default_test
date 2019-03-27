@@ -1,3 +1,60 @@
+contract myConA {
+    arr.map am
+    map m1 m2
+    m1[`a`] = `a1`
+    m1[`b`] = `b1`
+    m2[`c`] = `a2`
+    m2[`d`] = `b2`
+    am += m1
+    am += m1
+    am += m2
+    str out
+    for m, i in am {
+        if i == 1 {
+            continue
+        }
+        for mi, k in m {
+            if k == `b` {
+                continue
+            }           
+            out += mi + ` ` + k  
+        }
+        out += ` = `
+    }
+    return out
+} 
+==== 68
+contract myCon {
+    int sum
+    for i in 0..12 {
+        if i == 10 {
+            continue
+        }
+        sum += i
+    }
+    return sum
+} 
+==== 68
+contract myConW {
+    int sum i
+    while i <=12 {
+        if i == 8 {
+            i += 2
+            continue
+        }
+        sum += i
+        i += 1
+    }
+    return sum
+} 
+==== 61
+contract myCon {
+    int i
+    if i == 10 {
+        continue
+    }
+} 
+==== myCon 4:9: continue must be inside of while or for
 contract myBrw {
     int sum
     int i
@@ -36,7 +93,7 @@ contract myBr {
         break
     }
 } 
-==== myBr 4:9: break is outside of while or for
+==== myBr 4:9: break must be inside of while or for
 contract myForCall { 
     int sum
     for i in sum..11-1 {

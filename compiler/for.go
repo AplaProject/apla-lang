@@ -142,11 +142,14 @@ func forCode(node *parser.Node, cmpl *compiler) error {
 	nFor.Body.Value.(*parser.NBlock).Statements = append(before, nFor.Body.Value.(*parser.NBlock).Statements...)
 
 	nFor.Body.Value.(*parser.NBlock).Statements = append(nFor.Body.Value.(*parser.NBlock).Statements,
-		newBinary(parser.ADD_ASSIGN, newSetVar(iKey), &parser.Node{
-			Type:   parser.TValue,
-			Value:  int64(1),
-			Result: parser.VInt,
-		}))
+		[]*parser.Node{&parser.Node{
+			Type: parser.TEndLabel,
+		},
+			newBinary(parser.ADD_ASSIGN, newSetVar(iKey), &parser.Node{
+				Type:   parser.TValue,
+				Value:  int64(1),
+				Result: parser.VInt,
+			})}...)
 
 	initVars := &parser.Node{
 		Line:   node.Line,
@@ -227,11 +230,14 @@ func forInt(node *parser.Node, cmpl *compiler) error {
 	var code []*parser.Node
 
 	nFor.Body.Value.(*parser.NBlock).Statements = append(nFor.Body.Value.(*parser.NBlock).Statements,
-		newBinary(parser.ADD_ASSIGN, newSetVar(nFor.VarName), &parser.Node{
-			Type:   parser.TValue,
-			Value:  int64(1),
-			Result: parser.VInt,
-		}))
+		[]*parser.Node{&parser.Node{
+			Type: parser.TEndLabel,
+		},
+			newBinary(parser.ADD_ASSIGN, newSetVar(nFor.VarName), &parser.Node{
+				Type:   parser.TValue,
+				Value:  int64(1),
+				Result: parser.VInt,
+			})}...)
 
 	initVars := &parser.Node{
 		Line:   node.Line,

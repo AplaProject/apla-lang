@@ -292,6 +292,9 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 		if err = nodeToCode(nWhile.Body, cmpl); err != nil {
 			return err
 		}
+		for _, b := range cmpl.Jumps[len(cmpl.Jumps)-1].Continues {
+			cmpl.Contract.Code[b] = rt.Bcode(sizeCode - b + 1)
+		}
 		var off rt.Bcode
 		if off, err = cmpl.JumpOff(node, sizeCode-len(cmpl.Contract.Code)); err != nil {
 			return err
@@ -557,6 +560,19 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 		cmpl.Append(rt.JMP, 0)
 		cmpl.Jumps[len(cmpl.Jumps)-1].Breaks = append(cmpl.Jumps[len(cmpl.Jumps)-1].Breaks,
 			len(cmpl.Contract.Code)-1)
+	case parser.TContinue:
+		if len(cmpl.Jumps) == 0 {
+			return cmpl.Error(node, errContinue)
+		}
+		cmpl.Append(rt.JMP, 0)
+		cmpl.Jumps[len(cmpl.Jumps)-1].Continues = append(cmpl.Jumps[len(cmpl.Jumps)-1].Continues,
+			len(cmpl.Contract.Code)-1)
+	case parser.TEndLabel:
+		for _, b := range cmpl.Jumps[len(cmpl.Jumps)-1].Continues {
+			fmt.Println(`END`, b, len(cmpl.Contract.Code))
+			cmpl.Contract.Code[b] = rt.Bcode(len(cmpl.Contract.Code) - b + 1)
+		}
+		cmpl.Jumps[len(cmpl.Jumps)-1].Continues = nil
 	default:
 		fmt.Println(`Ooops`)
 		return cmpl.Error(node, errNodeType)
