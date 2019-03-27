@@ -569,7 +569,6 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 			len(cmpl.Contract.Code)-1)
 	case parser.TEndLabel:
 		for _, b := range cmpl.Jumps[len(cmpl.Jumps)-1].Continues {
-			fmt.Println(`END`, b, len(cmpl.Contract.Code))
 			cmpl.Contract.Code[b] = rt.Bcode(len(cmpl.Contract.Code) - b + 1)
 		}
 		cmpl.Jumps[len(cmpl.Jumps)-1].Continues = nil

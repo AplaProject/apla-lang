@@ -13,17 +13,40 @@ contract myConA {
         if i == 1 {
             continue
         }
+        out += str(i)
         for mi, k in m {
             if k == `b` {
+                out += `!`
                 continue
             }           
             out += mi + ` ` + k  
         }
-        out += ` = `
+        out += ` +`
     }
     return out
 } 
-==== 68
+==== 0a1 a! +2a2 cb2 d +
+contract myEq {
+    str s = `test 1`
+    str out d
+    if s == `test 1` {
+        out += `1`
+    }
+    if s != `test 1` {
+        out += `x`
+    }
+    d = s
+    if `test2` != s {
+        out += `2`
+    }
+    if d == s {
+        out += `3`
+    } else {
+        out += `y`
+    }
+    return out
+} 
+==== 123
 contract myCon {
     int sum
     for i in 0..12 {
@@ -1192,3 +1215,4 @@ contract {
    ==== gas $ expecting result or error text
 */
 ==== 4:3: syntax error: unexpected $end, expecting CONTRACT
+

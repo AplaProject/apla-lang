@@ -39,6 +39,8 @@ var (
 		{rt.ADDSTR, parser.VStr, parser.ADD, parser.VStr, parser.VStr},               // str+str
 		{rt.ASSIGNSTR, parser.VVoid, parser.ASSIGN, parser.VStr, parser.VStr},        // str = str
 		{rt.ASSIGNADDSTR, parser.VVoid, parser.ADD_ASSIGN, parser.VStr, parser.VStr}, // str += str
+		{rt.EQSTR, parser.VBool, parser.EQ, parser.VStr, parser.VStr},                // str == str
+		{rt.NEQSTR, parser.VBool, parser.NOT_EQ, parser.VStr, parser.VStr},           // str != str
 	}
 )
 

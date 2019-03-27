@@ -340,6 +340,20 @@ main:
 			top--
 			rt.Strings = append(rt.Strings, rt.Strings[stack[top]]+rt.Strings[stack[top+1]])
 			stack[top] = int64(len(rt.Strings) - 1)
+		case EQSTR:
+			top--
+			if rt.Strings[stack[top]] == rt.Strings[stack[top+1]] {
+				stack[top] = 1
+			} else {
+				stack[top] = 0
+			}
+		case NEQSTR:
+			top--
+			if rt.Strings[stack[top]] == rt.Strings[stack[top+1]] {
+				stack[top] = 0
+			} else {
+				stack[top] = 1
+			}
 		case ASSIGNADDSTR:
 			ind := *(*int64)(unsafe.Pointer(uintptr(stack[top-1])))
 			rt.Strings[ind] += rt.Strings[stack[top]]

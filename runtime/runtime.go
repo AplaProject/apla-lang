@@ -53,6 +53,8 @@ const (
 	SIGNINT      // unary minus int
 	NOT          // unary logical not
 	ADDSTR       // str+str
+	EQSTR        // str == str
+	NEQSTR       // str != str
 	ASSIGNADDSTR // vars += str
 	APPENDARR    // arr += item
 	GETINDEX     // var[]
