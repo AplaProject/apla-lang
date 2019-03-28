@@ -64,6 +64,8 @@ const (
 	COPYSTR      // copy str
 	ASSIGNSETMAP // var[key] = value
 	ASSIGNSETARR // var[] = value
+	INITARR      // +uint16 count
+	INITMAP      // +uint16 count
 	PUSH64       // + int64
 	DATA         // +uint16 size of data + data
 )

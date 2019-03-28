@@ -310,7 +310,7 @@ yystate7:
 		goto yyrule32
 	case c == '\n':
 		goto yystate8
-	case c == '\t' || c == ' ':
+	case c == '\t' || c == '\r' || c == ' ':
 		goto yystate7
 	}
 
@@ -359,7 +359,7 @@ yystate12:
 		goto yystate15
 	case c == '\n':
 		goto yystate14
-	case c == '\t' || c == ' ':
+	case c == '\t' || c == '\r' || c == ' ':
 		goto yystate13
 	}
 
@@ -372,7 +372,7 @@ yystate13:
 		goto yyrule30
 	case c == '\n':
 		goto yystate14
-	case c == '\t' || c == ' ':
+	case c == '\t' || c == '\r' || c == ' ':
 		goto yystate13
 	}
 
@@ -439,7 +439,7 @@ yystate21:
 		goto yystate24
 	case c == '\n':
 		goto yystate23
-	case c == '\t' || c == ' ':
+	case c == '\t' || c == '\r' || c == ' ':
 		goto yystate22
 	}
 
@@ -452,7 +452,7 @@ yystate22:
 		goto yyrule28
 	case c == '\n':
 		goto yystate23
-	case c == '\t' || c == ' ':
+	case c == '\t' || c == '\r' || c == ' ':
 		goto yystate22
 	}
 
@@ -479,7 +479,7 @@ yystate25:
 		goto yystate28
 	case c == '\n':
 		goto yystate27
-	case c == '\t' || c == ' ':
+	case c == '\t' || c == '\r' || c == ' ':
 		goto yystate26
 	}
 
@@ -492,7 +492,7 @@ yystate26:
 		goto yyrule26
 	case c == '\n':
 		goto yystate27
-	case c == '\t' || c == ' ':
+	case c == '\t' || c == '\r' || c == ' ':
 		goto yystate26
 	}
 
@@ -517,7 +517,7 @@ yystate29:
 		goto yyrule10
 	case c == '\n':
 		goto yystate30
-	case c == '\t' || c == ' ':
+	case c == '\t' || c == '\r' || c == ' ':
 		goto yystate29
 	}
 
@@ -538,7 +538,7 @@ yystate31:
 		goto yystate34
 	case c == '\n':
 		goto yystate33
-	case c == '\t' || c == ' ':
+	case c == '\t' || c == '\r' || c == ' ':
 		goto yystate32
 	}
 
@@ -551,7 +551,7 @@ yystate32:
 		goto yyrule27
 	case c == '\n':
 		goto yystate33
-	case c == '\t' || c == ' ':
+	case c == '\t' || c == '\r' || c == ' ':
 		goto yystate32
 	}
 
@@ -599,7 +599,7 @@ yystate37:
 		goto yystate45
 	case c == '\n':
 		goto yystate39
-	case c == '\t' || c == ' ':
+	case c == '\t' || c == '\r' || c == ' ':
 		goto yystate38
 	}
 
@@ -612,7 +612,7 @@ yystate38:
 		goto yyrule29
 	case c == '\n':
 		goto yystate39
-	case c == '\t' || c == ' ':
+	case c == '\t' || c == '\r' || c == ' ':
 		goto yystate38
 	}
 
@@ -749,7 +749,7 @@ yystate52:
 		goto yystate55
 	case c == '\n':
 		goto yystate54
-	case c == '\t' || c == ' ':
+	case c == '\t' || c == '\r' || c == ' ':
 		goto yystate53
 	}
 
@@ -762,7 +762,7 @@ yystate53:
 		goto yyrule36
 	case c == '\n':
 		goto yystate54
-	case c == '\t' || c == ' ':
+	case c == '\t' || c == '\r' || c == ' ':
 		goto yystate53
 	}
 
@@ -781,7 +781,7 @@ yystate55:
 		goto yyrule34
 	case c == '\n':
 		goto yystate56
-	case c == '\t' || c == ' ':
+	case c == '\t' || c == '\r' || c == ' ':
 		goto yystate55
 	}
 
@@ -811,7 +811,7 @@ yystate58:
 		goto yyrule31
 	case c == '\n':
 		goto yystate59
-	case c == '\t' || c == ' ':
+	case c == '\t' || c == '\r' || c == ' ':
 		goto yystate58
 	}
 
@@ -832,7 +832,7 @@ yystate60:
 		goto yystate63
 	case c == '\n':
 		goto yystate62
-	case c == '\t' || c == ' ':
+	case c == '\t' || c == '\r' || c == ' ':
 		goto yystate61
 	}
 
@@ -845,7 +845,7 @@ yystate61:
 		goto yyrule37
 	case c == '\n':
 		goto yystate62
-	case c == '\t' || c == ' ':
+	case c == '\t' || c == '\r' || c == ' ':
 		goto yystate61
 	}
 
@@ -864,7 +864,7 @@ yystate63:
 		goto yyrule35
 	case c == '\n':
 		goto yystate64
-	case c == '\t' || c == ' ':
+	case c == '\t' || c == '\r' || c == ' ':
 		goto yystate63
 	}
 
@@ -2285,7 +2285,7 @@ yyrule9: // =
 	{
 		return l.char(ASSIGN)
 	}
-yyrule10: // ,[ \t]*\n?
+yyrule10: // ,[ \t\r]*\n?
 	{
 		return l.char(COMMA)
 	}
@@ -2349,31 +2349,31 @@ yyrule25: // \|\|
 	{
 		return l.char(OR)
 	}
-yyrule26: // \+[ \t]*\n?
+yyrule26: // \+[ \t\r]*\n?
 	{
 		return l.char(ADD)
 	}
-yyrule27: // -[ \t]*\n?
+yyrule27: // -[ \t\r]*\n?
 	{
 		return l.char(SUB)
 	}
-yyrule28: // \*[ \t]*\n?
+yyrule28: // \*[ \t\r]*\n?
 	{
 		return l.char(MUL)
 	}
-yyrule29: // \/[ \t]*\n?
+yyrule29: // \/[ \t\r]*\n?
 	{
 		return l.char(DIV)
 	}
-yyrule30: // %[ \t]*\n?
+yyrule30: // %[ \t\r]*\n?
 	{
 		return l.char(MOD)
 	}
-yyrule31: // ==[ \t]*\n?
+yyrule31: // ==[ \t\r]*\n?
 	{
 		return l.char(EQ)
 	}
-yyrule32: // !=[ \t]*\n?
+yyrule32: // !=[ \t\r]*\n?
 	{
 		return l.char(NOT_EQ)
 	}
@@ -2381,19 +2381,19 @@ yyrule33: // !
 	{
 		return l.char(NOT)
 	}
-yyrule34: // \<=[ \t]*\n?
+yyrule34: // \<=[ \t\r]*\n?
 	{
 		return l.char(LTE)
 	}
-yyrule35: // >=[ \t]*\n?
+yyrule35: // >=[ \t\r]*\n?
 	{
 		return l.char(GTE)
 	}
-yyrule36: // \<[ \t]*\n?
+yyrule36: // \<[ \t\r]*\n?
 	{
 		return l.char(LT)
 	}
-yyrule37: // >[ \t]*\n?
+yyrule37: // >[ \t\r]*\n?
 	{
 		return l.char(GT)
 	}

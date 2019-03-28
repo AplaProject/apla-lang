@@ -109,7 +109,8 @@ func setResult(l yyLexer, v *Node) {
 %type <n> contract_body
 %type <n> contract_declaration
 %type <n> index
-
+%type <n> exprlist
+%type <n> exprmaplist
 
 %left AND 
 %left OR
@@ -201,6 +202,17 @@ statement
     | FOR IDENT IN expr DOUBLEDOT expr LBRACE statements RBRACE { $$ = newForInt( $2, $4, $6, $8, yylex )}
     ;
 
+exprlist
+    : expr { $$ = newArray($1, yylex); }
+    | exprlist COMMA expr { $$ = appendArray($1, $3, yylex);}
+    ;   
+
+exprmaplist
+    : STRING COLON expr { $$ = newMap($1, $3, yylex); }
+    | exprmaplist COMMA STRING COLON NEWLINE expr { $$ = appendMap($1, $3, $6, yylex); }
+    | exprmaplist COMMA STRING COLON expr { $$ = appendMap($1, $3, $5, yylex); }
+    ;   
+
 expr
     : LPAREN expr RPAREN { $$ = $2; }
     | INT { $$ = newValue($1, yylex);}
@@ -212,6 +224,8 @@ expr
     | CALLCONTRACT cntparams RPAREN { $$ = newCallContract($1, $2, yylex);}
     | index { $$ = $1}
     | IDENT { $$ = newGetVar($1, yylex);}
+    | LBRACE exprlist RBRACE { $$ = $2;}
+    | LBRACE exprmaplist RBRACE { $$ = $2;}
     | QUESTION LPAREN expr COMMA expr COMMA expr RPAREN { $$ = newQuestion($3, $5, $7, yylex);}
     | expr MUL expr { $$ = newBinary($1, $3, MUL, yylex); }
     | expr DIV expr { $$ = newBinary($1, $3, DIV, yylex);  }

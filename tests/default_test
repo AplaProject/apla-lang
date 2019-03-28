@@ -1,3 +1,58 @@
+contract myIMe1 {
+    map.str s = {`b`:`qq`, `a`:`ee`}
+    s["0"] = `ww`
+    return s
+} 
+====  [0: ww a: ee b: qq]
+contract myIMA {
+    str d = "end"
+    return {`тест`:{`a`,"b"}, `test`:{"c", d}}
+} 
+==== [test: [c end] тест: [a b]]
+contract myIMe {
+    str s
+    return {`b`:1, `a`:s}
+} 
+====  myIMe 3:24: Unexpected type of the parameter; expecting int
+contract myIM {
+    return {`b`:1, 
+    `a`:99, `d`:
+    77, `c`: 4}
+} 
+==== [a: 99 b: 1 c: 4 d: 77]
+contract myIAE {
+    arr a = {1, 2, 3, 7 }
+} 
+==== myIAE 2:27: Operator arr.str=arr.int has not been found
+contract myIAA {
+    int sum
+    int b = 9
+    for v in {{0, 1, 2, ?(5>3, 3, 10)},
+              {4, 5, 3+3, 7}, {8, b, 10}} {
+        for i in v {
+            sum += i
+        }
+    }
+    return sum
+} 
+==== 55
+contract myIA {
+    return {1, 2, 
+    3, 7}
+} 
+==== [1 2 3 7]
+contract myIAS {
+    return {`a`, `b`, `c`, `d`}
+} 
+==== [a b c d]
+contract myIAS {
+    return {`a`, 1, `c`, `d`}
+} 
+==== myIAS 2:18: Unexpected type of the parameter; expecting str
+contract myIA {
+    return {}
+} 
+==== 2:13: syntax error: unexpected RBRACE
 contract myConA {
     arr.map am
     map m1 m2

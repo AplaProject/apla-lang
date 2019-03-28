@@ -572,6 +572,41 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 			cmpl.Contract.Code[b] = rt.Bcode(len(cmpl.Contract.Code) - b + 1)
 		}
 		cmpl.Jumps[len(cmpl.Jumps)-1].Continues = nil
+	case parser.TArray:
+		var atype uint32
+		nArray := node.Value.(*parser.NArray)
+		for i, par := range nArray.List {
+			if err = nodeToCode(par, cmpl); err != nil {
+				return err
+			}
+			if i == 0 {
+				atype = par.Result
+			} else if atype != par.Result {
+				return cmpl.ErrorParam(par, errParamType, Type2Str(atype))
+			}
+		}
+		cmpl.Append(rt.INITARR, rt.Bcode(len(nArray.List)))
+		node.Result = (atype << 4) | parser.VArr
+	case parser.TMap:
+		var atype uint32
+		nMap := node.Value.(*parser.NMap)
+		for i, par := range nMap.List {
+			if cmpl.Data == nil {
+				cmpl.Data = make([]byte, 0, 1024)
+			}
+			cmpl.Append(rt.PUSHSTR, rt.Bcode(len(cmpl.Data)), rt.Bcode(len(par.Key)))
+			cmpl.Data = append(cmpl.Data, []byte(par.Key)...)
+			if err = nodeToCode(par.Value, cmpl); err != nil {
+				return err
+			}
+			if i == 0 {
+				atype = par.Value.Result
+			} else if atype != par.Value.Result {
+				return cmpl.ErrorParam(par.Value, errParamType, Type2Str(atype))
+			}
+		}
+		cmpl.Append(rt.INITMAP, rt.Bcode(len(nMap.List)))
+		node.Result = (atype << 4) | parser.VMap
 	default:
 		fmt.Println(`Ooops`)
 		return cmpl.Error(node, errNodeType)

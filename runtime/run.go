@@ -401,6 +401,28 @@ main:
 			iarr := rt.Objects[stack[top-2]].([]int64)
 			iarr[stack[top-1]] = stack[top]
 			top -= 3
+		case INITARR:
+			i++
+			count := int64(code[i])
+			iarr := make([]int64, count)
+			for k := range iarr {
+				iarr[k] = stack[top-count+int64(k)+1]
+			}
+			rt.Objects = append(rt.Objects, iarr)
+			top -= count - 1
+			stack[top] = int64(len(rt.Objects) - 1)
+		case INITMAP:
+			i++
+			count := int64(code[i])
+			imap := make(map[string]int64)
+			for k := int64(0); k < count; k++ {
+				cur := top - 2*(count-k) + 1
+				key := rt.Strings[stack[cur]]
+				imap[key] = stack[cur+1]
+			}
+			rt.Objects = append(rt.Objects, imap)
+			top -= 2*count - 1
+			stack[top] = int64(len(rt.Objects) - 1)
 		case PUSH64:
 			i += 4
 			top++

@@ -34,6 +34,8 @@ const (
 	TBreak
 	TContinue
 	TEndLabel
+	TArray
+	TMap
 )
 
 const (
@@ -82,6 +84,21 @@ type NForInt struct {
 	From    *Node
 	To      *Node
 	Body    *Node
+}
+
+// NArray - init array
+type NArray struct {
+	List []*Node
+}
+
+type KeyVal struct {
+	Key   string
+	Value *Node
+}
+
+// NMap - init map
+type NMap struct {
+	List []KeyVal
 }
 
 // NGetIndex - getting index
@@ -591,6 +608,36 @@ func newCallContract(name string, params *Node, l yyLexer) *Node {
 			Params: list,
 		},
 	}, l)
+}
+
+func newArray(par *Node, l yyLexer) *Node {
+	return setPos(&Node{
+		Type: TArray,
+		Value: &NArray{
+			List: []*Node{par},
+		},
+	}, l)
+}
+
+func appendArray(list *Node, par *Node, l yyLexer) *Node {
+	list.Value.(*NArray).List = append(list.Value.(*NArray).List, par)
+	return list
+}
+
+func newMap(key string, par *Node, l yyLexer) *Node {
+	return setPos(&Node{
+		Type: TMap,
+		Value: &NMap{
+			List: []KeyVal{{Key: key, Value: par}},
+		},
+	}, l)
+}
+
+func appendMap(list *Node, key string, par *Node, l yyLexer) *Node {
+	list.Value.(*NMap).List = append(list.Value.(*NMap).List, KeyVal{
+		Key: key, Value: par,
+	})
+	return list
 }
 
 // Parser creates AST
