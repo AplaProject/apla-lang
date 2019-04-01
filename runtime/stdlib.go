@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sort"
 	"strconv"
+	"unsafe"
 
 	"github.com/AplaProject/apla-lang/parser"
 )
@@ -24,6 +25,8 @@ var (
 		{LenStr, 1, `Len`, []uint32{parser.VStr}, parser.VInt},                        // Len(str) int
 		{StrInt, 1, `str`, []uint32{parser.VInt}, parser.VStr},                        // str(int) str
 		{IntStr, 1, `int`, []uint32{parser.VStr}, parser.VInt},                        // int(str) int
+		{FloatInt, 1, `float`, []uint32{parser.VInt}, parser.VFloat},                  // float(int) float
+		{IntFloat, 1, `int`, []uint32{parser.VFloat}, parser.VInt},                    // int(float) int
 	}
 )
 
@@ -74,4 +77,15 @@ func IntStr(rt *Runtime, i int64) (int64, error) {
 func StrInt(rt *Runtime, i int64) int64 {
 	rt.Strings = append(rt.Strings, fmt.Sprint(i))
 	return int64(len(rt.Strings) - 1)
+}
+
+// FloatInt converts an integer number to float
+func FloatInt(rt *Runtime, i int64) int64 {
+	f := float64(i)
+	return *(*int64)(unsafe.Pointer(&f))
+}
+
+// IntFloat converts afloat to the integer number
+func IntFloat(rt *Runtime, i int64) int64 {
+	return int64(*(*float64)(unsafe.Pointer(&i)))
 }

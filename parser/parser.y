@@ -23,6 +23,7 @@ func setResult(l yyLexer, v *Node) {
 %token<s> CALLCONTRACT  // @foobar(
 %token<s> INDEX  // foobar[
 %token<i> INT    // 314
+%token<f> FLOAT    // 3.14
 %token<s> STRING  // "string"
 %token<s> QSTRING  // `string`
 %token<b> TRUE   // true
@@ -88,6 +89,7 @@ func setResult(l yyLexer, v *Node) {
 %token T_STR  // str
 %token T_ARR  // arr
 %token T_MAP  // map
+%token T_FLOAT  // float
 
 %type <i> ordinaltype
 %type <n> type
@@ -129,6 +131,7 @@ ordinaltype
     | T_STR {$$ = VStr}
     | T_ARR {$$ = VArr}    
     | T_MAP {$$ = VMap}    
+    | T_FLOAT {$$ = VFloat}
     ;
 
 type
@@ -216,6 +219,7 @@ exprmaplist
 expr
     : LPAREN expr RPAREN { $$ = $2; }
     | INT { $$ = newValue($1, yylex);}
+    | FLOAT { $$ = newValue($1, yylex);}
     | STRING { $$ = newValue($1, yylex);}
     | QSTRING { $$ = newValue($1, yylex);}
     | TRUE { $$ = newValue(true, yylex);}

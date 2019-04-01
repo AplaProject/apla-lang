@@ -1,3 +1,49 @@
+contract callVAFloat3 { 
+    float f = 2223.333
+    return int(f) + int(5.5) + int(-10.9)
+}
+==== 2218
+contract callVAFloat2 { 
+    float f = 2.3
+    return f + float(345444)
+}
+==== 345446.3
+contract callVAFloat1 { 
+    float f = 2.3
+    float g = 2.0
+    f += 22.4
+    f/=g
+    f -= 2.35
+    f *= 3.0
+    return f
+}
+==== 30
+contract callVAFloatZ { 
+    float f g
+    f = 5.0
+    return f/g
+}
+==== dividing by zero
+contract callVAFloat { 
+    float f g
+    f = 3.1415
+    g = f*2.0/3.0
+    return f+4.2*g
+}
+==== 11.937700000000001
+contract callAFloat { 
+    arr.float af = {1.6, -2.2, 0.0, -11.12}
+    float sum
+    for f in af {
+        sum = sum - f
+    }
+    return sum
+}
+==== 11.719999999999999
+contract callFloat { 
+    return 1.0 + 2.56 + 0.344 + -10.5
+}
+==== -6.596
 contract myIMe1 {
     map.str s = {`b`:`qq`, `a`:`ee`}
     s["0"] = `ww`
@@ -807,7 +853,7 @@ contract myData {
 contract myCallDIV {
     @myDIV()
 }
-==== integer divide by zero
+==== dividing by zero
 contract myCall {
     return @mySLem() + @mySLem()
 }
@@ -1123,12 +1169,12 @@ contract myVarSetAB {
 contract myMod2 {
     int a = 21 % 0
 } 
-==== integer divide by zero
+==== dividing by zero
 contract myMod {
     int a = 21
     a %= 2-2
 } 
-==== integer divide by zero
+==== dividing by zero
 contract myVarAssign {
     int a = 7
     int b = a + 3
@@ -1182,7 +1228,7 @@ contract myVarE {
 contract myDIV {
     return 100/(15-0xf)
 } 
-==== integer divide by zero
+==== dividing by zero
 contract myMULF {
     return 2*false
 } 

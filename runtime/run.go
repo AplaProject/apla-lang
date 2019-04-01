@@ -11,7 +11,7 @@ import (
 type Bcode uint16
 
 const (
-	errDivZero  = `integer divide by zero`
+	errDivZero  = `dividing by zero`
 	errCommand  = `unknown command %d`
 	errGasLimit = `gas is over`
 	errIndexOut = `index out of range index:%d len:%d`
@@ -428,6 +428,56 @@ main:
 			top++
 			stack[top] = int64((uint64(code[i-3]) << 48) | (uint64(code[i-2]) << 32) |
 				(uint64(code[i-1]) << 16) | (uint64(code[i]) & 0xffff))
+		case SIGNFLOAT:
+			f := -*(*float64)(unsafe.Pointer(&stack[top]))
+			stack[top] = *(*int64)(unsafe.Pointer(&f))
+		case ADDFLOAT:
+			top--
+			f := *(*float64)(unsafe.Pointer(&stack[top]))
+			f += *(*float64)(unsafe.Pointer(&stack[top+1]))
+			stack[top] = *(*int64)(unsafe.Pointer(&f))
+		case SUBFLOAT:
+			top--
+			f := *(*float64)(unsafe.Pointer(&stack[top]))
+			f -= *(*float64)(unsafe.Pointer(&stack[top+1]))
+			stack[top] = *(*int64)(unsafe.Pointer(&f))
+		case MULFLOAT:
+			top--
+			f := *(*float64)(unsafe.Pointer(&stack[top]))
+			f *= *(*float64)(unsafe.Pointer(&stack[top+1]))
+			stack[top] = *(*int64)(unsafe.Pointer(&f))
+		case DIVFLOAT:
+			top--
+			if stack[top+1] == 0 {
+				return ``, gas, fmt.Errorf(errDivZero)
+			}
+			f := *(*float64)(unsafe.Pointer(&stack[top]))
+			f /= *(*float64)(unsafe.Pointer(&stack[top+1]))
+			stack[top] = *(*int64)(unsafe.Pointer(&f))
+		case ASSIGNADDFLOAT:
+			f := *(*float64)(unsafe.Pointer(uintptr(stack[top-1])))
+			f += *(*float64)(unsafe.Pointer(&stack[top]))
+			*(*int64)(unsafe.Pointer(uintptr(stack[top-1]))) = *(*int64)(unsafe.Pointer(&f))
+			top -= 2
+		case ASSIGNSUBFLOAT:
+			f := *(*float64)(unsafe.Pointer(uintptr(stack[top-1])))
+			f -= *(*float64)(unsafe.Pointer(&stack[top]))
+			*(*int64)(unsafe.Pointer(uintptr(stack[top-1]))) = *(*int64)(unsafe.Pointer(&f))
+			top -= 2
+		case ASSIGNMULFLOAT:
+			f := *(*float64)(unsafe.Pointer(uintptr(stack[top-1])))
+			f *= *(*float64)(unsafe.Pointer(&stack[top]))
+			*(*int64)(unsafe.Pointer(uintptr(stack[top-1]))) = *(*int64)(unsafe.Pointer(&f))
+			top -= 2
+		case ASSIGNDIVFLOAT:
+			f := *(*float64)(unsafe.Pointer(uintptr(stack[top-1])))
+			d := *(*float64)(unsafe.Pointer(&stack[top]))
+			if d == 0.0 {
+				return ``, gas, fmt.Errorf(errDivZero)
+			}
+			f /= d
+			*(*int64)(unsafe.Pointer(uintptr(stack[top-1]))) = *(*int64)(unsafe.Pointer(&f))
+			top -= 2
 		default:
 			return ``, gas, fmt.Errorf(errCommand, code[i])
 		}

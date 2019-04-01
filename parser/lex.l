@@ -19,7 +19,7 @@ func (l *lexer) scan(lval *yySymType) lex.Char {
 hexint	    	0[xX][0-9a-fA-F]+
 digit			[0-9]|{unicodeDigit}
 int				[0-9]+
-float			{int}\.[0-9]*
+float			{int}\.[0-9]+
 identifier		{letter}({letter}|{digit})*
 callcontract    @{identifier}\(
 call    		{identifier}\(
@@ -99,13 +99,18 @@ hexint			return l.char(T_INT)
 str			    return l.char(T_STR)
 arr			    return l.char(T_ARR)
 map			    return l.char(T_MAP)
+float			return l.char(T_FLOAT)
 
+{float}			{
+					ai, _ := strconv.ParseFloat(string(l.TokenBytes(nil)), 64); 
+					lval.f = ai
+					return l.char(FLOAT)
+				}
 {hexint}			{
 					val, _ := strconv.ParseInt(string(l.TokenBytes(nil)), 0, 64)
 					lval.i = int64(val)
 					return l.char(INT)
 				}
-
 {int}			{
 					ai, _ := strconv.Atoi(string(l.TokenBytes(nil)))
 					lval.i = int64(ai)

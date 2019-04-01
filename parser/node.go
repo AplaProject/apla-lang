@@ -39,12 +39,13 @@ const (
 )
 
 const (
-	VVoid = iota
-	VInt  // int
-	VBool // bool
-	VStr  // str
-	VArr  // arr
-	VMap  // map
+	VVoid  = iota
+	VInt   // int
+	VBool  // bool
+	VStr   // str
+	VArr   // arr
+	VMap   // map
+	VFloat // float
 )
 
 // NVar contains type and name of variable or parameter
@@ -399,6 +400,8 @@ func addStatement(statements *Node, statement *Node, l yyLexer) *Node {
 func newValue(value interface{}, l yyLexer) *Node {
 	var vtype uint32
 	switch value.(type) {
+	case float64:
+		vtype = VFloat
 	case int64:
 		vtype = VInt
 	case string:

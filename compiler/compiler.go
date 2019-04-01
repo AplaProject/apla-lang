@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"strings"
+	"unsafe"
 
 	"github.com/AplaProject/apla-lang/parser"
 	rt "github.com/AplaProject/apla-lang/runtime"
@@ -260,6 +261,12 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 			}
 			cmpl.Append(rt.PUSHSTR, rt.Bcode(len(cmpl.Data)), rt.Bcode(len(v)))
 			cmpl.Data = append(cmpl.Data, []byte(v)...)
+		case float64:
+			var uf = uintptr(unsafe.Pointer(&v))
+			u64 := *(*uint64)(unsafe.Pointer(uf))
+			cmpl.Append(rt.PUSH64, rt.Bcode(u64>>48), rt.Bcode((u64>>32)&0xffff),
+				rt.Bcode((u64>>16)&0xffff), rt.Bcode(u64&0xffff))
+			node.Result = parser.VFloat
 		default:
 			return cmpl.ErrorParam(node, errType, node.Value)
 		}

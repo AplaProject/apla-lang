@@ -14,33 +14,43 @@ const (
 var (
 	operators = [][]uint32{
 		// BCode, Result, Operator, Type of parameters...
-		{rt.SIGNINT, parser.VInt, parser.SUB, parser.VInt},                           // -int
-		{rt.NOT, parser.VBool, parser.NOT, parser.VBool},                             // !bool
-		{rt.ADDINT, parser.VInt, parser.ADD, parser.VInt, parser.VInt},               // int+int
-		{rt.SUBINT, parser.VInt, parser.SUB, parser.VInt, parser.VInt},               // int-int
-		{rt.MULINT, parser.VInt, parser.MUL, parser.VInt, parser.VInt},               // int*int
-		{rt.DIVINT, parser.VInt, parser.DIV, parser.VInt, parser.VInt},               // int/int
-		{rt.MODINT, parser.VInt, parser.MOD, parser.VInt, parser.VInt},               // int%int
-		{rt.ASSIGNINT, parser.VVoid, parser.ASSIGN, parser.VInt, parser.VInt},        // int = int
-		{rt.ASSIGNADDINT, parser.VVoid, parser.ADD_ASSIGN, parser.VInt, parser.VInt}, // int += int
-		{rt.ASSIGNSUBINT, parser.VVoid, parser.SUB_ASSIGN, parser.VInt, parser.VInt}, // int -= int
-		{rt.ASSIGNMULINT, parser.VVoid, parser.MUL_ASSIGN, parser.VInt, parser.VInt}, // int *= int
-		{rt.ASSIGNDIVINT, parser.VVoid, parser.DIV_ASSIGN, parser.VInt, parser.VInt}, // int /= int
-		{rt.ASSIGNMODINT, parser.VVoid, parser.MOD_ASSIGN, parser.VInt, parser.VInt}, // int %= int
-		{rt.EQINT, parser.VBool, parser.EQ, parser.VInt, parser.VInt},                // int == int
-		{rt.NEINT, parser.VBool, parser.NOT_EQ, parser.VInt, parser.VInt},            // int != int
-		{rt.LTINT, parser.VBool, parser.LT, parser.VInt, parser.VInt},                // int < int
-		{rt.LEINT, parser.VBool, parser.LTE, parser.VInt, parser.VInt},               // int <= int
-		{rt.GTINT, parser.VBool, parser.GT, parser.VInt, parser.VInt},                // int > int
-		{rt.GEINT, parser.VBool, parser.GTE, parser.VInt, parser.VInt},               // int >= int
-		{rt.ASSIGNINT, parser.VVoid, parser.ASSIGN, parser.VBool, parser.VBool},      // bool = bool
-		{rt.AND, parser.VBool, parser.AND, parser.VBool, parser.VBool},               // bool && bool
-		{rt.OR, parser.VBool, parser.OR, parser.VBool, parser.VBool},                 // bool || bool
-		{rt.ADDSTR, parser.VStr, parser.ADD, parser.VStr, parser.VStr},               // str+str
-		{rt.ASSIGNSTR, parser.VVoid, parser.ASSIGN, parser.VStr, parser.VStr},        // str = str
-		{rt.ASSIGNADDSTR, parser.VVoid, parser.ADD_ASSIGN, parser.VStr, parser.VStr}, // str += str
-		{rt.EQSTR, parser.VBool, parser.EQ, parser.VStr, parser.VStr},                // str == str
-		{rt.NEQSTR, parser.VBool, parser.NOT_EQ, parser.VStr, parser.VStr},           // str != str
+		{rt.SIGNINT, parser.VInt, parser.SUB, parser.VInt},                                 // -int
+		{rt.NOT, parser.VBool, parser.NOT, parser.VBool},                                   // !bool
+		{rt.ADDINT, parser.VInt, parser.ADD, parser.VInt, parser.VInt},                     // int+int
+		{rt.SUBINT, parser.VInt, parser.SUB, parser.VInt, parser.VInt},                     // int-int
+		{rt.MULINT, parser.VInt, parser.MUL, parser.VInt, parser.VInt},                     // int*int
+		{rt.DIVINT, parser.VInt, parser.DIV, parser.VInt, parser.VInt},                     // int/int
+		{rt.MODINT, parser.VInt, parser.MOD, parser.VInt, parser.VInt},                     // int%int
+		{rt.ASSIGNINT, parser.VVoid, parser.ASSIGN, parser.VInt, parser.VInt},              // int = int
+		{rt.ASSIGNADDINT, parser.VVoid, parser.ADD_ASSIGN, parser.VInt, parser.VInt},       // int += int
+		{rt.ASSIGNSUBINT, parser.VVoid, parser.SUB_ASSIGN, parser.VInt, parser.VInt},       // int -= int
+		{rt.ASSIGNMULINT, parser.VVoid, parser.MUL_ASSIGN, parser.VInt, parser.VInt},       // int *= int
+		{rt.ASSIGNDIVINT, parser.VVoid, parser.DIV_ASSIGN, parser.VInt, parser.VInt},       // int /= int
+		{rt.ASSIGNMODINT, parser.VVoid, parser.MOD_ASSIGN, parser.VInt, parser.VInt},       // int %= int
+		{rt.EQINT, parser.VBool, parser.EQ, parser.VInt, parser.VInt},                      // int == int
+		{rt.NEINT, parser.VBool, parser.NOT_EQ, parser.VInt, parser.VInt},                  // int != int
+		{rt.LTINT, parser.VBool, parser.LT, parser.VInt, parser.VInt},                      // int < int
+		{rt.LEINT, parser.VBool, parser.LTE, parser.VInt, parser.VInt},                     // int <= int
+		{rt.GTINT, parser.VBool, parser.GT, parser.VInt, parser.VInt},                      // int > int
+		{rt.GEINT, parser.VBool, parser.GTE, parser.VInt, parser.VInt},                     // int >= int
+		{rt.ASSIGNINT, parser.VVoid, parser.ASSIGN, parser.VBool, parser.VBool},            // bool = bool
+		{rt.AND, parser.VBool, parser.AND, parser.VBool, parser.VBool},                     // bool && bool
+		{rt.OR, parser.VBool, parser.OR, parser.VBool, parser.VBool},                       // bool || bool
+		{rt.ADDSTR, parser.VStr, parser.ADD, parser.VStr, parser.VStr},                     // str+str
+		{rt.ASSIGNSTR, parser.VVoid, parser.ASSIGN, parser.VStr, parser.VStr},              // str = str
+		{rt.ASSIGNADDSTR, parser.VVoid, parser.ADD_ASSIGN, parser.VStr, parser.VStr},       // str += str
+		{rt.EQSTR, parser.VBool, parser.EQ, parser.VStr, parser.VStr},                      // str == str
+		{rt.NEQSTR, parser.VBool, parser.NOT_EQ, parser.VStr, parser.VStr},                 // str != str
+		{rt.SIGNFLOAT, parser.VFloat, parser.SUB, parser.VFloat},                           // -float
+		{rt.ADDFLOAT, parser.VFloat, parser.ADD, parser.VFloat, parser.VFloat},             // float+float
+		{rt.SUBFLOAT, parser.VFloat, parser.SUB, parser.VFloat, parser.VFloat},             // float-float
+		{rt.ASSIGNINT, parser.VVoid, parser.ASSIGN, parser.VFloat, parser.VFloat},          // float = float
+		{rt.MULFLOAT, parser.VFloat, parser.MUL, parser.VFloat, parser.VFloat},             // float*float
+		{rt.DIVFLOAT, parser.VFloat, parser.DIV, parser.VFloat, parser.VFloat},             // float/float
+		{rt.ASSIGNADDFLOAT, parser.VVoid, parser.ADD_ASSIGN, parser.VFloat, parser.VFloat}, // float += float
+		{rt.ASSIGNSUBFLOAT, parser.VVoid, parser.SUB_ASSIGN, parser.VFloat, parser.VFloat}, // float -= float
+		{rt.ASSIGNMULFLOAT, parser.VVoid, parser.MUL_ASSIGN, parser.VFloat, parser.VFloat}, // float *= float
+		{rt.ASSIGNDIVFLOAT, parser.VVoid, parser.DIV_ASSIGN, parser.VFloat, parser.VFloat}, // float /= float
 	}
 )
 
@@ -170,6 +180,8 @@ main:
 			ret += `arr`
 		case parser.VMap:
 			ret += `map`
+		case parser.VFloat:
+			ret += `float`
 		default:
 			break main
 		}
