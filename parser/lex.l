@@ -100,6 +100,7 @@ str			    return l.char(T_STR)
 arr			    return l.char(T_ARR)
 map			    return l.char(T_MAP)
 float			return l.char(T_FLOAT)
+money			return l.char(T_MONEY)
 
 {float}			{
 					ai, _ := strconv.ParseFloat(string(l.TokenBytes(nil)), 64); 

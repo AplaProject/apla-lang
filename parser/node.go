@@ -46,6 +46,7 @@ const (
 	VArr   // arr
 	VMap   // map
 	VFloat // float
+	VMoney // money
 )
 
 // NVar contains type and name of variable or parameter

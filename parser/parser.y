@@ -90,6 +90,7 @@ func setResult(l yyLexer, v *Node) {
 %token T_ARR  // arr
 %token T_MAP  // map
 %token T_FLOAT  // float
+%token T_MONEY  // money
 
 %type <i> ordinaltype
 %type <n> type
@@ -132,6 +133,7 @@ ordinaltype
     | T_ARR {$$ = VArr}    
     | T_MAP {$$ = VMap}    
     | T_FLOAT {$$ = VFloat}
+    | T_MONEY {$$ = VMoney}
     ;
 
 type

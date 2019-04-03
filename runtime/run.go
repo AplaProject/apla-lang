@@ -5,6 +5,8 @@ import (
 	"reflect"
 	"unsafe"
 
+	"github.com/shopspring/decimal"
+
 	"github.com/AplaProject/apla-lang/parser"
 )
 
@@ -106,6 +108,9 @@ main:
 					v = int64(len(rt.Objects) - 1)
 				case parser.VMap:
 					rt.Objects = append(rt.Objects, map[string]int64{})
+					v = int64(len(rt.Objects) - 1)
+				case parser.VMoney:
+					rt.Objects = append(rt.Objects, decimal.New(0, 0))
 					v = int64(len(rt.Objects) - 1)
 				}
 				Vars = append(Vars, v)
@@ -309,7 +314,7 @@ main:
 			}
 			i += 2
 			switch code[i] & 0xf {
-			case parser.VArr, parser.VMap, parser.VStr: // Create a copy of the object
+			case parser.VArr, parser.VMap, parser.VStr, parser.VMoney: // Create a copy of the object
 				stack[top] = copy(rt, int64(code[i]), stack[top])
 			}
 			pars = append(pars, int64(code[i-1]), stack[top])

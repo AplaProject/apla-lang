@@ -1,3 +1,8 @@
+contract callD { 
+    money m
+    return m
+}
+==== 0
 contract callVAFloat3 { 
     float f = 2223.333
     return int(f) + int(5.5) + int(-10.9)

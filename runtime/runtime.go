@@ -6,6 +6,8 @@ import (
 	"strings"
 	"unsafe"
 
+	"github.com/shopspring/decimal"
+
 	"github.com/AplaProject/apla-lang/parser"
 )
 
@@ -165,6 +167,8 @@ func print(rt *Runtime, val int64, vtype int64) string {
 			items[i] = key + `: ` + print(rt, imap[key], vtype>>4)
 		}
 		result += strings.Join(items, ` `) + `]`
+	case parser.VMoney:
+		result = fmt.Sprint(val)
 	default:
 		result = fmt.Sprint(val)
 	}
@@ -176,6 +180,9 @@ func copy(rt *Runtime, vtype int64, index int64) int64 {
 	case parser.VStr:
 		rt.Strings = append(rt.Strings, rt.Strings[index])
 		return int64(len(rt.Strings) - 1)
+	case parser.VMoney:
+		rt.Objects = append(rt.Objects, rt.Objects[index].(decimal.Decimal))
+		return int64(len(rt.Objects) - 1)
 	case parser.VArr:
 		subtype := (vtype >> 4) & 0xf
 		src := rt.Objects[index].([]int64)
