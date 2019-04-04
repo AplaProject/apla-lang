@@ -1,8 +1,41 @@
-contract callD { 
-    money m
+contract callDArr { 
+    money d = money(7)
+    arr.money am = {money(123), d}
+    am += d
+    d += money(33)
+    am += d
+    return am
+}
+==== [123 7 7 40]
+contract callDMA { 
+    money m = money(123)
+    money d = money(`-7899`)
+    m += d
+    m -= money(224)
+    m *= money(3)
+    m /= money(1000)
     return m
 }
-==== 0
+==== -24
+contract callDMZ { 
+    money m = money(123)
+    return m/money(0.0)
+}
+==== dividing by zero
+contract callDM { 
+    money m = money(123)
+    return -m * money(`200`)/money(100.0)
+}
+==== -246
+contract callDE { 
+    return money("12345string")
+}
+==== can't convert 12345string to decimal
+contract callD { 
+    money m = money(1234567)
+    return m + money(7654321.7234) - money("123456789012345678908888888.678")
+}
+==== -123456789012345678900000000
 contract callVAFloat3 { 
     float f = 2223.333
     return int(f) + int(5.5) + int(-10.9)

@@ -6,6 +6,8 @@ import (
 	"strconv"
 	"unsafe"
 
+	"github.com/shopspring/decimal"
+
 	"github.com/AplaProject/apla-lang/parser"
 )
 
@@ -27,6 +29,9 @@ var (
 		{IntStr, 1, `int`, []uint32{parser.VStr}, parser.VInt},                        // int(str) int
 		{FloatInt, 1, `float`, []uint32{parser.VInt}, parser.VFloat},                  // float(int) float
 		{IntFloat, 1, `int`, []uint32{parser.VFloat}, parser.VInt},                    // int(float) int
+		{MoneyInt, 1, `money`, []uint32{parser.VInt}, parser.VMoney},                  // money(int) money
+		{MoneyFloat, 1, `money`, []uint32{parser.VFloat}, parser.VMoney},              // money(float) money
+		{MoneyStr, 1, `money`, []uint32{parser.VStr}, parser.VMoney},                  // money(str) money
 	}
 )
 
@@ -85,7 +90,29 @@ func FloatInt(rt *Runtime, i int64) int64 {
 	return *(*int64)(unsafe.Pointer(&f))
 }
 
-// IntFloat converts afloat to the integer number
+// IntFloat converts a float to the integer number
 func IntFloat(rt *Runtime, i int64) int64 {
 	return int64(*(*float64)(unsafe.Pointer(&i)))
+}
+
+// MoneyInt converts an integer number to money
+func MoneyInt(rt *Runtime, i int64) int64 {
+	rt.Objects = append(rt.Objects, decimal.New(i, 0))
+	return int64(len(rt.Objects) - 1)
+}
+
+// MoneyFloat converts a float number to money
+func MoneyFloat(rt *Runtime, i int64) int64 {
+	rt.Objects = append(rt.Objects, decimal.NewFromFloat(*(*float64)(unsafe.Pointer(&i))).Floor())
+	return int64(len(rt.Objects) - 1)
+}
+
+// MoneyStr converts a string to money
+func MoneyStr(rt *Runtime, i int64) (int64, error) {
+	d, err := decimal.NewFromString(rt.Strings[i])
+	if err != nil {
+		return 0, err
+	}
+	rt.Objects = append(rt.Objects, d.Floor())
+	return int64(len(rt.Objects) - 1), nil
 }

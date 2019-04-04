@@ -65,6 +65,7 @@ const (
 	GETMAP         // var[key]
 	SETMAP         // var[key]
 	COPYSTR        // copy str
+	COPY           // copy object
 	ASSIGNSETMAP   // var[key] = value
 	ASSIGNSETARR   // var[] = value
 	INITARR        // +uint16 count
@@ -79,7 +80,17 @@ const (
 	ASSIGNSUBFLOAT // vars -= float
 	ASSIGNMULFLOAT // vars *= float
 	ASSIGNDIVFLOAT // vars /= float
-	DATA           // +uint16 size of data + data
+	ADDMONEY       // money + money
+	SUBMONEY       // money - money
+	MULMONEY       // money * money
+	DIVMONEY       // money / money
+	SIGNMONEY      // -money
+	ASSIGNADDMONEY // vars += money
+	ASSIGNSUBMONEY // vars -= money
+	ASSIGNMULMONEY // vars *= money
+	ASSIGNDIVMONEY // vars /= money
+
+	DATA // +uint16 size of data + data
 )
 
 // VarInfo describes a variable
@@ -168,7 +179,7 @@ func print(rt *Runtime, val int64, vtype int64) string {
 		}
 		result += strings.Join(items, ` `) + `]`
 	case parser.VMoney:
-		result = fmt.Sprint(val)
+		result = fmt.Sprint(rt.Objects[val].(decimal.Decimal))
 	default:
 		result = fmt.Sprint(val)
 	}

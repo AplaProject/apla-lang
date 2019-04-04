@@ -51,6 +51,16 @@ var (
 		{rt.ASSIGNSUBFLOAT, parser.VVoid, parser.SUB_ASSIGN, parser.VFloat, parser.VFloat}, // float -= float
 		{rt.ASSIGNMULFLOAT, parser.VVoid, parser.MUL_ASSIGN, parser.VFloat, parser.VFloat}, // float *= float
 		{rt.ASSIGNDIVFLOAT, parser.VVoid, parser.DIV_ASSIGN, parser.VFloat, parser.VFloat}, // float /= float
+		{rt.ASSIGNINT, parser.VVoid, parser.ASSIGN, parser.VMoney, parser.VMoney},          // money = money
+		{rt.ADDMONEY, parser.VMoney, parser.ADD, parser.VMoney, parser.VMoney},             // money+money
+		{rt.SUBMONEY, parser.VMoney, parser.SUB, parser.VMoney, parser.VMoney},             // money-money
+		{rt.SIGNMONEY, parser.VMoney, parser.SUB, parser.VMoney},                           // -money
+		{rt.MULMONEY, parser.VMoney, parser.MUL, parser.VMoney, parser.VMoney},             // money*money
+		{rt.DIVMONEY, parser.VMoney, parser.DIV, parser.VMoney, parser.VMoney},             // money/money
+		{rt.ASSIGNADDMONEY, parser.VVoid, parser.ADD_ASSIGN, parser.VMoney, parser.VMoney}, // money += money
+		{rt.ASSIGNSUBMONEY, parser.VVoid, parser.SUB_ASSIGN, parser.VMoney, parser.VMoney}, // money -= money
+		{rt.ASSIGNMULMONEY, parser.VVoid, parser.MUL_ASSIGN, parser.VMoney, parser.VMoney}, // money *= money
+		{rt.ASSIGNDIVMONEY, parser.VVoid, parser.DIV_ASSIGN, parser.VMoney, parser.VMoney}, // money /= money
 	}
 )
 
@@ -82,6 +92,9 @@ func (cmpl *compiler) findBinary(binary *parser.NBinary) (rt.Bcode, uint32) {
 		if subtype == binary.Right.Result {
 			if binary.Right.Result == parser.VStr {
 				cmpl.Append(rt.COPYSTR)
+			}
+			if binary.Right.Result == parser.VMoney {
+				cmpl.Append(rt.COPY, parser.VMoney)
 			}
 			if outtype&0xf == parser.VMap {
 				return rt.ASSIGNSETMAP, parser.VVoid
@@ -182,6 +195,8 @@ main:
 			ret += `map`
 		case parser.VFloat:
 			ret += `float`
+		case parser.VMoney:
+			ret += `money`
 		default:
 			break main
 		}

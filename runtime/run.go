@@ -398,6 +398,9 @@ main:
 			}
 		case COPYSTR:
 			stack[top] = copy(rt, int64(parser.VStr), stack[top])
+		case COPY:
+			i++
+			stack[top] = copy(rt, int64(code[i]), stack[top])
 		case ASSIGNSETMAP:
 			imap := rt.Objects[stack[top-2]].(map[string]int64)
 			imap[rt.Strings[stack[top-1]]] = stack[top]
@@ -482,6 +485,59 @@ main:
 			}
 			f /= d
 			*(*int64)(unsafe.Pointer(uintptr(stack[top-1]))) = *(*int64)(unsafe.Pointer(&f))
+			top -= 2
+		case ADDMONEY:
+			top--
+			d := rt.Objects[stack[top]].(decimal.Decimal)
+			rt.Objects = append(rt.Objects, d.Add(rt.Objects[stack[top+1]].(decimal.Decimal)))
+			stack[top] = int64(len(rt.Objects) - 1)
+		case SUBMONEY:
+			top--
+			d := rt.Objects[stack[top]].(decimal.Decimal)
+			rt.Objects = append(rt.Objects, d.Sub(rt.Objects[stack[top+1]].(decimal.Decimal)))
+			stack[top] = int64(len(rt.Objects) - 1)
+		case SIGNMONEY:
+			rt.Objects = append(rt.Objects, rt.Objects[stack[top]].(decimal.Decimal).Neg())
+			stack[top] = int64(len(rt.Objects) - 1)
+		case MULMONEY:
+			top--
+			d := rt.Objects[stack[top]].(decimal.Decimal)
+			rt.Objects = append(rt.Objects, d.Mul(rt.Objects[stack[top+1]].(decimal.Decimal)))
+			stack[top] = int64(len(rt.Objects) - 1)
+		case DIVMONEY:
+			top--
+			d := rt.Objects[stack[top+1]].(decimal.Decimal)
+			if d.IsZero() {
+				return ``, gas, fmt.Errorf(errDivZero)
+			}
+			rt.Objects = append(rt.Objects, rt.Objects[stack[top]].(decimal.Decimal).Div(d))
+			stack[top] = int64(len(rt.Objects) - 1)
+		case ASSIGNADDMONEY:
+			d := rt.Objects[stack[top]].(decimal.Decimal)
+			ind := *(*int64)(unsafe.Pointer(uintptr(stack[top-1])))
+			rt.Objects = append(rt.Objects, rt.Objects[ind].(decimal.Decimal).Add(d))
+			*(*int64)(unsafe.Pointer(uintptr(stack[top-1]))) = int64(len(rt.Objects) - 1)
+			top -= 2
+		case ASSIGNSUBMONEY:
+			d := rt.Objects[stack[top]].(decimal.Decimal)
+			ind := *(*int64)(unsafe.Pointer(uintptr(stack[top-1])))
+			rt.Objects = append(rt.Objects, rt.Objects[ind].(decimal.Decimal).Sub(d))
+			*(*int64)(unsafe.Pointer(uintptr(stack[top-1]))) = int64(len(rt.Objects) - 1)
+			top -= 2
+		case ASSIGNMULMONEY:
+			d := rt.Objects[stack[top]].(decimal.Decimal)
+			ind := *(*int64)(unsafe.Pointer(uintptr(stack[top-1])))
+			rt.Objects = append(rt.Objects, rt.Objects[ind].(decimal.Decimal).Mul(d))
+			*(*int64)(unsafe.Pointer(uintptr(stack[top-1]))) = int64(len(rt.Objects) - 1)
+			top -= 2
+		case ASSIGNDIVMONEY:
+			d := rt.Objects[stack[top]].(decimal.Decimal)
+			if d.IsZero() {
+				return ``, gas, fmt.Errorf(errDivZero)
+			}
+			ind := *(*int64)(unsafe.Pointer(uintptr(stack[top-1])))
+			rt.Objects = append(rt.Objects, rt.Objects[ind].(decimal.Decimal).Div(d))
+			*(*int64)(unsafe.Pointer(uintptr(stack[top-1]))) = int64(len(rt.Objects) - 1)
 			top -= 2
 		default:
 			return ``, gas, fmt.Errorf(errCommand, code[i])
