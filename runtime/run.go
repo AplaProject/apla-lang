@@ -149,13 +149,6 @@ main:
 				b = 1
 			}
 			stack[top] = b
-		case NEINT:
-			var b int64
-			top--
-			if stack[top] != stack[top+1] {
-				b = 1
-			}
-			stack[top] = b
 		case LTINT:
 			var b int64
 			top--
@@ -163,24 +156,10 @@ main:
 				b = 1
 			}
 			stack[top] = b
-		case LEINT:
-			var b int64
-			top--
-			if stack[top] <= stack[top+1] {
-				b = 1
-			}
-			stack[top] = b
 		case GTINT:
 			var b int64
 			top--
 			if stack[top] > stack[top+1] {
-				b = 1
-			}
-			stack[top] = b
-		case GEINT:
-			var b int64
-			top--
-			if stack[top] >= stack[top+1] {
 				b = 1
 			}
 			stack[top] = b
@@ -352,13 +331,6 @@ main:
 			} else {
 				stack[top] = 0
 			}
-		case NEQSTR:
-			top--
-			if rt.Strings[stack[top]] == rt.Strings[stack[top+1]] {
-				stack[top] = 0
-			} else {
-				stack[top] = 1
-			}
 		case ASSIGNADDSTR:
 			ind := *(*int64)(unsafe.Pointer(uintptr(stack[top-1])))
 			rt.Strings[ind] += rt.Strings[stack[top]]
@@ -486,6 +458,30 @@ main:
 			f /= d
 			*(*int64)(unsafe.Pointer(uintptr(stack[top-1]))) = *(*int64)(unsafe.Pointer(&f))
 			top -= 2
+		case EQFLOAT:
+			var b int64
+			top--
+			if *(*float64)(unsafe.Pointer(&stack[top])) ==
+				*(*float64)(unsafe.Pointer(&stack[top+1])) {
+				b = 1
+			}
+			stack[top] = b
+		case LTFLOAT:
+			var b int64
+			top--
+			if *(*float64)(unsafe.Pointer(&stack[top])) <
+				*(*float64)(unsafe.Pointer(&stack[top+1])) {
+				b = 1
+			}
+			stack[top] = b
+		case GTFLOAT:
+			var b int64
+			top--
+			if *(*float64)(unsafe.Pointer(&stack[top])) >
+				*(*float64)(unsafe.Pointer(&stack[top+1])) {
+				b = 1
+			}
+			stack[top] = b
 		case ADDMONEY:
 			top--
 			d := rt.Objects[stack[top]].(decimal.Decimal)
@@ -539,6 +535,30 @@ main:
 			rt.Objects = append(rt.Objects, rt.Objects[ind].(decimal.Decimal).Div(d))
 			*(*int64)(unsafe.Pointer(uintptr(stack[top-1]))) = int64(len(rt.Objects) - 1)
 			top -= 2
+		case EQMONEY:
+			var b int64
+			top--
+			d := rt.Objects[stack[top]].(decimal.Decimal)
+			if d.Equal(rt.Objects[stack[top+1]].(decimal.Decimal)) {
+				b = 1
+			}
+			stack[top] = b
+		case LTMONEY:
+			var b int64
+			top--
+			d := rt.Objects[stack[top]].(decimal.Decimal)
+			if d.LessThan(rt.Objects[stack[top+1]].(decimal.Decimal)) {
+				b = 1
+			}
+			stack[top] = b
+		case GTMONEY:
+			var b int64
+			top--
+			d := rt.Objects[stack[top]].(decimal.Decimal)
+			if d.GreaterThan(rt.Objects[stack[top+1]].(decimal.Decimal)) {
+				b = 1
+			}
+			stack[top] = b
 		default:
 			return ``, gas, fmt.Errorf(errCommand, code[i])
 		}

@@ -28,11 +28,8 @@ var (
 		{rt.ASSIGNDIVINT, parser.VVoid, parser.DIV_ASSIGN, parser.VInt, parser.VInt},       // int /= int
 		{rt.ASSIGNMODINT, parser.VVoid, parser.MOD_ASSIGN, parser.VInt, parser.VInt},       // int %= int
 		{rt.EQINT, parser.VBool, parser.EQ, parser.VInt, parser.VInt},                      // int == int
-		{rt.NEINT, parser.VBool, parser.NOT_EQ, parser.VInt, parser.VInt},                  // int != int
 		{rt.LTINT, parser.VBool, parser.LT, parser.VInt, parser.VInt},                      // int < int
-		{rt.LEINT, parser.VBool, parser.LTE, parser.VInt, parser.VInt},                     // int <= int
 		{rt.GTINT, parser.VBool, parser.GT, parser.VInt, parser.VInt},                      // int > int
-		{rt.GEINT, parser.VBool, parser.GTE, parser.VInt, parser.VInt},                     // int >= int
 		{rt.ASSIGNINT, parser.VVoid, parser.ASSIGN, parser.VBool, parser.VBool},            // bool = bool
 		{rt.AND, parser.VBool, parser.AND, parser.VBool, parser.VBool},                     // bool && bool
 		{rt.OR, parser.VBool, parser.OR, parser.VBool, parser.VBool},                       // bool || bool
@@ -40,7 +37,6 @@ var (
 		{rt.ASSIGNSTR, parser.VVoid, parser.ASSIGN, parser.VStr, parser.VStr},              // str = str
 		{rt.ASSIGNADDSTR, parser.VVoid, parser.ADD_ASSIGN, parser.VStr, parser.VStr},       // str += str
 		{rt.EQSTR, parser.VBool, parser.EQ, parser.VStr, parser.VStr},                      // str == str
-		{rt.NEQSTR, parser.VBool, parser.NOT_EQ, parser.VStr, parser.VStr},                 // str != str
 		{rt.SIGNFLOAT, parser.VFloat, parser.SUB, parser.VFloat},                           // -float
 		{rt.ADDFLOAT, parser.VFloat, parser.ADD, parser.VFloat, parser.VFloat},             // float+float
 		{rt.SUBFLOAT, parser.VFloat, parser.SUB, parser.VFloat, parser.VFloat},             // float-float
@@ -61,6 +57,12 @@ var (
 		{rt.ASSIGNSUBMONEY, parser.VVoid, parser.SUB_ASSIGN, parser.VMoney, parser.VMoney}, // money -= money
 		{rt.ASSIGNMULMONEY, parser.VVoid, parser.MUL_ASSIGN, parser.VMoney, parser.VMoney}, // money *= money
 		{rt.ASSIGNDIVMONEY, parser.VVoid, parser.DIV_ASSIGN, parser.VMoney, parser.VMoney}, // money /= money
+		{rt.EQFLOAT, parser.VBool, parser.EQ, parser.VFloat, parser.VFloat},                // float == float
+		{rt.LTFLOAT, parser.VBool, parser.LT, parser.VFloat, parser.VFloat},                // float < float
+		{rt.GTFLOAT, parser.VBool, parser.GT, parser.VFloat, parser.VFloat},                // float > float
+		{rt.EQMONEY, parser.VBool, parser.EQ, parser.VMoney, parser.VMoney},                // money == money
+		{rt.LTMONEY, parser.VBool, parser.LT, parser.VMoney, parser.VMoney},                // money < money
+		{rt.GTMONEY, parser.VBool, parser.GT, parser.VMoney, parser.VMoney},                // money > money
 	}
 )
 

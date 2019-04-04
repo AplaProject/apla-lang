@@ -1,3 +1,32 @@
+contract callFDCall { 
+    str out = @callFD(f: 10.33, m: money(10.67))
+    if money(out) <= money(20) {
+        out += `1`
+    }
+    if money(out) >= money(200) {
+        out += `2`
+    }
+    if money(out) == money(2012) {
+        out += `3`
+    }
+    if money(out) != money(20123) {
+        out += `4`
+    }
+    return out
+}
+==== 20123
+contract callFD { 
+    data {
+        float f 
+        money m
+    }
+    if f == 0.0 {
+        m = money(5)
+        f = 5.0
+    }
+    return m + money(f)
+}
+==== 10
 contract callDArr { 
     money d = money(7)
     arr.money am = {money(123), d}

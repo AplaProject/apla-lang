@@ -24,11 +24,8 @@ const (
 	DIVINT         // int/int
 	MODINT         // int%int
 	EQINT          // int == int
-	NEINT          // int != int
 	LTINT          // int < int
-	LEINT          // int <= int
 	GTINT          // int > int
-	GEINT          // int >= int
 	AND            // bool && bool
 	OR             // bool || bool
 	DUP            // duplicate top of stack
@@ -57,7 +54,6 @@ const (
 	NOT            // unary logical not
 	ADDSTR         // str+str
 	EQSTR          // str == str
-	NEQSTR         // str != str
 	ASSIGNADDSTR   // vars += str
 	APPENDARR      // arr += item
 	GETINDEX       // var[]
@@ -80,6 +76,9 @@ const (
 	ASSIGNSUBFLOAT // vars -= float
 	ASSIGNMULFLOAT // vars *= float
 	ASSIGNDIVFLOAT // vars /= float
+	EQFLOAT        // float == float
+	LTFLOAT        // float < float
+	GTFLOAT        // float > float
 	ADDMONEY       // money + money
 	SUBMONEY       // money - money
 	MULMONEY       // money * money
@@ -89,6 +88,9 @@ const (
 	ASSIGNSUBMONEY // vars -= money
 	ASSIGNMULMONEY // vars *= money
 	ASSIGNDIVMONEY // vars /= money
+	EQMONEY        // money == money
+	LTMONEY        // money < money
+	GTMONEY        // money > money
 
 	DATA // +uint16 size of data + data
 )

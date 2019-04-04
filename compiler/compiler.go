@@ -177,6 +177,18 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 		if err = nodeToCode(nBinary.Right, cmpl); err != nil {
 			return err
 		}
+		var notCmp bool
+		if nBinary.Oper == parser.NOT_EQ || nBinary.Oper == parser.LTE || nBinary.Oper == parser.GTE {
+			notCmp = true
+			switch nBinary.Oper {
+			case parser.NOT_EQ:
+				nBinary.Oper = parser.EQ
+			case parser.LTE:
+				nBinary.Oper = parser.GT
+			case parser.GTE:
+				nBinary.Oper = parser.LT
+			}
+		}
 		code, result := cmpl.findBinary(nBinary)
 		var jumpCmd rt.Bcode
 		switch code {
@@ -188,6 +200,9 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 			jumpCmd = rt.Bcode(rt.JNZ)
 		}
 		cmpl.Append(code)
+		if notCmp {
+			cmpl.Append(rt.NOT)
+		}
 		if jumpCmd != rt.NOP {
 			cmpl.Contract.Code = append(cmpl.Contract.Code[:forJump],
 				append([]rt.Bcode{rt.DUP, jumpCmd, rt.Bcode(len(cmpl.Contract.Code) - forJump + 2)},
