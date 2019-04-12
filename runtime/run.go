@@ -19,6 +19,7 @@ const (
 	errIndexOut = `index out of range index:%d len:%d`
 	errIndexMap = `Key %s doesn't exist`
 	errStr2Int  = `cannot convert %s to int`
+	errGlobVar  = `global variable is undefined`
 )
 
 type objCount struct {
@@ -407,7 +408,7 @@ main:
 			i++
 			envVal := rt.Custom.Env[int64(code[i])]
 			if !envVal.Init {
-				return ``, gas, fmt.Errorf(errCommand, code[i])
+				return ``, gas, fmt.Errorf(errGlobVar)
 			}
 			top++
 			stack[top] = envVal.Value
