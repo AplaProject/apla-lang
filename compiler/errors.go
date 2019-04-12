@@ -33,6 +33,7 @@ const (
 	errForType           = `Unexpected type %s of expression; expecting array or map`
 	errBreak             = `break must be inside of while or for`
 	errContinue          = `continue must be inside of while or for`
+	errEnv               = `Environment variable $%s is undefined`
 )
 
 func (cmpl *compiler) Error(node *parser.Node, text string) error {

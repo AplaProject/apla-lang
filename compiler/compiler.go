@@ -19,6 +19,7 @@ type compiler struct {
 	Contract  *rt.Contract
 	Blocks    []*parser.Node
 	Contracts *[]*rt.Contract
+	Custom    *rt.Custom
 	NameSpace *map[string]uint32
 	RetFunc   int64
 	InFunc    bool
@@ -629,6 +630,20 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 		}
 		cmpl.Append(rt.INITMAP, rt.Bcode(len(nMap.List)))
 		node.Result = (atype << 4) | parser.VMap
+	case parser.TEnv:
+		var (
+			val rt.EnvItem
+			ok  bool
+		)
+		nEnv := node.Value.(*parser.NEnv)
+		if cmpl.Custom == nil {
+			return cmpl.ErrorParam(node, errEnv, nEnv.Name)
+		}
+		if val, ok = cmpl.Custom.Env[nEnv.Name]; !ok {
+			return cmpl.ErrorParam(node, errEnv, nEnv.Name)
+		}
+		cmpl.Append(rt.ENV, rt.Bcode(val.Index))
+		node.Result = val.Type
 	default:
 		fmt.Println(`Ooops`)
 		return cmpl.Error(node, errNodeType)
@@ -637,7 +652,8 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 }
 
 // Compile compiles contract
-func Compile(input string, nameSpace *map[string]uint32, contracts *[]*rt.Contract) (*rt.Contract, error) {
+func Compile(input string, nameSpace *map[string]uint32, contracts *[]*rt.Contract,
+	custom *rt.Custom) (*rt.Contract, error) {
 	var root *parser.Node
 
 	if len(*nameSpace) == 0 {
@@ -650,6 +666,7 @@ func Compile(input string, nameSpace *map[string]uint32, contracts *[]*rt.Contra
 		},
 		NameSpace: nameSpace,
 		Contracts: contracts,
+		Custom:    custom,
 	}
 
 	root, err := parser.Parser(input)

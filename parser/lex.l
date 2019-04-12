@@ -21,6 +21,7 @@ digit			[0-9]|{unicodeDigit}
 int				[0-9]+
 float			{int}\.[0-9]+
 identifier		{letter}({letter}|{digit})*
+env             ${identifier}
 callcontract    @{identifier}\(
 call    		{identifier}\(
 index           {identifier}\[
@@ -120,6 +121,11 @@ money			return l.char(T_MONEY)
 {identifier}	{
 					lval.s = string(l.TokenBytes(nil))
 					return l.char(IDENT)
+				}
+{env}	{
+					lval.s = string(l.TokenBytes(nil))
+					lval.s = lval.s[1:]
+					return l.char(ENV)
 				}
 {string}		{
 					var err error

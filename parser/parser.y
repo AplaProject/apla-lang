@@ -19,6 +19,7 @@ func setResult(l yyLexer, v *Node) {
 
 // Identifiers + literals
 %token<s> IDENT  // foobar
+%token<s> ENV   // $foobar
 %token<s> CALL  // foobar(
 %token<s> CALLCONTRACT  // @foobar(
 %token<s> INDEX  // foobar[
@@ -229,6 +230,7 @@ expr
     | CALL params RPAREN { $$ = newCallFunc($1, $2, yylex);}
     | CALLCONTRACT cntparams RPAREN { $$ = newCallContract($1, $2, yylex);}
     | index { $$ = $1}
+    | ENV { $$ = newEnv($1, yylex);}
     | IDENT { $$ = newGetVar($1, yylex);}
     | LBRACE exprlist RBRACE { $$ = $2;}
     | LBRACE exprmaplist RBRACE { $$ = $2;}

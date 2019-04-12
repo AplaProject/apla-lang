@@ -84,10 +84,17 @@ func loadTest(filename string) (ret []*contract, err error) {
 func testFile(filename string) error {
 	vm := simvolio.NewVM(simvolio.VMSettings{
 		GasLimit: 200000000,
+		Custom: &simvolio.Custom{
+			Env: map[string]uint32{`block`: simvolio.Int, `ecosystem`: simvolio.Int,
+				`key`: simvolio.Str},
+		},
 	})
 	contracts, err := loadTest(filename)
 	if err != nil {
 		return err
+	}
+	rtCustom := &simvolio.RTCustom{
+		Env: map[string]interface{}{`block`: 7, `ecosystem`: 1, `key`: `0122afcd34`},
 	}
 	for i := int64(len(contracts)) - 1; i >= 0; i-- {
 		cnt := contracts[i]
@@ -98,7 +105,7 @@ func testFile(filename string) error {
 			continue
 		}
 		//		fmt.Println(`I`, cnt.Line)
-		result, gas, err := vm.Run(vm.Contracts[len(vm.Contracts)-1])
+		result, gas, err := vm.Run(vm.Contracts[len(vm.Contracts)-1], rtCustom)
 		if err != nil {
 			if err = cnt.checkError(err); err != nil {
 				return err

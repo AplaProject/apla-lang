@@ -66,6 +66,7 @@ const (
 	ASSIGNSETARR   // var[] = value
 	INITARR        // +uint16 count
 	INITMAP        // +uint16 count
+	ENV            // +uint16
 	PUSH64         // + int64
 	SIGNFLOAT      // -float
 	ADDFLOAT       // float + float
@@ -124,12 +125,33 @@ type Contract struct {
 	Params map[string]VarInfo
 }
 
+type EnvItem struct {
+	Index int
+	Type  uint32
+}
+
+// Custom is a structure for compile customizing
+type Custom struct {
+	Env map[string]EnvItem
+}
+
+type EnvVal struct {
+	Value int64
+	Init  bool
+}
+
+// RTCustom is a structure for runtime customizing
+type RTCustom struct {
+	Env []EnvVal
+}
+
 // Runtime is a runtime structure
 type Runtime struct {
 	//	Vars      []int64
 	Contracts *[]*Contract
 	Strings   []string
 	Objects   []interface{}
+	Custom    *RTCustom
 }
 
 // NewRuntime creates a new runtime

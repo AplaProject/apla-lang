@@ -36,6 +36,7 @@ const (
 	TEndLabel
 	TArray
 	TMap
+	TEnv
 )
 
 const (
@@ -59,6 +60,11 @@ type NVar struct {
 type NType struct {
 	Type int64
 	Def  bool
+}
+
+// NEnv contains a name of environment variable
+type NEnv struct {
+	Name string
 }
 
 // NVarValue contains the name of variable
@@ -448,6 +454,15 @@ func newVarValue(name string, l yyLexer) *Node {
 	return setPos(&Node{
 		Type: TSetVar,
 		Value: &NVarValue{
+			Name: name,
+		},
+	}, l)
+}
+
+func newEnv(name string, l yyLexer) *Node {
+	return setPos(&Node{
+		Type: TEnv,
+		Value: &NEnv{
 			Name: name,
 		},
 	}, l)

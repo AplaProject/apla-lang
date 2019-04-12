@@ -1,3 +1,15 @@
+contract EnvKey { 
+    return `key=` + $key 
+}
+==== key=0122afcd34
+contract Env { 
+    return $block + $ecosystem
+}
+==== 8
+contract Env { 
+    return $test
+}
+==== Env 2:12: Environment variable $test is undefined
 contract callFDCall { 
     str out = @callFD(f: 10.33, m: money(10.67))
     if money(out) <= money(20) {

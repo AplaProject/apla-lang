@@ -403,6 +403,14 @@ main:
 			rt.Objects = append(rt.Objects, imap)
 			top -= 2*count - 1
 			stack[top] = int64(len(rt.Objects) - 1)
+		case ENV:
+			i++
+			envVal := rt.Custom.Env[int64(code[i])]
+			if !envVal.Init {
+				return ``, gas, fmt.Errorf(errCommand, code[i])
+			}
+			top++
+			stack[top] = envVal.Value
 		case PUSH64:
 			i += 4
 			top++
