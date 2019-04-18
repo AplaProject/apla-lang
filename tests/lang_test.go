@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/AplaProject/apla-lang"
+	"github.com/AplaProject/apla-lang/runtime"
 )
 
 type contract struct {
@@ -81,20 +82,41 @@ func loadTest(filename string) (ret []*contract, err error) {
 	return
 }
 
+func testFunc(data runtime.IData, s string, i int64) (string, int64, error) {
+	return s + fmt.Sprint(i), 100, nil
+}
+
+func voidFunc(data runtime.IData, s string) (int64, error) {
+	return 20, fmt.Errorf(`errorVoidFunc`)
+}
+
+type myData struct {
+	Env []interface{}
+}
+
+func (data myData) GetEnv() []interface{} {
+	return data.Env
+}
+
 func testFile(filename string) error {
 	vm := simvolio.NewVM(simvolio.VMSettings{
 		GasLimit: 200000000,
-		Custom: &simvolio.Custom{
-			Env: map[string]uint32{`block`: simvolio.Int, `ecosystem`: simvolio.Int,
-				`key`: simvolio.Str},
+		Env: []simvolio.EnvItem{
+			{Name: `block`, Type: simvolio.Int},
+			{Name: `ecosystem`, Type: simvolio.Int},
+			{Name: `key`, Type: simvolio.Str},
+		},
+		Funcs: []simvolio.FuncItem{
+			{Func: testFunc, Name: `testFunc`, Params: []uint32{simvolio.Str, simvolio.Int}, Result: simvolio.Str},
+			{Func: voidFunc, Name: `voidFunc`, Params: []uint32{simvolio.Str}},
 		},
 	})
 	contracts, err := loadTest(filename)
 	if err != nil {
 		return err
 	}
-	rtCustom := &simvolio.RTCustom{
-		Env: map[string]interface{}{`block`: 7, `ecosystem`: 1, `key`: `0122afcd34`},
+	data := myData{
+		Env: []interface{}{7, 1, `0122afcd34`},
 	}
 	for i := int64(len(contracts)) - 1; i >= 0; i-- {
 		cnt := contracts[i]
@@ -105,7 +127,7 @@ func testFile(filename string) error {
 			continue
 		}
 		//		fmt.Println(`I`, cnt.Line)
-		result, gas, err := vm.Run(vm.Contracts[len(vm.Contracts)-1], rtCustom)
+		result, gas, err := vm.Run(vm.Contracts[len(vm.Contracts)-1], data)
 		if err != nil {
 			if err = cnt.checkError(err); err != nil {
 				return err

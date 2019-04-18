@@ -20,6 +20,7 @@ const (
 	errIndexMap = `Key %s doesn't exist`
 	errStr2Int  = `cannot convert %s to int`
 	errGlobVar  = `global variable is undefined`
+	errRetType  = `unsupported type of result value in %s`
 )
 
 type objCount struct {
@@ -244,6 +245,47 @@ main:
 			coff += 2
 			i += int64(int16(code[i+1]))
 			continue
+		case CUSTOMFUNC:
+			i++
+			eFunc := rt.Funcs[code[i]]
+			parCount := int64(len(eFunc.Params))
+			parsFunc := make([]reflect.Value, parCount+1)
+			top -= parCount
+			parsFunc[0] = reflect.ValueOf(rt.Data)
+			for k := int64(0); k < parCount; k++ {
+				switch eFunc.Params[k] {
+				case parser.VStr:
+					parsFunc[k+1] = reflect.ValueOf(rt.Strings[stack[top+k+1]])
+				default:
+					parsFunc[k+1] = reflect.ValueOf(stack[top+k+1])
+				}
+			}
+			var result []reflect.Value
+			result = reflect.ValueOf(eFunc.Func).Call(parsFunc)
+			gas -= result[len(result)-2].Interface().(int64)
+			last := result[len(result)-1].Interface()
+			if last != nil {
+				if _, isError := last.(error); isError {
+					return ``, gas, result[len(result)-1].Interface().(error)
+				}
+			}
+			top++
+			switch eFunc.Result {
+			case parser.VVoid:
+			case parser.VInt:
+				stack[top] = result[0].Interface().(int64)
+			case parser.VBool:
+				if result[0].Interface().(bool) {
+					stack[top] = 1
+				} else {
+					stack[top] = 0
+				}
+			case parser.VStr:
+				rt.Strings = append(rt.Strings, result[0].Interface().(string))
+				stack[top] = int64(len(rt.Strings) - 1)
+			default:
+				return ``, gas, fmt.Errorf(errRetType, eFunc.Name)
+			}
 		case EMBEDFUNC:
 			i++
 			eFunc := StdLib[code[i]]
@@ -257,6 +299,7 @@ main:
 			}
 			var result []reflect.Value
 			result = reflect.ValueOf(eFunc.Func).Call(parsFunc)
+			gas -= eFunc.Gas
 			if len(result) > 0 {
 				last := result[len(result)-1].Interface()
 				if last != nil {
@@ -406,7 +449,7 @@ main:
 			stack[top] = int64(len(rt.Objects) - 1)
 		case ENV:
 			i++
-			envVal := rt.Custom.Env[int64(code[i])]
+			envVal := rt.Env[int64(code[i])]
 			if !envVal.Init {
 				return ``, gas, fmt.Errorf(errGlobVar)
 			}

@@ -456,7 +456,12 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 				strings.Join(pars, `, `)))
 		}
 		node.Result = ftype
-		if code >= EMBEDDED {
+		if code >= CUSTOM {
+			if ftype > parser.VStr {
+				return cmpl.ErrorParam(node, errRetType, nFunc.Name)
+			}
+			cmpl.Append(rt.CUSTOMFUNC, code-CUSTOM)
+		} else if code >= EMBEDDED {
 			cmpl.Append(rt.EMBEDFUNC, code-EMBEDDED)
 		} else {
 			var off rt.Bcode
@@ -656,9 +661,6 @@ func Compile(input string, nameSpace *map[string]uint32, contracts *[]*rt.Contra
 	custom *rt.Custom) (*rt.Contract, error) {
 	var root *parser.Node
 
-	if len(*nameSpace) == 0 {
-		initNameSpace(nameSpace)
-	}
 	cmpl := &compiler{
 		Contract: &rt.Contract{
 			Code: make([]rt.Bcode, 0, 64),
@@ -667,6 +669,10 @@ func Compile(input string, nameSpace *map[string]uint32, contracts *[]*rt.Contra
 		NameSpace: nameSpace,
 		Contracts: contracts,
 		Custom:    custom,
+	}
+
+	if len(*nameSpace) == 0 {
+		initNameSpace(cmpl, nameSpace)
 	}
 
 	root, err := parser.Parser(input)

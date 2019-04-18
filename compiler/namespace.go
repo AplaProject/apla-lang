@@ -9,6 +9,7 @@ import (
 
 const (
 	EMBEDDED = 0x1000
+	CUSTOM   = 0x2000
 )
 
 var (
@@ -158,7 +159,7 @@ func (cmpl *compiler) findCallFunc(nfunc *parser.NCallFunc) (rt.Bcode, uint32) {
 	return rt.NOP, 0
 }
 
-func initNameSpace(nameSpace *map[string]uint32) {
+func initNameSpace(cmpl *compiler, nameSpace *map[string]uint32) {
 	for _, oper := range operators {
 		var key string
 		for i := 2; i < len(oper); i++ {
@@ -173,6 +174,14 @@ func initNameSpace(nameSpace *map[string]uint32) {
 			key += fmt.Sprintf(`$%d`, par)
 		}
 		(*nameSpace)[key] = uint32(i+EMBEDDED) | (eFunc.Result << 24)
+	}
+
+	for i, fItem := range cmpl.Custom.Funcs {
+		key := fmt.Sprintf(`$%s`, fItem.Name)
+		for _, par := range fItem.Params {
+			key += fmt.Sprintf(`$%d`, par)
+		}
+		(*nameSpace)[key] = uint32(i+CUSTOM) | (fItem.Result << 24)
 	}
 }
 

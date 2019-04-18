@@ -44,6 +44,7 @@ const (
 	ASSIGNMODINT   // vars %= int
 	CALLFUNC       // + uint16 call contract function
 	EMBEDFUNC      // + uint16 call embedded function
+	CUSTOMFUNC     // + uint16 call custom function
 	CALLCONTRACT   // + uint16 call contract
 	LOADPARS       // load contract parameters
 	PARCONTRACT    // + uint16 index of parameter
@@ -130,9 +131,17 @@ type EnvItem struct {
 	Type  uint32
 }
 
+type FuncItem struct {
+	Name   string
+	Result uint32
+	Params []uint32
+	Func   interface{}
+}
+
 // Custom is a structure for compile customizing
 type Custom struct {
-	Env map[string]EnvItem
+	Env   map[string]EnvItem
+	Funcs []FuncItem
 }
 
 type EnvVal struct {
@@ -140,9 +149,9 @@ type EnvVal struct {
 	Init  bool
 }
 
-// RTCustom is a structure for runtime customizing
-type RTCustom struct {
-	Env []EnvVal
+// Data is an interface for runtime customizing
+type IData interface {
+	GetEnv() []interface{}
 }
 
 // Runtime is a runtime structure
@@ -151,7 +160,9 @@ type Runtime struct {
 	Contracts *[]*Contract
 	Strings   []string
 	Objects   []interface{}
-	Custom    *RTCustom
+	Data      IData
+	Funcs     []FuncItem
+	Env       []EnvVal
 }
 
 // NewRuntime creates a new runtime

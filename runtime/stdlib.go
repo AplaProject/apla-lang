@@ -12,6 +12,7 @@ import (
 )
 
 type EmbedFunc struct {
+	Gas    int64
 	Func   interface{}
 	Params int64 // number of parameters from stack
 	Name   string
@@ -21,17 +22,18 @@ type EmbedFunc struct {
 
 var (
 	StdLib = []EmbedFunc{
-		{KeysMap, 1, `Keys`, []uint32{parser.VMap}, (parser.VStr << 4) | parser.VArr}, // Keys(map) arr
-		{LenArr, 1, `Len`, []uint32{parser.VArr}, parser.VInt},                        // Len(arr) int
-		{LenMap, 1, `Len`, []uint32{parser.VMap}, parser.VInt},                        // Len(map) int
-		{LenStr, 1, `Len`, []uint32{parser.VStr}, parser.VInt},                        // Len(str) int
-		{StrInt, 1, `str`, []uint32{parser.VInt}, parser.VStr},                        // str(int) str
-		{IntStr, 1, `int`, []uint32{parser.VStr}, parser.VInt},                        // int(str) int
-		{FloatInt, 1, `float`, []uint32{parser.VInt}, parser.VFloat},                  // float(int) float
-		{IntFloat, 1, `int`, []uint32{parser.VFloat}, parser.VInt},                    // int(float) int
-		{MoneyInt, 1, `money`, []uint32{parser.VInt}, parser.VMoney},                  // money(int) money
-		{MoneyFloat, 1, `money`, []uint32{parser.VFloat}, parser.VMoney},              // money(float) money
-		{MoneyStr, 1, `money`, []uint32{parser.VStr}, parser.VMoney},                  // money(str) money
+		{20, KeysMap, 1, `Keys`, []uint32{parser.VMap},
+			(parser.VStr << 4) | parser.VArr}, // Keys(map) arr
+		{5, LenArr, 1, `Len`, []uint32{parser.VArr}, parser.VInt},           // Len(arr) int
+		{5, LenMap, 1, `Len`, []uint32{parser.VMap}, parser.VInt},           // Len(map) int
+		{5, LenStr, 1, `Len`, []uint32{parser.VStr}, parser.VInt},           // Len(str) int
+		{5, StrInt, 1, `str`, []uint32{parser.VInt}, parser.VStr},           // str(int) str
+		{5, IntStr, 1, `int`, []uint32{parser.VStr}, parser.VInt},           // int(str) int
+		{5, FloatInt, 1, `float`, []uint32{parser.VInt}, parser.VFloat},     // float(int) float
+		{5, IntFloat, 1, `int`, []uint32{parser.VFloat}, parser.VInt},       // int(float) int
+		{7, MoneyInt, 1, `money`, []uint32{parser.VInt}, parser.VMoney},     // money(int) money
+		{7, MoneyFloat, 1, `money`, []uint32{parser.VFloat}, parser.VMoney}, // money(float) money
+		{7, MoneyStr, 1, `money`, []uint32{parser.VStr}, parser.VMoney},     // money(str) money
 	}
 )
 

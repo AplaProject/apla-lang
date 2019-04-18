@@ -34,6 +34,7 @@ const (
 	errBreak             = `break must be inside of while or for`
 	errContinue          = `continue must be inside of while or for`
 	errEnv               = `Environment variable $%s is undefined`
+	errRetType           = `unsupported type of result value in %s`
 )
 
 func (cmpl *compiler) Error(node *parser.Node, text string) error {

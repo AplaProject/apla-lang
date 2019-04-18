@@ -12,7 +12,7 @@ const (
 
 	errCntExists    = `Contract %s has already been defined`
 	errCntNotExists = `Contract %s doesn't exists`
-	errGlobVar      = `%s is not a global variable`
+	errGlobVar      = `Wrong count of global variables`
 	errGlobType     = `%s has unsupported type`
 )
 
@@ -27,18 +27,22 @@ const (
 	Money // money
 )
 
-type Custom struct {
-	Env map[string]uint32
+type FuncItem struct {
+	Name   string
+	Params []uint32
+	Result uint32
+	Func   interface{}
+}
+
+type EnvItem struct {
+	Name string
+	Type uint32
 }
 
 type VMSettings struct {
-	Custom   *Custom
+	Funcs    []FuncItem
+	Env      []EnvItem
 	GasLimit int64
-}
-
-// RTCustom is a structure for runtime customizing
-type RTCustom struct {
-	Env map[string]interface{}
 }
 
 // VM is a virtual machine structure
@@ -55,20 +59,29 @@ func NewVM(settings VMSettings) *VM {
 		settings.GasLimit = DEFAULT_GAS_LIMIT
 	}
 	env := make(map[string]runtime.EnvItem)
-	var ind int
-	for key, val := range settings.Custom.Env {
-		env[key] = runtime.EnvItem{
-			Index: ind,
-			Type:  val,
+	for i, val := range settings.Env {
+		env[val.Name] = runtime.EnvItem{
+			Index: i,
+			Type:  val.Type,
 		}
-		ind++
 	}
+	funcs := make([]runtime.FuncItem, len(settings.Funcs))
+	for i, val := range settings.Funcs {
+		funcs[i] = runtime.FuncItem{
+			Result: val.Result,
+			Params: val.Params,
+			Name:   val.Name,
+			Func:   val.Func,
+		}
+	}
+
 	return &VM{
 		Contracts: make([]*runtime.Contract, 0, 1000),
 		NameSpace: make(map[string]uint32),
 		Settings:  settings,
 		Custom: &runtime.Custom{
-			Env: env,
+			Env:   env,
+			Funcs: funcs,
 		},
 	}
 }
@@ -121,18 +134,18 @@ func (vm *VM) LoadContract(input string, id int64) error {
 }
 
 // Run executes the contract
-func (vm *VM) Run(cnt *runtime.Contract, Custom *RTCustom) (string, int64, error) {
+func (vm *VM) Run(cnt *runtime.Contract, data runtime.IData) (string, int64, error) {
 	rt := runtime.NewRuntime(&vm.Contracts)
 	env := make([]runtime.EnvVal, len(vm.Custom.Env))
-	for key, val := range Custom.Env {
+	envData := data.GetEnv()
+	if len(envData) != len(vm.Custom.Env) {
+		return ``, 0, fmt.Errorf(errGlobVar)
+	}
+
+	for i, val := range envData {
 		var (
-			ok      bool
-			envItem runtime.EnvItem
-			vEnv    int64
+			vEnv int64
 		)
-		if envItem, ok = vm.Custom.Env[key]; !ok {
-			return ``, 0, fmt.Errorf(errGlobVar, key)
-		}
 		switch v := val.(type) {
 		case int64:
 			vEnv = v
@@ -142,24 +155,31 @@ func (vm *VM) Run(cnt *runtime.Contract, Custom *RTCustom) (string, int64, error
 			rt.Strings = append(rt.Strings, v)
 			vEnv = int64(len(rt.Strings) - 1)
 		default:
-			return ``, 0, fmt.Errorf(errGlobType, key)
+			var name string
+			for key, eVal := range vm.Custom.Env {
+				if eVal.Index == i {
+					name = key
+					break
+				}
+			}
+			return ``, 0, fmt.Errorf(errGlobType, name)
 		}
-		env[envItem.Index] = runtime.EnvVal{
+		env[i] = runtime.EnvVal{
 			Value: vEnv,
 			Init:  true,
 		}
 	}
-	rt.Custom = &runtime.RTCustom{
-		Env: env,
-	}
+	rt.Env = env
+	rt.Data = data
+	rt.Funcs = vm.Custom.Funcs
 	return rt.Run(cnt.Code, nil, vm.Settings.GasLimit)
 }
 
 // RunByName executes the contract
-func (vm *VM) RunByName(name string, Custom *RTCustom) (string, int64, error) {
+func (vm *VM) RunByName(name string, data runtime.IData) (string, int64, error) {
 	cnt := vm.GetContract(name)
 	if cnt == nil {
 		return ``, 0, fmt.Errorf(errCntNotExists, name)
 	}
-	return vm.Run(cnt, Custom)
+	return vm.Run(cnt, data)
 }

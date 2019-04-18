@@ -1,3 +1,18 @@
+contract FuncTestCust { 
+    return `=` + testFunc(`start`, 100) + `ok`
+}
+==== =start100ok
+contract FuncCust { 
+    voidFunc(`ok`)
+}
+==== errorVoidFunc
+contract FuncCust { 
+    func voidFunc(str s) {
+
+    }
+    return `ok`
+}
+==== FuncCust 4:5: Function voidFunc has already been defined
 contract EnvKey { 
     return `key=` + $key 
 }
