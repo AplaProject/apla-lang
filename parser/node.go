@@ -37,18 +37,31 @@ const (
 	TArray
 	TMap
 	TEnv
+	TObject
+	TObjList
 )
 
 const (
-	VVoid  = iota
-	VInt   // int
-	VBool  // bool
-	VStr   // str
-	VArr   // arr
-	VMap   // map
-	VFloat // float
-	VMoney // money
+	VVoid   = iota
+	VInt    // int
+	VBool   // bool
+	VStr    // str
+	VArr    // arr
+	VMap    // map
+	VFloat  // float
+	VMoney  // money
+	VObject // object
 )
+
+// NObject contains object data
+type NObject struct {
+	List []KeyVal
+}
+
+// NObjList - init array in object
+type NObjList struct {
+	List []*Node
+}
 
 // NVar contains type and name of variable or parameter
 type NVar struct {
@@ -656,6 +669,36 @@ func appendMap(list *Node, key string, par *Node, l yyLexer) *Node {
 	list.Value.(*NMap).List = append(list.Value.(*NMap).List, KeyVal{
 		Key: key, Value: par,
 	})
+	return list
+}
+
+func newObj(key string, par *Node, l yyLexer) *Node {
+	return setPos(&Node{
+		Type: TObject,
+		Value: &NObject{
+			List: []KeyVal{{Key: key, Value: par}},
+		},
+	}, l)
+}
+
+func appendObj(list *Node, key string, par *Node, l yyLexer) *Node {
+	list.Value.(*NObject).List = append(list.Value.(*NObject).List, KeyVal{
+		Key: key, Value: par,
+	})
+	return list
+}
+
+func newObjArr(par *Node, l yyLexer) *Node {
+	return setPos(&Node{
+		Type: TObjList,
+		Value: &NObjList{
+			List: []*Node{par},
+		},
+	}, l)
+}
+
+func appendObjArr(list *Node, par *Node, l yyLexer) *Node {
+	list.Value.(*NObjList).List = append(list.Value.(*NObjList).List, par)
 	return list
 }
 

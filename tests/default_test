@@ -1,3 +1,10 @@
+contract ObjTest { 
+    int i = 27
+    obj o1 = @{id: 20, Where: {"id": {"$eq": 20}, my: {"$in":[20, 30, 40]},
+      "$and": [id: i, val: "string"]},
+      "OOOPS": 3.456}
+}
+==== =start100ok
 contract FuncTestCust { 
     return `=` + testFunc(`start`, 100) + `ok`
 }

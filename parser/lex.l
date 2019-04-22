@@ -54,6 +54,7 @@ unicodeLetter	\x80
 \([ \t]*\n?     return l.char(LPAREN)
 \n[ \t]*\)		return l.char(RPAREN)
 \)				return l.char(RPAREN)
+@\{[ \t]*\n?  	return l.char(OBJ)
 \{[ \t]*\n?  	return l.char(LBRACE)
 \}		return l.char(RBRACE)
 \[[ \t]*\n?		return l.char(LBRACKET)
@@ -102,6 +103,7 @@ arr			    return l.char(T_ARR)
 map			    return l.char(T_MAP)
 float			return l.char(T_FLOAT)
 money			return l.char(T_MONEY)
+obj  			return l.char(T_OBJECT)
 
 {float}			{
 					ai, _ := strconv.ParseFloat(string(l.TokenBytes(nil)), 64); 

@@ -36,6 +36,7 @@ func setResult(l yyLexer, v *Node) {
 %token COLON   // :
 %token LPAREN  // (
 %token RPAREN  // )
+%token OBJ  // @{
 %token LBRACE  // {
 %token RBRACE  // }
 %token LBRACKET // [
@@ -92,6 +93,7 @@ func setResult(l yyLexer, v *Node) {
 %token T_MAP  // map
 %token T_FLOAT  // float
 %token T_MONEY  // money
+%token T_OBJECT  // object
 
 %type <i> ordinaltype
 %type <n> type
@@ -115,6 +117,9 @@ func setResult(l yyLexer, v *Node) {
 %type <n> index
 %type <n> exprlist
 %type <n> exprmaplist
+%type <n> exprobj
+%type <n> object
+%type <n> objlist
 
 %left AND 
 %left OR
@@ -135,6 +140,7 @@ ordinaltype
     | T_MAP {$$ = VMap}    
     | T_FLOAT {$$ = VFloat}
     | T_MONEY {$$ = VMoney}
+    | T_OBJECT {$$ = VObject}
     ;
 
 type
@@ -219,6 +225,36 @@ exprmaplist
     | exprmaplist COMMA STRING COLON expr { $$ = appendMap($1, $3, $5, yylex); }
     ;   
 
+object
+    : STRING COLON exprobj { $$ = newObj($1, $3, yylex); }
+    | IDENT COLON exprobj { $$ = newObj($1, $3, yylex); }
+    | object COMMA STRING COLON exprobj { $$ = appendObj($1, $3, $5, yylex);}
+    | object COMMA IDENT COLON exprobj { $$ = appendObj($1, $3, $5, yylex);}
+    ;   
+
+objlist
+    : exprobj { $$ = newObjArr($1, yylex); }
+    | objlist COMMA exprobj { $$ = appendObjArr($1, $3, yylex);}
+    ;   
+
+exprobj
+    : LPAREN expr RPAREN { $$ = $2; }
+    | INT { $$ = newValue($1, yylex);}
+    | FLOAT { $$ = newValue($1, yylex);}
+    | STRING { $$ = newValue($1, yylex);}
+    | QSTRING { $$ = newValue($1, yylex);}
+    | TRUE { $$ = newValue(true, yylex);}
+    | FALSE { $$ = newValue(false, yylex);}
+    | CALL params RPAREN { $$ = newCallFunc($1, $2, yylex);}
+    | CALLCONTRACT cntparams RPAREN { $$ = newCallContract($1, $2, yylex);}
+    | index { $$ = $1}
+    | ENV { $$ = newEnv($1, yylex);}
+    | IDENT { $$ = newGetVar($1, yylex);}
+    | LBRACE object RBRACE { $$ = $2;}
+    | LBRACKET objlist RBRACKET { $$ = $2;}
+    | LBRACKET object RBRACKET { $$ = $2;}
+
+
 expr
     : LPAREN expr RPAREN { $$ = $2; }
     | INT { $$ = newValue($1, yylex);}
@@ -232,6 +268,7 @@ expr
     | index { $$ = $1}
     | ENV { $$ = newEnv($1, yylex);}
     | IDENT { $$ = newGetVar($1, yylex);}
+    | OBJ object RBRACE { $$ = $2;}
     | LBRACE exprlist RBRACE { $$ = $2;}
     | LBRACE exprmaplist RBRACE { $$ = $2;}
     | QUESTION LPAREN expr COMMA expr COMMA expr RPAREN { $$ = newQuestion($3, $5, $7, yylex);}
