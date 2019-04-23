@@ -10,6 +10,7 @@ import (
 
 	"github.com/AplaProject/apla-lang"
 	"github.com/AplaProject/apla-lang/runtime"
+	"github.com/AplaProject/apla-lang/types"
 )
 
 type contract struct {
@@ -90,6 +91,10 @@ func voidFunc(data runtime.IData, s string) (int64, error) {
 	return 20, fmt.Errorf(`errorVoidFunc`)
 }
 
+func objFunc(data runtime.IData, obj *types.Map) (string, int64, error) {
+	return fmt.Sprint(obj), 20, nil
+}
+
 type myData struct {
 	Env []interface{}
 }
@@ -109,6 +114,7 @@ func testFile(filename string) error {
 		Funcs: []simvolio.FuncItem{
 			{Func: testFunc, Name: `testFunc`, Params: []uint32{simvolio.Str, simvolio.Int}, Result: simvolio.Str},
 			{Func: voidFunc, Name: `voidFunc`, Params: []uint32{simvolio.Str}},
+			{Func: objFunc, Name: `objFunc`, Params: []uint32{simvolio.Object}, Result: simvolio.Str},
 		},
 	})
 	contracts, err := loadTest(filename)

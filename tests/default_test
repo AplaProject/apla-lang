@@ -1,10 +1,19 @@
+contract ObjF2 { 
+    str s = `string`
+    return objFunc( @{`list`: [10, "245", [0, 1, 2]], Where: {"id": {"$in": ["test", s]}} })
+}
+==== map[list:[10 245 [0 1 2]] Where:map[id:map[$in:[test string]]]]
+contract ObjF { 
+    int i = 27
+    return objFunc( @{id: "me", Where: {"id": {"$eq": i}}, "OOOPS": 3.456 })
+}
+==== map[id:me Where:map[id:map[$eq:27]] OOOPS:3.456]
 contract ObjTest { 
     int i = 27
-    obj o1 = @{id: 20, Where: {"id": {"$eq": 20}, my: {"$in":[20, 30, 40]},
-      "$and": [id: i, val: "string"]},
-      "OOOPS": 3.456}
+    return objFunc(@{id: 20, Where: {"id": {"$eq": 20}, my: {"$in":[20, 30, 40]},
+      "$and": [id: i, val: "string"]}})
 }
-==== =start100ok
+==== map[id:20 Where:map[id:map[$eq:20] my:map[$in:[20 30 40]] $and:[map[id:27] map[val:string]]]]
 contract FuncTestCust { 
     return `=` + testFunc(`start`, 100) + `ok`
 }

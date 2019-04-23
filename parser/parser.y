@@ -252,7 +252,7 @@ exprobj
     | IDENT { $$ = newGetVar($1, yylex);}
     | LBRACE object RBRACE { $$ = $2;}
     | LBRACKET objlist RBRACKET { $$ = $2;}
-    | LBRACKET object RBRACKET { $$ = $2;}
+    | LBRACKET object RBRACKET { $$ = newObjList($2, yylex);}
 
 
 expr

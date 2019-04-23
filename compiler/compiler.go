@@ -649,6 +649,38 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 		}
 		cmpl.Append(rt.ENV, rt.Bcode(val.Index))
 		node.Result = val.Type
+	case parser.TObject:
+		nObj := node.Value.(*parser.NObject)
+		for _, par := range nObj.List {
+			if cmpl.Data == nil {
+				cmpl.Data = make([]byte, 0, 1024)
+			}
+			cmpl.Append(rt.PUSHSTR, rt.Bcode(len(cmpl.Data)), rt.Bcode(len(par.Key)))
+			cmpl.Data = append(cmpl.Data, []byte(par.Key)...)
+			if err = nodeToCode(par.Value, cmpl); err != nil {
+				return err
+			}
+			cmpl.Append(rt.PUSH16, rt.Bcode(par.Value.Result))
+		}
+		cmpl.Append(rt.INITOBJ, rt.Bcode(len(nObj.List)))
+		node.Result = parser.VObject
+	case parser.TObjArr:
+		nObjArr := node.Value.(*parser.NObjArr)
+		for _, par := range nObjArr.List {
+			if err = nodeToCode(par, cmpl); err != nil {
+				return err
+			}
+			cmpl.Append(rt.PUSH16, rt.Bcode(par.Result))
+		}
+		cmpl.Append(rt.INITOBJLIST, rt.Bcode(len(nObjArr.List)))
+		node.Result = parser.VObjList
+	case parser.TObjList:
+		nObjList := node.Value.(*parser.NObjList)
+		if err = nodeToCode(nObjList.Obj, cmpl); err != nil {
+			return err
+		}
+		cmpl.Append(rt.OBJ2LIST)
+		node.Result = parser.VObject
 	default:
 		fmt.Println(`Ooops`)
 		return cmpl.Error(node, errNodeType)

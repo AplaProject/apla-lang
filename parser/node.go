@@ -38,6 +38,7 @@ const (
 	TMap
 	TEnv
 	TObject
+	TObjArr
 	TObjList
 )
 
@@ -51,6 +52,7 @@ const (
 	VFloat  // float
 	VMoney  // money
 	VObject // object
+	VObjList
 )
 
 // NObject contains object data
@@ -59,8 +61,13 @@ type NObject struct {
 }
 
 // NObjList - init array in object
-type NObjList struct {
+type NObjArr struct {
 	List []*Node
+}
+
+// NObjArr - init array in object
+type NObjList struct {
+	Obj *Node
 }
 
 // NVar contains type and name of variable or parameter
@@ -688,17 +695,26 @@ func appendObj(list *Node, key string, par *Node, l yyLexer) *Node {
 	return list
 }
 
-func newObjArr(par *Node, l yyLexer) *Node {
+func newObjList(par *Node, l yyLexer) *Node {
 	return setPos(&Node{
 		Type: TObjList,
 		Value: &NObjList{
+			Obj: par,
+		},
+	}, l)
+}
+
+func newObjArr(par *Node, l yyLexer) *Node {
+	return setPos(&Node{
+		Type: TObjArr,
+		Value: &NObjArr{
 			List: []*Node{par},
 		},
 	}, l)
 }
 
 func appendObjArr(list *Node, par *Node, l yyLexer) *Node {
-	list.Value.(*NObjList).List = append(list.Value.(*NObjList).List, par)
+	list.Value.(*NObjArr).List = append(list.Value.(*NObjArr).List, par)
 	return list
 }
 

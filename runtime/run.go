@@ -8,6 +8,7 @@ import (
 	"github.com/shopspring/decimal"
 
 	"github.com/AplaProject/apla-lang/parser"
+	"github.com/AplaProject/apla-lang/types"
 )
 
 type Bcode uint16
@@ -256,6 +257,8 @@ main:
 				switch eFunc.Params[k] {
 				case parser.VStr:
 					parsFunc[k+1] = reflect.ValueOf(rt.Strings[stack[top+k+1]])
+				case parser.VObject:
+					parsFunc[k+1] = reflect.ValueOf(rt.Objects[stack[top+k+1]])
 				default:
 					parsFunc[k+1] = reflect.ValueOf(stack[top+k+1])
 				}
@@ -446,6 +449,54 @@ main:
 			}
 			rt.Objects = append(rt.Objects, imap)
 			top -= 2*count - 1
+			stack[top] = int64(len(rt.Objects) - 1)
+		case INITOBJ:
+			i++
+			count := int64(code[i])
+			imap := types.NewMap()
+			for k := int64(0); k < count; k++ {
+				cur := top - 3*(count-k) + 1
+				key := rt.Strings[stack[cur]]
+				switch stack[cur+2] {
+				case parser.VObjList:
+					imap.Set(key, rt.Objects[stack[cur+1]])
+				case parser.VObject:
+					imap.Set(key, rt.Objects[stack[cur+1]])
+				default:
+					imap.Set(key, print(rt, stack[cur+1], stack[cur+2]))
+				}
+			}
+			rt.Objects = append(rt.Objects, imap)
+			top -= 3*count - 1
+			stack[top] = int64(len(rt.Objects) - 1)
+		case INITOBJLIST:
+			i++
+			count := int64(code[i])
+			ilist := make([]interface{}, count)
+			for k := int64(0); k < count; k++ {
+				cur := top - 2*(count-k) + 1
+				switch stack[cur+1] {
+				case parser.VObjList:
+					ilist[k] = rt.Objects[stack[cur]]
+				case parser.VObject:
+					ilist[k] = rt.Objects[stack[cur]]
+				default:
+					ilist[k] = print(rt, stack[cur], stack[cur+1])
+				}
+			}
+			rt.Objects = append(rt.Objects, ilist)
+			top -= 2*count - 1
+			stack[top] = int64(len(rt.Objects) - 1)
+		case OBJ2LIST:
+			obj := rt.Objects[stack[top]].(*types.Map)
+			ilist := make([]interface{}, obj.Size())
+			for k, key := range obj.Keys() {
+				val, _ := obj.Get(key)
+				ilist[k] = types.LoadMap(map[string]interface{}{
+					key: val,
+				})
+			}
+			rt.Objects = append(rt.Objects, ilist)
 			stack[top] = int64(len(rt.Objects) - 1)
 		case ENV:
 			i++

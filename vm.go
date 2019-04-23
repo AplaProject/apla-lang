@@ -17,14 +17,16 @@ const (
 )
 
 const (
-	Void  = iota
-	Int   // int
-	Bool  // bool
-	Str   // str
-	Arr   // arr
-	Map   // map
-	Float // float
-	Money // money
+	Void    = iota
+	Int     // int
+	Bool    // bool
+	Str     // str
+	Arr     // arr
+	Map     // map
+	Float   // float
+	Money   // money
+	Object  // object
+	ObjList // list in object
 )
 
 type FuncItem struct {

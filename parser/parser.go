@@ -1217,7 +1217,7 @@ yydefault:
 		yyDollar = yyS[yypt-3 : yypt+1]
 //line parser.y:255
 		{
-			yyVAL.n = yyDollar[2].n
+			yyVAL.n = newObjList(yyDollar[2].n, yylex)
 		}
 	case 76:
 		yyDollar = yyS[yypt-3 : yypt+1]
