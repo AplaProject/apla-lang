@@ -40,6 +40,8 @@ const (
 	TObject
 	TObjArr
 	TObjList
+	TSwitch
+	TCase
 )
 
 const (
@@ -54,6 +56,24 @@ const (
 	VObject // object
 	VObjList
 )
+
+// NSwitch - switch statement
+type NSwitch struct {
+	Expr    *Node
+	Case    *Node
+	Default *Node
+}
+
+// NCaseItem - case statement
+type NCaseItem struct {
+	ExprList *Node
+	Body     *Node
+}
+
+// NCase - case statement
+type NCase struct {
+	List []*NCaseItem
+}
 
 // NObject contains object data
 type NObject struct {
@@ -716,6 +736,42 @@ func newObjArr(par *Node, l yyLexer) *Node {
 func appendObjArr(list *Node, par *Node, l yyLexer) *Node {
 	list.Value.(*NObjArr).List = append(list.Value.(*NObjArr).List, par)
 	return list
+}
+
+func createCase(expr *Node, statement *Node, l yyLexer) *Node {
+	list := make([]*NCaseItem, 1, 10)
+	list[0] = &NCaseItem{
+		ExprList: expr,
+		Body:     statement,
+	}
+	return setPos(&Node{
+		Type: TCase,
+		Value: &NCase{
+			List: list,
+		},
+	}, l)
+}
+
+func newCase(statements *Node, expr *Node, statement *Node, l yyLexer) *Node {
+	if statements == nil {
+		return createCase(expr, statement, l)
+	}
+	statements.Value.(*NCase).List = append(statements.Value.(*NCase).List, &NCaseItem{
+		ExprList: expr,
+		Body:     statement,
+	})
+	return statements
+}
+
+func newSwitch(expr *Node, icase *Node, def *Node, l yyLexer) *Node {
+	return setPos(&Node{
+		Type: TSwitch,
+		Value: &NSwitch{
+			Expr:    expr,
+			Case:    icase,
+			Default: def,
+		},
+	}, l)
 }
 
 // Parser creates AST

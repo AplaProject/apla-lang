@@ -82,8 +82,11 @@ func setResult(l yyLexer, v *Node) {
 %token RETURN   // return
 %token WHILE   // while
 %token FUNC    // func
-%token FOR    // for
-%token IN     // in
+%token FOR     // for
+%token IN      // in
+%token SWITCH  // switch
+%token CASE    // case
+%token DEFAULT // default
 
 // Types
 %token T_INT    // int
@@ -109,6 +112,9 @@ func setResult(l yyLexer, v *Node) {
 %type <n> expr
 %type <n> elif
 %type <n> else
+%type <n> switch
+%type <n> case
+%type <n> default
 %type <n> statement
 %type <n> statements
 %type <n> cntparams
@@ -156,6 +162,7 @@ rettype
 statements
     : /*empty*/ { $$ = nil }
     | statements NEWLINE { $$ = $1 }
+    | statements switch { $$ = addStatement($1, $2, yylex)}
     | statements statement NEWLINE { $$ = addStatement($1, $2, yylex)}
     ;
 
@@ -187,6 +194,20 @@ elif
    : /*empty*/ {$$ = nil}
    | elif ELIF expr LBRACE statements RBRACE { $$ = newElif($1, $3, $5, yylex) }
    ;
+
+case
+   : /*empty*/ {$$ = nil}
+   | case CASE exprlist LBRACE statements RBRACE NEWLINE { $$ = newCase($1, $3, $5, yylex) }
+   ;
+
+default 
+   : /*empty*/ {$$ = nil}
+   | DEFAULT LBRACE statements RBRACE { $$ = $3 }
+   ;
+
+switch
+    : SWITCH expr NEWLINE case default { $$ = newSwitch( $2, $4, $5, yylex ) }
+    ;
 
 statement 
     : var ASSIGN expr { $$ = newBinary($1, $3, ASSIGN, yylex) }

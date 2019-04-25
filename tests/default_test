@@ -1,3 +1,44 @@
+contract Switch { 
+    arr a
+    switch a
+    case 20 { 
+    }
+}
+==== 
+contract Switch { 
+    int i
+    switch i + 1 
+    case 20 { 
+    } case 10 {}
+}
+==== 5:7: syntax error: unexpected CASE, expecting NEWLINE
+contract Switch { 
+    int i
+    switch i + 1 
+    case 20 { 
+    }
+    case 10 { }
+    default 20 {}
+}
+==== 7:13: syntax error: unexpected INT, expecting LBRACE
+contract Switch { 
+    int i
+    switch i + 1 
+    case {}
+}
+==== 4:11: syntax error: unexpected RBRACE
+contract Switch { 
+    int i
+    switch i + 1 {
+    }
+}
+==== 3:18: syntax error: unexpected LBRACE
+contract Switch { 
+    switch {
+
+    }
+}
+==== 2:14: syntax error: unexpected NEWLINE
 contract ObjF2 { 
     str s = `string`
     return objFunc( @{`list`: [10, "245", [0, 1, 2]], Where: {"id": {"$in": ["test", s]}} })
