@@ -681,6 +681,70 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 		}
 		cmpl.Append(rt.OBJ2LIST)
 		node.Result = parser.VObject
+	case parser.TSwitch:
+		nSwitch := node.Value.(*parser.NSwitch)
+		if err = nodeToCode(nSwitch.Expr, cmpl); err != nil {
+			return err
+		}
+		result := nSwitch.Expr.Result
+		if result != parser.VInt && result != parser.VStr && result != parser.VFloat {
+			return cmpl.ErrorParam(nSwitch.Expr, errSwitchType, Type2Str(result))
+		}
+		cmp := rt.Bcode(rt.EQINT)
+		if result == parser.VStr {
+			cmp = rt.EQSTR
+		} else if result == parser.VFloat {
+			cmp = rt.EQFLOAT
+		}
+		var off rt.Bcode
+		exps := make([]int, 0, 16)
+		ends := make([]int, 0, 16)
+		for _, icase := range nSwitch.Case.Value.(*parser.NCase).List {
+			for _, iexpr := range icase.ExprList.Value.(*parser.NArray).List {
+				cmpl.Append(rt.DUP)
+				if err = nodeToCode(iexpr, cmpl); err != nil {
+					return err
+				}
+				if iexpr.Result != result {
+					return cmpl.ErrorTwoParam(nSwitch.Expr, errCaseType, Type2Str(iexpr.Result),
+						Type2Str(result))
+				}
+				cmpl.Append(cmp)
+				exps = append(exps, len(cmpl.Contract.Code))
+				cmpl.Append(rt.JNZ, 0)
+			}
+			next := len(cmpl.Contract.Code)
+			cmpl.Append(rt.JMPREL, 0)
+			sizeCode := len(cmpl.Contract.Code)
+			for _, eoff := range exps {
+				if off, err = cmpl.JumpOff(node, sizeCode-eoff); err != nil {
+					return err
+				}
+				cmpl.Contract.Code[eoff+1] = off
+			}
+			exps = exps[:0]
+			if err = nodeToCode(icase.Body, cmpl); err != nil {
+				return err
+			}
+			ends = append(ends, len(cmpl.Contract.Code))
+			cmpl.Append(rt.JMPREL, 0)
+			if off, err = cmpl.JumpOff(node, len(cmpl.Contract.Code)-next); err != nil {
+				return err
+			}
+			cmpl.Contract.Code[next+1] = off
+		}
+		if nSwitch.Default != nil {
+			if err = nodeToCode(nSwitch.Default, cmpl); err != nil {
+				return err
+			}
+		}
+		sizeCode := len(cmpl.Contract.Code)
+		for _, eoff := range ends {
+			if off, err = cmpl.JumpOff(node, sizeCode-eoff); err != nil {
+				return err
+			}
+			cmpl.Contract.Code[eoff+1] = off
+		}
 	default:
 		fmt.Println(`Ooops`)
 		return cmpl.Error(node, errNodeType)

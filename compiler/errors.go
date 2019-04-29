@@ -35,6 +35,8 @@ const (
 	errContinue          = `continue must be inside of while or for`
 	errEnv               = `Environment variable $%s is undefined`
 	errRetType           = `unsupported type of result value in %s`
+	errSwitchType        = `switch doesn't support %s type`
+	errCaseType          = `Unexpected type %s of expression; expecting %s`
 )
 
 func (cmpl *compiler) Error(node *parser.Node, text string) error {
@@ -43,6 +45,10 @@ func (cmpl *compiler) Error(node *parser.Node, text string) error {
 
 func (cmpl *compiler) ErrorParam(node *parser.Node, text string, value interface{}) error {
 	return cmpl.Error(node, fmt.Sprintf(text, value))
+}
+
+func (cmpl *compiler) ErrorTwoParam(node *parser.Node, text string, par1, par2 interface{}) error {
+	return cmpl.Error(node, fmt.Sprintf(text, par1, par2))
 }
 
 func (cmpl *compiler) ErrorOperator(node *parser.Node) error {

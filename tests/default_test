@@ -1,10 +1,101 @@
+contract SwitchFloat { 
+    float a = 5.234
+    int ret
+    switch a
+    case 1.0, 2.0 { 
+        ret = 7/0
+    }
+    case 67.0, 5.234 { 
+        ret = 35
+    }
+    default {
+        ret = 3
+    }
+    return ret*2
+}
+==== 70
+contract SwitchStr { 
+    str a = `name`
+    int ret
+    switch a
+    case `first`, `second` { 
+        ret = 7/0
+    }
+    case `third`, `name` { 
+        ret = 14
+    }
+    default {
+        ret = 3
+    }
+    return ret*2
+}
+==== 28
+contract SwitchDef { 
+    str a
+    int ret
+    switch a
+    case `7s`, `xs4` { 
+        ret = 7/0
+    }
+    case `1dxd`, `a5` { 
+        ret = 14
+    }
+    default {
+        ret = 3
+    }
+    return ret*2
+}
+==== 6
+contract Switch3 { 
+    int a = 5
+    int ret
+    switch a
+    case 7, 4 { 
+        ret = 7/0
+    }
+    case 1, 5 { 
+        ret = 14
+    }
+    case ret/0, 3 { 
+        ret = 9
+    }
+    return ret
+}
+==== 14
+contract Switch2 { 
+    int a = 3
+    int ret
+    switch a
+    case 7, 3, ret/0 { 
+        ret = 7
+    }
+    return ret
+}
+==== 7
+contract Switch1 { 
+    int a = 7
+    int ret
+    switch a
+    case 7 { 
+        ret = 10
+    }
+    return ret
+}
+==== 10
+contract Switch { 
+    int a
+    switch a
+    case 2, `20` { 
+    }
+}
+==== Switch 3:12: Unexpected type str of expression; expecting int
 contract Switch { 
     arr a
     switch a
     case 20 { 
     }
 }
-==== 
+==== Switch 3:12: switch doesn't support arr.str type
 contract Switch { 
     int i
     switch i + 1 
