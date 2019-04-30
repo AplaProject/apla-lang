@@ -14,14 +14,16 @@ import (
 type Bcode uint16
 
 const (
-	errDivZero  = `dividing by zero`
-	errCommand  = `unknown command %d`
-	errGasLimit = `gas is over`
-	errIndexOut = `index out of range index:%d len:%d`
-	errIndexMap = `Key %s doesn't exist`
-	errStr2Int  = `cannot convert %s to int`
-	errGlobVar  = `global variable is undefined`
-	errRetType  = `unsupported type of result value in %s`
+	errDivZero      = `dividing by zero`
+	errCommand      = `unknown command %d`
+	errGasLimit     = `gas is over`
+	errIndexOut     = `index out of range index:%d len:%d`
+	errIndexMap     = `Key %s doesn't exist`
+	errStr2Int      = `cannot convert %s to int`
+	errGlobVar      = `global variable is undefined`
+	errRetType      = `unsupported type of result value in %s`
+	errFloatResult  = `incorrect float result`
+	errInvalidParam = `invalid parameters`
 )
 
 type objCount struct {

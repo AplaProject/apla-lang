@@ -34,6 +34,19 @@ var (
 		{7, MoneyInt, 1, `money`, []uint32{parser.VInt}, parser.VMoney},     // money(int) money
 		{7, MoneyFloat, 1, `money`, []uint32{parser.VFloat}, parser.VMoney}, // money(float) money
 		{7, MoneyStr, 1, `money`, []uint32{parser.VStr}, parser.VMoney},     // money(str) money
+		{5, Floor, 1, `Floor`, []uint32{parser.VFloat}, parser.VInt},        // Floor(float) int
+		{5, Log, 1, `Log`, []uint32{parser.VFloat}, parser.VFloat},          // Log(float) float
+		{5, Log10, 1, `Log10`, []uint32{parser.VFloat}, parser.VFloat},      // Log10(float) float
+		{10, Pow, 2, `Pow`, []uint32{parser.VFloat, parser.VFloat},
+			parser.VFloat}, // Pow(float, float) float
+		{5, Round, 1, `Round`, []uint32{parser.VFloat}, parser.VInt},  // Round(float) int
+		{10, Sqrt, 1, `Sqrt`, []uint32{parser.VFloat}, parser.VFloat}, // Sqrt(float) float
+		{5, Replace, 3, `Replace`, []uint32{parser.VStr, parser.VStr,
+			parser.VStr}, parser.VStr}, // Replace(str, str, str) str
+		{7, Split, 2, `Split`, []uint32{parser.VStr, parser.VStr},
+			(parser.VStr << 4) | parser.VArr}, // Split(str, str) arr.str
+		{5, Substr, 3, `Substr`, []uint32{parser.VStr, parser.VInt,
+			parser.VInt}, parser.VStr}, // Substr(str, int, int) str
 	}
 )
 

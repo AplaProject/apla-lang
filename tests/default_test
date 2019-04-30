@@ -1,3 +1,20 @@
+contract StrSusbtr {
+    str ins = "This is строка"
+    return Substr(ins, 6, 5)
+}
+==== s стр
+contract StrRepl {
+    str ins = "This is строка"
+	str out = Replace(ins, `is ст`, `*** `)
+    return Split(Replace(out, ` `, `=`), `=`)
+}
+==== [This *** рока]
+contract Floor { 
+	float it
+	it = Log(Pow(2.0,3.0) + float(2))
+    return Sqrt( float(Round(it) + Floor(it))) + Log10(10.0)
+}
+==== 3
 contract SwitchFloat { 
     float a = 5.234
     int ret
