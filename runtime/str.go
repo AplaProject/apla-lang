@@ -42,3 +42,31 @@ func Substr(rt *Runtime, in, off, length int64) (int64, error) {
 	rt.Strings = append(rt.Strings, string(rin[off:off+length]))
 	return int64(len(rt.Strings) - 1), nil
 }
+
+// Contains returns true if s contains substr string
+func Contains(rt *Runtime, s, substr int64) int64 {
+	if strings.Contains(rt.Strings[s], rt.Strings[substr]) {
+		return 1
+	}
+	return 0
+}
+
+// Join is joining input with separator
+func Join(rt *Runtime, arrid int64, sep int64) int64 {
+	var ret string
+	for i, item := range rt.Objects[arrid].([]int64) {
+		if i > 0 {
+			ret += rt.Strings[sep]
+		}
+		ret += rt.Strings[item]
+	}
+	rt.Strings = append(rt.Strings, ret)
+	return int64(len(rt.Strings) - 1)
+}
+
+func HasPrefix(rt *Runtime, s, prefix int64) int64 {
+	if strings.HasPrefix(rt.Strings[s], rt.Strings[prefix]) {
+		return 1
+	}
+	return 0
+}

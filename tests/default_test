@@ -1,3 +1,23 @@
+contract StrContains {
+    str out
+    str ins = "This is строка"
+    if Contains(ins, `рок`) {
+        out += `1`
+        if !Contains(ins, `iso`) {
+            out += `2`
+        }
+    }
+    out += Join({`one`, `two`, `three`}, `+`)
+    if HasPrefix(ins, `This`) {
+        out += `3`
+        if !HasPrefix(ins, `this`) {
+            out += `4`
+        }
+    }
+
+    return out
+}
+==== 12one+two+three34
 contract StrSusbtr {
     str ins = "This is строка"
     return Substr(ins, 6, 5)

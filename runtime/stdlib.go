@@ -47,6 +47,12 @@ var (
 			(parser.VStr << 4) | parser.VArr}, // Split(str, str) arr.str
 		{5, Substr, 3, `Substr`, []uint32{parser.VStr, parser.VInt,
 			parser.VInt}, parser.VStr}, // Substr(str, int, int) str
+		{5, Contains, 2, `Contains`, []uint32{parser.VStr, parser.VStr},
+			parser.VBool}, // Contains(str, str) bool
+		{5, HasPrefix, 2, `HasPrefix`, []uint32{parser.VStr, parser.VStr},
+			parser.VBool}, // HasPrefix(str, str) bool
+		{5, Join, 2, `Join`, []uint32{(parser.VStr << 4) | parser.VArr, parser.VStr},
+			parser.VStr}, // Join(arr.str, str) str
 	}
 )
 
