@@ -70,3 +70,18 @@ func HasPrefix(rt *Runtime, s, prefix int64) int64 {
 	}
 	return 0
 }
+
+func TrimSpace(rt *Runtime, s int64) int64 {
+	rt.Strings = append(rt.Strings, strings.TrimSpace(rt.Strings[s]))
+	return int64(len(rt.Strings) - 1)
+}
+
+func ToLower(rt *Runtime, s int64) int64 {
+	rt.Strings = append(rt.Strings, strings.ToLower(rt.Strings[s]))
+	return int64(len(rt.Strings) - 1)
+}
+
+func ToUpper(rt *Runtime, s int64) int64 {
+	rt.Strings = append(rt.Strings, strings.ToUpper(rt.Strings[s]))
+	return int64(len(rt.Strings) - 1)
+}

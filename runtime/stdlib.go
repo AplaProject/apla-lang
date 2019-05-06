@@ -53,6 +53,9 @@ var (
 			parser.VBool}, // HasPrefix(str, str) bool
 		{5, Join, 2, `Join`, []uint32{(parser.VStr << 4) | parser.VArr, parser.VStr},
 			parser.VStr}, // Join(arr.str, str) str
+		{5, TrimSpace, 1, `TrimSpace`, []uint32{parser.VStr}, parser.VStr}, // TrimSpace(str) str
+		{5, ToLower, 1, `ToLower`, []uint32{parser.VStr}, parser.VStr},     // ToLower(str) str
+		{5, ToUpper, 1, `ToUpper`, []uint32{parser.VStr}, parser.VStr},     // ToUpper(str) str
 	}
 )
 

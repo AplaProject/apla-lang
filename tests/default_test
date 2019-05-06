@@ -14,10 +14,10 @@ contract StrContains {
             out += `4`
         }
     }
-
+    out += ToUpper(TrimSpace("  \r\nqqq\t\r  \n ")) + ToLower("AbCdУ")
     return out
 }
-==== 12one+two+three34
+==== 12one+two+three34QQQabcdу
 contract StrSusbtr {
     str ins = "This is строка"
     return Substr(ins, 6, 5)
