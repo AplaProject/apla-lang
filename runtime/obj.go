@@ -65,3 +65,60 @@ func IsExists(rt *Runtime, obj, key int64) int64 {
 	}
 	return 0
 }
+
+func IsString(rt *Runtime, obj, key int64) int64 {
+	omap := rt.Objects[obj].(*types.Map)
+	if val, found := omap.Get(rt.Strings[key]); found {
+		if _, ok := val.(string); ok {
+			return 1
+		}
+	}
+	return 0
+}
+
+func IsArray(rt *Runtime, obj, key int64) int64 {
+	omap := rt.Objects[obj].(*types.Map)
+	if val, found := omap.Get(rt.Strings[key]); found {
+		if _, ok := val.([]interface{}); ok {
+			return 1
+		}
+	}
+	return 0
+}
+
+func IsMap(rt *Runtime, obj, key int64) int64 {
+	omap := rt.Objects[obj].(*types.Map)
+	if val, found := omap.Get(rt.Strings[key]); found {
+		if _, ok := val.(*types.Map); ok {
+			return 1
+		}
+	}
+	return 0
+}
+
+func GetString(rt *Runtime, obj, key int64) int64 {
+	omap := rt.Objects[obj].(*types.Map)
+	if val, found := omap.Get(rt.Strings[key]); found {
+		rt.Strings = append(rt.Strings, fmt.Sprint(val))
+		return int64(len(rt.Strings) - 1)
+	}
+	return 0
+}
+
+func GetArray(rt *Runtime, obj, key int64) int64 {
+	ret := make([]int64, 0, 8)
+	omap := rt.Objects[obj].(*types.Map)
+	if val, found := omap.Get(rt.Strings[key]); found {
+		switch v := val.(type) {
+		case []interface{}:
+			for _, item := range v {
+				rt.Strings = append(rt.Strings, fmt.Sprint(item))
+				ret = append(ret, int64(len(rt.Strings)-1))
+			}
+		default:
+			ret = append(ret, GetString(rt, obj, key))
+		}
+	}
+	rt.Objects = append(rt.Objects, ret)
+	return int64(len(rt.Objects) - 1)
+}

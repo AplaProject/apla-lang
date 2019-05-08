@@ -1,10 +1,31 @@
-contract JSONIs {
+contract JSONGetArr {
     obj o = JSONDecode(`{"par1" : {"val3":"Value1", "val2": 32}, 
-         "para": [101, 102, "qqq"] }`)
-    str ret = str(IsExists(o, `para`)) + str(IsExists(o, `para1`))
+         "para": [103, 102, "qqq"], "name": "Name", "Myint": 101 }`)
+    arr ret = GetArray(o, `para`) 
+    ret += `OK`
+    for item in GetArray(o, `Myint`) { 
+        ret += item 
+    }
     return ret
 }
-==== truefalse
+==== [103 102 qqq OK 101]
+contract JSONGet {
+    obj o = JSONDecode(`{"par1" : {"val3":"Value1", "val2": 32}, 
+         "para": [101, 102, "qqq"], "name": "Name", "Myint": 101 }`)
+    str ret = GetString(o, `Myint`) + GetString(o, `qqq`) + GetString(o, "par1")
+    return ret
+}
+==== 101map[val2:32 val3:Value1]
+contract JSONIs {
+    obj o = JSONDecode(`{"par1" : {"val3":"Value1", "val2": 32}, 
+         "para": [101, 102, "qqq"], "name": "Name" }`)
+    str ret = str(IsExists(o, `para`)) + str(IsExists(o, `para1`)) +
+              str(IsString(o, `par1`)) + str(IsString(o, `name`))
+    ret += ` ` + str(IsArray(o, `par1`)) + str(IsArray(o, `para`))
+    ret += ` ` + str(IsMap(o, `par1`)) + str(IsMap(o, `para`))
+    return ret
+}
+==== truefalsefalsetrue falsetrue truefalse
 contract JSONArr {
     obj o = JSONDecode(`{"par1" : {"val3":"Value1", "val2": 32}, 
          "para": [101, 102, "qqq"] }`)

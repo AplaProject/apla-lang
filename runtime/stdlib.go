@@ -63,6 +63,16 @@ var (
 			[]uint32{parser.VObject, parser.VStr}, parser.VStr}, // JSONEncodeIndent(obj, str) str
 		{5, IsExists, 2, `IsExists`, []uint32{parser.VObject, parser.VStr},
 			parser.VBool}, // IsExists(obj, str) bool
+		{5, IsString, 2, `IsString`, []uint32{parser.VObject, parser.VStr},
+			parser.VBool}, // IsString(obj, str) bool
+		{5, IsArray, 2, `IsArray`, []uint32{parser.VObject, parser.VStr},
+			parser.VBool}, // IsArray(obj, str) bool
+		{5, IsMap, 2, `IsMap`, []uint32{parser.VObject, parser.VStr},
+			parser.VBool}, // IsMap(obj, str) bool
+		{5, GetString, 2, `GetString`, []uint32{parser.VObject, parser.VStr},
+			parser.VStr}, // GetString(obj, str) str
+		{5, GetArray, 2, `GetArray`, []uint32{parser.VObject, parser.VStr},
+			(parser.VStr << 4) | parser.VArr}, // GetString(obj, str) arr.str
 	}
 )
 
