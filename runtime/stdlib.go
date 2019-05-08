@@ -28,6 +28,7 @@ var (
 		{5, LenMap, 1, `Len`, []uint32{parser.VMap}, parser.VInt},           // Len(map) int
 		{5, LenStr, 1, `Len`, []uint32{parser.VStr}, parser.VInt},           // Len(str) int
 		{5, StrInt, 1, `str`, []uint32{parser.VInt}, parser.VStr},           // str(int) str
+		{5, StrBool, 1, `str`, []uint32{parser.VBool}, parser.VStr},         // str(bool) str
 		{5, IntStr, 1, `int`, []uint32{parser.VStr}, parser.VInt},           // int(str) int
 		{5, FloatInt, 1, `float`, []uint32{parser.VInt}, parser.VFloat},     // float(int) float
 		{5, IntFloat, 1, `int`, []uint32{parser.VFloat}, parser.VInt},       // int(float) int
@@ -53,9 +54,15 @@ var (
 			parser.VBool}, // HasPrefix(str, str) bool
 		{5, Join, 2, `Join`, []uint32{(parser.VStr << 4) | parser.VArr, parser.VStr},
 			parser.VStr}, // Join(arr.str, str) str
-		{5, TrimSpace, 1, `TrimSpace`, []uint32{parser.VStr}, parser.VStr}, // TrimSpace(str) str
-		{5, ToLower, 1, `ToLower`, []uint32{parser.VStr}, parser.VStr},     // ToLower(str) str
-		{5, ToUpper, 1, `ToUpper`, []uint32{parser.VStr}, parser.VStr},     // ToUpper(str) str
+		{5, TrimSpace, 1, `TrimSpace`, []uint32{parser.VStr}, parser.VStr},       // TrimSpace(str) str
+		{5, ToLower, 1, `ToLower`, []uint32{parser.VStr}, parser.VStr},           // ToLower(str) str
+		{5, ToUpper, 1, `ToUpper`, []uint32{parser.VStr}, parser.VStr},           // ToUpper(str) str
+		{10, JSONDecode, 1, `JSONDecode`, []uint32{parser.VStr}, parser.VObject}, // JSONDecode(str) obj
+		{10, JSONEncode, 1, `JSONEncode`, []uint32{parser.VObject}, parser.VStr}, // JSONEncode(obj) str
+		{10, JSONEncodeIndent, 2, `JSONEncodeIndent`,
+			[]uint32{parser.VObject, parser.VStr}, parser.VStr}, // JSONEncodeIndent(obj, str) str
+		{5, IsExists, 2, `IsExists`, []uint32{parser.VObject, parser.VStr},
+			parser.VBool}, // IsExists(obj, str) bool
 	}
 )
 
@@ -105,6 +112,16 @@ func IntStr(rt *Runtime, i int64) (int64, error) {
 // StrInt converts the integer number to the string
 func StrInt(rt *Runtime, i int64) int64 {
 	rt.Strings = append(rt.Strings, fmt.Sprint(i))
+	return int64(len(rt.Strings) - 1)
+}
+
+// StrBool converts the boolean to the string
+func StrBool(rt *Runtime, i int64) int64 {
+	ret := `true`
+	if i == 0 {
+		ret = `false`
+	}
+	rt.Strings = append(rt.Strings, ret)
 	return int64(len(rt.Strings) - 1)
 }
 

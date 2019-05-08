@@ -1,3 +1,29 @@
+contract JSONIs {
+    obj o = JSONDecode(`{"par1" : {"val3":"Value1", "val2": 32}, 
+         "para": [101, 102, "qqq"] }`)
+    str ret = str(IsExists(o, `para`)) + str(IsExists(o, `para1`))
+    return ret
+}
+==== truefalse
+contract JSONArr {
+    obj o = JSONDecode(`{"par1" : {"val3":"Value1", "val2": 32}, 
+         "para": [101, 102, "qqq"] }`)
+    return JSONEncode(o)
+}
+==== {"par1":{"val2":"32","val3":"Value1"},"para":["101","102","qqq"]}
+contract JSONOne {
+    obj o = JSONDecode(`{"par1" : "Value1", "parInt": 101, "parFloat": 3.456, "b": true }`)
+    return JSONEncode(o)
+}
+==== {"b":"true","par1":"Value1","parFloat":"3.456","parInt":"101"}
+contract JSONQ {
+    JSONDecode("This is строка")
+}
+==== invalid character 'T' looking for beginning of value
+contract JSON {
+    JSONDecode(`["This is строка"]`)
+}
+==== json: cannot unmarshal array into Go value of type map[string]interface {}
 contract StrContains {
     str out
     str ins = "This is строка"

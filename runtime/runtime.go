@@ -9,6 +9,7 @@ import (
 	"github.com/shopspring/decimal"
 
 	"github.com/AplaProject/apla-lang/parser"
+	"github.com/AplaProject/apla-lang/types"
 )
 
 const (
@@ -170,12 +171,14 @@ type Runtime struct {
 
 // NewRuntime creates a new runtime
 func NewRuntime(Contracts *[]*Contract) *Runtime {
-	return &Runtime{
+	ret := &Runtime{
 		//		Vars:      make([]int64, 0, 100),
 		Contracts: Contracts,
 		Strings:   make([]string, 0, 8),
 		Objects:   make([]interface{}, 0, 8),
 	}
+	ret.Strings = append(ret.Strings, ``)
+	return ret
 }
 
 func print(rt *Runtime, val int64, vtype int64) string {
@@ -218,6 +221,8 @@ func print(rt *Runtime, val int64, vtype int64) string {
 		result += strings.Join(items, ` `) + `]`
 	case parser.VMoney:
 		result = fmt.Sprint(rt.Objects[val].(decimal.Decimal))
+	case parser.VObject:
+		result = fmt.Sprint(rt.Objects[val].(*types.Map))
 	default:
 		result = fmt.Sprint(val)
 	}

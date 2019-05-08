@@ -24,6 +24,7 @@ const (
 	errRetType      = `unsupported type of result value in %s`
 	errFloatResult  = `incorrect float result`
 	errInvalidParam = `invalid parameters`
+	errTypeJSON     = `Value doesn't support json marshalling`
 )
 
 type objCount struct {

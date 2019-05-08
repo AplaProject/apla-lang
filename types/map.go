@@ -80,6 +80,8 @@ func ConvertMap(in interface{}) interface{} {
 		for i, item := range v {
 			v[i] = ConvertMap(item)
 		}
+	default:
+		in = fmt.Sprint(in)
 	}
 	return in
 }

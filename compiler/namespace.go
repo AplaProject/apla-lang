@@ -64,6 +64,7 @@ var (
 		{rt.EQMONEY, parser.VBool, parser.EQ, parser.VMoney, parser.VMoney},                // money == money
 		{rt.LTMONEY, parser.VBool, parser.LT, parser.VMoney, parser.VMoney},                // money < money
 		{rt.GTMONEY, parser.VBool, parser.GT, parser.VMoney, parser.VMoney},                // money > money
+		{rt.ASSIGNINT, parser.VObject, parser.ASSIGN, parser.VObject, parser.VObject},      // obj = obj
 	}
 )
 
@@ -208,6 +209,8 @@ main:
 			ret += `float`
 		case parser.VMoney:
 			ret += `money`
+		case parser.VObject:
+			ret += `obj`
 		default:
 			break main
 		}
