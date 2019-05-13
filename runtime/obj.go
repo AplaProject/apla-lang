@@ -122,3 +122,21 @@ func GetArray(rt *Runtime, obj, key int64) int64 {
 	rt.Objects = append(rt.Objects, ret)
 	return int64(len(rt.Objects) - 1)
 }
+
+func GetMap(rt *Runtime, obj, key int64) int64 {
+	ret := make(map[string]int64)
+	omap := rt.Objects[obj].(*types.Map)
+	if val, found := omap.Get(rt.Strings[key]); found {
+
+		switch v := val.(type) {
+		case *types.Map:
+			for _, ikey := range v.Keys() {
+				item, _ := v.Get(ikey)
+				rt.Strings = append(rt.Strings, fmt.Sprint(item))
+				ret[ikey] = int64(len(rt.Strings) - 1)
+			}
+		}
+	}
+	rt.Objects = append(rt.Objects, ret)
+	return int64(len(rt.Objects) - 1)
+}

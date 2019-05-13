@@ -72,7 +72,9 @@ var (
 		{5, GetString, 2, `GetString`, []uint32{parser.VObject, parser.VStr},
 			parser.VStr}, // GetString(obj, str) str
 		{5, GetArray, 2, `GetArray`, []uint32{parser.VObject, parser.VStr},
-			(parser.VStr << 4) | parser.VArr}, // GetString(obj, str) arr.str
+			(parser.VStr << 4) | parser.VArr}, // GetArray(obj, str) arr.str
+		{5, GetMap, 2, `GetMap`, []uint32{parser.VObject, parser.VStr},
+			(parser.VStr << 4) | parser.VMap}, // GetMap(obj, str) map.str
 	}
 )
 
