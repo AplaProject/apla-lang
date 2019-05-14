@@ -54,6 +54,7 @@ const (
 	VFloat  // float
 	VMoney  // money
 	VObject // object
+	VBytes  // bytes
 	VObjList
 )
 

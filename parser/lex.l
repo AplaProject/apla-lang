@@ -107,6 +107,7 @@ map			    return l.char(T_MAP)
 float			return l.char(T_FLOAT)
 money			return l.char(T_MONEY)
 obj  			return l.char(T_OBJECT)
+bytes  			return l.char(T_BYTES)
 
 {float}			{
 					ai, _ := strconv.ParseFloat(string(l.TokenBytes(nil)), 64); 

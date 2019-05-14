@@ -118,6 +118,9 @@ main:
 				case parser.VMoney:
 					rt.Objects = append(rt.Objects, decimal.New(0, 0))
 					v = int64(len(rt.Objects) - 1)
+				case parser.VBytes:
+					rt.Objects = append(rt.Objects, []byte{})
+					v = int64(len(rt.Objects) - 1)
 				}
 				Vars = append(Vars, v)
 			}
@@ -665,6 +668,11 @@ main:
 				b = 1
 			}
 			stack[top] = b
+		case ASSIGNADDBYTES:
+			ind := *(*int64)(unsafe.Pointer(uintptr(stack[top-1])))
+			rt.Objects[ind] = append(rt.Objects[ind].([]byte),
+				rt.Objects[stack[top]].([]byte)...)
+			top -= 2
 		default:
 			return ``, gas, fmt.Errorf(errCommand, code[i])
 		}

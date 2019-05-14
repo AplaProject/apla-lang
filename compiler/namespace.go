@@ -65,6 +65,8 @@ var (
 		{rt.LTMONEY, parser.VBool, parser.LT, parser.VMoney, parser.VMoney},                // money < money
 		{rt.GTMONEY, parser.VBool, parser.GT, parser.VMoney, parser.VMoney},                // money > money
 		{rt.ASSIGNINT, parser.VObject, parser.ASSIGN, parser.VObject, parser.VObject},      // obj = obj
+		{rt.ASSIGNINT, parser.VVoid, parser.ASSIGN, parser.VBytes, parser.VBytes},          // bytes = bytes
+		{rt.ASSIGNADDBYTES, parser.VVoid, parser.ADD_ASSIGN, parser.VBytes, parser.VBytes}, // bytes += bytes
 	}
 )
 
@@ -211,6 +213,8 @@ main:
 			ret += `money`
 		case parser.VObject:
 			ret += `obj`
+		case parser.VBytes:
+			ret += `bytes`
 		default:
 			break main
 		}

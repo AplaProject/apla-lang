@@ -97,6 +97,7 @@ const (
 	EQMONEY        // money == money
 	LTMONEY        // money < money
 	GTMONEY        // money > money
+	ASSIGNADDBYTES // vars += bytes
 
 	DATA // +uint16 size of data + data
 )

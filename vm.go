@@ -26,6 +26,7 @@ const (
 	Float   // float
 	Money   // money
 	Object  // object
+	Bytes   // bytes
 	ObjList // list in object
 )
 

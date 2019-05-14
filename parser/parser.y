@@ -97,6 +97,7 @@ func setResult(l yyLexer, v *Node) {
 %token T_FLOAT  // float
 %token T_MONEY  // money
 %token T_OBJECT  // object
+%token T_BYTES  // bytes
 
 %type <i> ordinaltype
 %type <n> type
@@ -147,6 +148,7 @@ ordinaltype
     | T_FLOAT {$$ = VFloat}
     | T_MONEY {$$ = VMoney}
     | T_OBJECT {$$ = VObject}
+    | T_BYTES {$$ = VBytes}    
     ;
 
 type

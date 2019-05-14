@@ -27,6 +27,7 @@ var (
 		{5, LenArr, 1, `Len`, []uint32{parser.VArr}, parser.VInt},           // Len(arr) int
 		{5, LenMap, 1, `Len`, []uint32{parser.VMap}, parser.VInt},           // Len(map) int
 		{5, LenStr, 1, `Len`, []uint32{parser.VStr}, parser.VInt},           // Len(str) int
+		{5, LenBytes, 1, `Len`, []uint32{parser.VBytes}, parser.VInt},       // Len(bytes) int
 		{5, StrInt, 1, `str`, []uint32{parser.VInt}, parser.VStr},           // str(int) str
 		{5, StrBool, 1, `str`, []uint32{parser.VBool}, parser.VStr},         // str(bool) str
 		{5, IntStr, 1, `int`, []uint32{parser.VStr}, parser.VInt},           // int(str) int
@@ -35,6 +36,7 @@ var (
 		{7, MoneyInt, 1, `money`, []uint32{parser.VInt}, parser.VMoney},     // money(int) money
 		{7, MoneyFloat, 1, `money`, []uint32{parser.VFloat}, parser.VMoney}, // money(float) money
 		{7, MoneyStr, 1, `money`, []uint32{parser.VStr}, parser.VMoney},     // money(str) money
+		{7, BytesStr, 1, `bytes`, []uint32{parser.VStr}, parser.VBytes},     // bytes(str) bytes
 		{5, Floor, 1, `Floor`, []uint32{parser.VFloat}, parser.VInt},        // Floor(float) int
 		{5, Log, 1, `Log`, []uint32{parser.VFloat}, parser.VFloat},          // Log(float) float
 		{5, Log10, 1, `Log10`, []uint32{parser.VFloat}, parser.VFloat},      // Log10(float) float
@@ -112,6 +114,11 @@ func LenStr(rt *Runtime, i int64) int64 {
 	return int64(len(rt.Strings[i]))
 }
 
+// LenBytes returns the length of the bytes
+func LenBytes(rt *Runtime, i int64) int64 {
+	return int64(len(rt.Objects[i].([]byte)))
+}
+
 // IntStr converts a string to the integer number
 func IntStr(rt *Runtime, i int64) (int64, error) {
 	val, err := strconv.ParseInt(rt.Strings[i], 0, 64)
@@ -168,4 +175,10 @@ func MoneyStr(rt *Runtime, i int64) (int64, error) {
 	}
 	rt.Objects = append(rt.Objects, d.Floor())
 	return int64(len(rt.Objects) - 1), nil
+}
+
+// BytesStr converts a string to bytes
+func BytesStr(rt *Runtime, i int64) int64 {
+	rt.Objects = append(rt.Objects, []byte(rt.Strings[i]))
+	return int64(len(rt.Objects) - 1)
 }
