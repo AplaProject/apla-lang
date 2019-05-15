@@ -77,6 +77,8 @@ var (
 			(parser.VStr << 4) | parser.VArr}, // GetArray(obj, str) arr.str
 		{5, GetMap, 2, `GetMap`, []uint32{parser.VObject, parser.VStr},
 			(parser.VStr << 4) | parser.VMap}, // GetMap(obj, str) map.str
+		{7, HexBytes, 1, `Hex`, []uint32{parser.VBytes}, parser.VStr},     // Hex(bytes) str
+		{7, UnHexBytes, 1, `UnHex`, []uint32{parser.VStr}, parser.VBytes}, // UnHex(str) bytes
 	}
 )
 
@@ -112,11 +114,6 @@ func LenMap(rt *Runtime, i int64) int64 {
 // LenStr returns the length of the string
 func LenStr(rt *Runtime, i int64) int64 {
 	return int64(len(rt.Strings[i]))
-}
-
-// LenBytes returns the length of the bytes
-func LenBytes(rt *Runtime, i int64) int64 {
-	return int64(len(rt.Objects[i].([]byte)))
 }
 
 // IntStr converts a string to the integer number
@@ -175,10 +172,4 @@ func MoneyStr(rt *Runtime, i int64) (int64, error) {
 	}
 	rt.Objects = append(rt.Objects, d.Floor())
 	return int64(len(rt.Objects) - 1), nil
-}
-
-// BytesStr converts a string to bytes
-func BytesStr(rt *Runtime, i int64) int64 {
-	rt.Objects = append(rt.Objects, []byte(rt.Strings[i]))
-	return int64(len(rt.Objects) - 1)
 }
