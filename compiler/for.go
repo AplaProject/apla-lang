@@ -77,7 +77,7 @@ func forCode(node *parser.Node, cmpl *compiler) error {
 	}
 	cmpl.Contract.Code = cmpl.Contract.Code[:curLen]
 	maintype, subtype := parseType(nFor.Expr.Result)
-	if maintype != parser.VArr && maintype != parser.VMap {
+	if maintype != parser.VArr && maintype != parser.VMap && maintype != parser.VBytes {
 		return cmpl.ErrorParam(nFor.Expr, errForType, Type2Str(nFor.Expr.Result))
 	}
 	keyType := parser.VInt

@@ -517,7 +517,7 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 			}
 			cmdInd := rt.Bcode(rt.GETINDEX)
 			switch outtype {
-			case parser.VArr:
+			case parser.VArr, parser.VBytes:
 				if item.Result != parser.VInt {
 					return cmpl.ErrorParam(node, errIndexInt, Type2Str(item.Result))
 				}
@@ -550,7 +550,7 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 			}
 			var formap rt.Bcode
 			switch outtype {
-			case parser.VArr:
+			case parser.VArr, parser.VBytes:
 				if item.Result != parser.VInt {
 					return cmpl.ErrorParam(node, errIndexInt, Type2Str(item.Result))
 				}
@@ -572,7 +572,7 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 			}
 			itype = subtype
 		}
-		node.Result = retType //uint32(vinfo.Type) //itype
+		node.Result = retType
 	case parser.TFor:
 		if err = forCode(node, cmpl); err != nil {
 			return err

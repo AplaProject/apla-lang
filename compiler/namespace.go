@@ -71,6 +71,10 @@ var (
 )
 
 func parseType(intype uint32) (outtype, subtype uint32) {
+	if intype == parser.VBytes {
+		subtype = parser.VInt
+		outtype = intype
+	}
 	if intype > 0xf {
 		subtype = intype >> 4
 		outtype = intype & 0xf
@@ -90,7 +94,7 @@ func (cmpl *compiler) findBinary(binary *parser.NBinary) (rt.Bcode, uint32) {
 		}
 	}
 	if binary.Oper == parser.ASSIGN && (binary.Left.Result&0xf == parser.VArr ||
-		binary.Left.Result&0xf == parser.VMap) {
+		binary.Left.Result&0xf == parser.VMap || binary.Left.Result&0xf == parser.VBytes) {
 		if binary.Left.Result == binary.Right.Result {
 			return rt.ASSIGNINT, parser.VVoid
 		}
@@ -107,6 +111,9 @@ func (cmpl *compiler) findBinary(binary *parser.NBinary) (rt.Bcode, uint32) {
 			}
 			if outtype&0xf == parser.VArr {
 				return rt.ASSIGNSETARR, parser.VVoid
+			}
+			if outtype&0xf == parser.VBytes {
+				return rt.ASSIGNSETBYTES, parser.VVoid
 			}
 		}
 	}

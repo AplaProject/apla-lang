@@ -13,63 +13,64 @@ import (
 )
 
 const (
-	NOP          = iota
-	PUSH16       // + int16
-	PUSH32       // + int32
-	PUSHSTR      // + uint64 + uint16  offset + size in Data
-	INITVARS     // + uint16 (count) + ... uint16 types
-	DELVARS      // + uint16 (new count)
-	ADDINT       // int+int
-	SUBINT       // int-int
-	MULINT       // int*int
-	DIVINT       // int/int
-	MODINT       // int%int
-	EQINT        // int == int
-	LTINT        // int < int
-	GTINT        // int > int
-	AND          // bool && bool
-	OR           // bool || bool
-	DUP          // duplicate top of stack
-	GETVAR       // + uint16
-	SETVAR       // + uint16
-	JMP          // + int16   jump with the offset with clearing stack
-	JMPREL       // + int16   jump with the offset
-	JZE          // + int16   jump if top equals zero with the offset
-	JNZ          // + int16   jump if top does not equal zero with the offset
-	ASSIGNINT    // vars = int / vars = str
-	ASSIGNSTR    // vars = str
-	ASSIGNADDINT // vars += int
-	ASSIGNSUBINT // vars -= int
-	ASSIGNMULINT // vars *= int
-	ASSIGNDIVINT // vars /= int
-	ASSIGNMODINT // vars %= int
-	CALLFUNC     // + uint16 call contract function
-	EMBEDFUNC    // + uint16 call embedded function
-	CUSTOMFUNC   // + uint16 call custom function
-	CALLCONTRACT // + uint16 call contract
-	LOADPARS     // load contract parameters
-	PARCONTRACT  // + uint16 index of parameter
-	GETPARAMS    // + uint16 count of parameters
-	RETURN       // return from contract + int16 (type)
-	RETFUNC      // return from function
-	SIGNINT      // unary minus int
-	NOT          // unary logical not
-	ADDSTR       // str+str
-	EQSTR        // str == str
-	ASSIGNADDSTR // vars += str
-	APPENDARR    // arr += item
-	GETINDEX     // var[]
-	SETINDEX     // var[]
-	GETMAP       // var[key]
-	SETMAP       // var[key]
-	COPYSTR      // copy str
-	COPY         // copy object
-	ASSIGNSETMAP // var[key] = value
-	ASSIGNSETARR // var[] = value
-	INITARR      // +uint16 count
-	INITMAP      // +uint16 count
-	INITOBJ      // +uint16 count
-	INITOBJLIST  // +uint16 count
+	NOP            = iota
+	PUSH16         // + int16
+	PUSH32         // + int32
+	PUSHSTR        // + uint64 + uint16  offset + size in Data
+	INITVARS       // + uint16 (count) + ... uint16 types
+	DELVARS        // + uint16 (new count)
+	ADDINT         // int+int
+	SUBINT         // int-int
+	MULINT         // int*int
+	DIVINT         // int/int
+	MODINT         // int%int
+	EQINT          // int == int
+	LTINT          // int < int
+	GTINT          // int > int
+	AND            // bool && bool
+	OR             // bool || bool
+	DUP            // duplicate top of stack
+	GETVAR         // + uint16
+	SETVAR         // + uint16
+	JMP            // + int16   jump with the offset with clearing stack
+	JMPREL         // + int16   jump with the offset
+	JZE            // + int16   jump if top equals zero with the offset
+	JNZ            // + int16   jump if top does not equal zero with the offset
+	ASSIGNINT      // vars = int / vars = str
+	ASSIGNSTR      // vars = str
+	ASSIGNADDINT   // vars += int
+	ASSIGNSUBINT   // vars -= int
+	ASSIGNMULINT   // vars *= int
+	ASSIGNDIVINT   // vars /= int
+	ASSIGNMODINT   // vars %= int
+	CALLFUNC       // + uint16 call contract function
+	EMBEDFUNC      // + uint16 call embedded function
+	CUSTOMFUNC     // + uint16 call custom function
+	CALLCONTRACT   // + uint16 call contract
+	LOADPARS       // load contract parameters
+	PARCONTRACT    // + uint16 index of parameter
+	GETPARAMS      // + uint16 count of parameters
+	RETURN         // return from contract + int16 (type)
+	RETFUNC        // return from function
+	SIGNINT        // unary minus int
+	NOT            // unary logical not
+	ADDSTR         // str+str
+	EQSTR          // str == str
+	ASSIGNADDSTR   // vars += str
+	APPENDARR      // arr += item
+	GETINDEX       // var[]
+	SETINDEX       // var[]
+	GETMAP         // var[key]
+	SETMAP         // var[key]
+	COPYSTR        // copy str
+	COPY           // copy object
+	ASSIGNSETMAP   // var[key] = value
+	ASSIGNSETARR   // var[] = value
+	ASSIGNSETBYTES // var[] = value
+	INITARR        // +uint16 count
+	INITMAP        // +uint16 count
+	INITOBJ        // +uint16 count
+	INITOBJLIST    // +uint16 count
 	OBJ2LIST
 	ENV            // +uint16
 	PUSH64         // + int64

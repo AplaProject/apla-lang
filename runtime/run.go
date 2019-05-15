@@ -25,6 +25,7 @@ const (
 	errFloatResult  = `incorrect float result`
 	errInvalidParam = `invalid parameters`
 	errTypeJSON     = `Value doesn't support json marshalling`
+	errBytesVal     = `The byte value is greater than 255`
 )
 
 type objCount struct {
@@ -393,19 +394,30 @@ main:
 			rt.Objects[ind] = append(rt.Objects[ind].([]int64), stack[top])
 			top -= 2
 		case GETINDEX:
-			arr := rt.Objects[stack[top-1]].([]int64)
-			if stack[top] >= int64(len(arr)) || stack[top] < 0 {
-				return ``, gas, fmt.Errorf(errIndexOut, stack[top], len(arr))
+			switch v := rt.Objects[stack[top-1]].(type) {
+			case []int64:
+				if stack[top] >= int64(len(v)) || stack[top] < 0 {
+					return ``, gas, fmt.Errorf(errIndexOut, stack[top], len(v))
+				}
+				stack[top-1] = v[stack[top]]
+			case []uint8:
+				if stack[top] >= int64(len(v)) || stack[top] < 0 {
+					return ``, gas, fmt.Errorf(errIndexOut, stack[top], len(v))
+				}
+				stack[top-1] = int64(v[stack[top]])
 			}
-			stack[top-1] = rt.Objects[stack[top-1]].([]int64)[stack[top]]
 			top--
 		case SETINDEX:
-			arr := rt.Objects[stack[top-1]].([]int64)
-			if stack[top] >= int64(len(arr)) || stack[top] < 0 {
-				return ``, gas, fmt.Errorf(errIndexOut, stack[top], len(arr))
+			switch v := rt.Objects[stack[top-1]].(type) {
+			case []int64:
+				if stack[top] >= int64(len(v)) || stack[top] < 0 {
+					return ``, gas, fmt.Errorf(errIndexOut, stack[top], len(v))
+				}
+			case []uint8:
+				if stack[top] >= int64(len(v)) || stack[top] < 0 {
+					return ``, gas, fmt.Errorf(errIndexOut, stack[top], len(v))
+				}
 			}
-			//			stack[top-1] = int64(uintptr(unsafe.Pointer(&rt.Objects[stack[top-1]].([]int64)[stack[top]])))
-			//			top--
 		case GETMAP:
 			imap := rt.Objects[stack[top-1]].(map[string]int64)
 			if stack[top] >= int64(len(rt.Strings)) || stack[top] < 0 {
@@ -433,6 +445,13 @@ main:
 		case ASSIGNSETARR:
 			iarr := rt.Objects[stack[top-2]].([]int64)
 			iarr[stack[top-1]] = stack[top]
+			top -= 3
+		case ASSIGNSETBYTES:
+			ibyte := rt.Objects[stack[top-2]].([]uint8)
+			if uint64(stack[top]) > 255 {
+				return ``, gas, fmt.Errorf(errBytesVal)
+			}
+			ibyte[stack[top-1]] = uint8(stack[top])
 			top -= 3
 		case INITARR:
 			i++

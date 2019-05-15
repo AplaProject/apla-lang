@@ -30,7 +30,7 @@ const (
 	errIndexType         = `Type %s doesn't support indexing`
 	errIndexInt          = `Unexpected type %s of expression; expecting int`
 	errIndexStr          = `Unexpected type %s of expression; expecting str`
-	errForType           = `Unexpected type %s of expression; expecting array or map`
+	errForType           = `Unexpected type %s of expression; expecting array, bytes or map`
 	errBreak             = `break must be inside of while or for`
 	errContinue          = `continue must be inside of while or for`
 	errEnv               = `Environment variable $%s is undefined`
