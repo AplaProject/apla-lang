@@ -1,3 +1,11 @@
+contract FileA {
+    data {
+        file myf
+    }
+    file f1
+    return `OK` + FileName(myf) + Hex(FileBody(f1))
+}
+==== OK
 contract BytesE {
     bytes b = UnHex(`0102000e0d0f`)
     b[0] = 300

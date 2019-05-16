@@ -27,6 +27,7 @@ const (
 	Money   // money
 	Object  // object
 	Bytes   // bytes
+	File    // file
 	ObjList // list in object
 )
 

@@ -9,6 +9,7 @@ import (
 	"github.com/shopspring/decimal"
 
 	"github.com/AplaProject/apla-lang/parser"
+	"github.com/AplaProject/apla-lang/types"
 )
 
 type EmbedFunc struct {
@@ -77,8 +78,11 @@ var (
 			(parser.VStr << 4) | parser.VArr}, // GetArray(obj, str) arr.str
 		{5, GetMap, 2, `GetMap`, []uint32{parser.VObject, parser.VStr},
 			(parser.VStr << 4) | parser.VMap}, // GetMap(obj, str) map.str
-		{7, HexBytes, 1, `Hex`, []uint32{parser.VBytes}, parser.VStr},     // Hex(bytes) str
-		{7, UnHexBytes, 1, `UnHex`, []uint32{parser.VStr}, parser.VBytes}, // UnHex(str) bytes
+		{7, HexBytes, 1, `Hex`, []uint32{parser.VBytes}, parser.VStr},       // Hex(bytes) str
+		{7, UnHexBytes, 1, `UnHex`, []uint32{parser.VStr}, parser.VBytes},   // UnHex(str) bytes
+		{5, FileName, 1, `FileName`, []uint32{parser.VFile}, parser.VStr},   // FileName(file) str
+		{5, FileMime, 1, `FileMime`, []uint32{parser.VFile}, parser.VStr},   // FileMime(file) str
+		{5, FileBody, 1, `FileBody`, []uint32{parser.VFile}, parser.VBytes}, // FileBody(file) bytes
 	}
 )
 
@@ -172,4 +176,22 @@ func MoneyStr(rt *Runtime, i int64) (int64, error) {
 	}
 	rt.Objects = append(rt.Objects, d.Floor())
 	return int64(len(rt.Objects) - 1), nil
+}
+
+func FileName(rt *Runtime, i int64) int64 {
+	fvar := rt.Objects[i].(*types.File)
+	rt.Strings = append(rt.Strings, fvar.Name)
+	return int64(len(rt.Strings) - 1)
+}
+
+func FileMime(rt *Runtime, i int64) int64 {
+	fvar := rt.Objects[i].(*types.File)
+	rt.Strings = append(rt.Strings, fvar.MimeType)
+	return int64(len(rt.Strings) - 1)
+}
+
+func FileBody(rt *Runtime, i int64) int64 {
+	fvar := rt.Objects[i].(*types.File)
+	rt.Objects = append(rt.Objects, fvar.Body)
+	return int64(len(rt.Objects) - 1)
 }

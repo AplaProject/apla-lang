@@ -122,6 +122,9 @@ main:
 				case parser.VBytes:
 					rt.Objects = append(rt.Objects, []byte{})
 					v = int64(len(rt.Objects) - 1)
+				case parser.VFile:
+					rt.Objects = append(rt.Objects, types.NewFile())
+					v = int64(len(rt.Objects) - 1)
 				}
 				Vars = append(Vars, v)
 			}

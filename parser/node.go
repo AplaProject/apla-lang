@@ -55,6 +55,7 @@ const (
 	VMoney  // money
 	VObject // object
 	VBytes  // bytes
+	VFile   // file
 	VObjList
 )
 

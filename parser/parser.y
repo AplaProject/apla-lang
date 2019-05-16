@@ -98,6 +98,7 @@ func setResult(l yyLexer, v *Node) {
 %token T_MONEY  // money
 %token T_OBJECT  // object
 %token T_BYTES  // bytes
+%token T_FILE  // file
 
 %type <i> ordinaltype
 %type <n> type
@@ -149,6 +150,7 @@ ordinaltype
     | T_MONEY {$$ = VMoney}
     | T_OBJECT {$$ = VObject}
     | T_BYTES {$$ = VBytes}    
+    | T_FILE {$$ = VFile}    
     ;
 
 type

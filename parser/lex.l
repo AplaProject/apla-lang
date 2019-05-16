@@ -108,6 +108,7 @@ float			return l.char(T_FLOAT)
 money			return l.char(T_MONEY)
 obj  			return l.char(T_OBJECT)
 bytes  			return l.char(T_BYTES)
+file  			return l.char(T_FILE)
 
 {float}			{
 					ai, _ := strconv.ParseFloat(string(l.TokenBytes(nil)), 64); 
