@@ -350,7 +350,8 @@ main:
 			}
 			i += 2
 			switch code[i] & 0xf {
-			case parser.VArr, parser.VMap, parser.VStr, parser.VMoney: // Create a copy of the object
+			case parser.VArr, parser.VMap, parser.VStr, parser.VMoney,
+				parser.VBytes, parser.VFile: // Create a copy of the object
 				stack[top] = copy(rt, int64(code[i]), stack[top])
 			}
 			pars = append(pars, int64(code[i-1]), stack[top])

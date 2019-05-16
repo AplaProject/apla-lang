@@ -83,6 +83,8 @@ var (
 		{5, FileName, 1, `FileName`, []uint32{parser.VFile}, parser.VStr},   // FileName(file) str
 		{5, FileMime, 1, `FileMime`, []uint32{parser.VFile}, parser.VStr},   // FileMime(file) str
 		{5, FileBody, 1, `FileBody`, []uint32{parser.VFile}, parser.VBytes}, // FileBody(file) bytes
+		{5, FileInit, 3, `FileInit`, []uint32{parser.VStr, parser.VStr, parser.VBytes},
+			parser.VFile}, // FileInit(str str bytes) file
 	}
 )
 
@@ -193,5 +195,11 @@ func FileMime(rt *Runtime, i int64) int64 {
 func FileBody(rt *Runtime, i int64) int64 {
 	fvar := rt.Objects[i].(*types.File)
 	rt.Objects = append(rt.Objects, fvar.Body)
+	return int64(len(rt.Objects) - 1)
+}
+
+func FileInit(rt *Runtime, iname, imime, ibody int64) int64 {
+	rt.Objects = append(rt.Objects, types.FileInit(
+		rt.Strings[iname], rt.Strings[imime], rt.Objects[ibody].([]byte)))
 	return int64(len(rt.Objects) - 1)
 }

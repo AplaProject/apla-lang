@@ -257,6 +257,13 @@ func copy(rt *Runtime, vtype int64, index int64) int64 {
 		}
 		rt.Objects = append(rt.Objects, imap)
 		return int64(len(rt.Objects) - 1)
+	case parser.VBytes:
+		rt.Objects = append(rt.Objects, rt.Objects[index].([]byte))
+		return int64(len(rt.Objects) - 1)
+	case parser.VFile:
+		fvar := rt.Objects[index].(*types.File)
+		rt.Objects = append(rt.Objects, types.FileInit(fvar.Name, fvar.MimeType, fvar.Body))
+		return int64(len(rt.Objects) - 1)
 	}
 	return index
 }

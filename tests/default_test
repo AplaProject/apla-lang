@@ -1,9 +1,13 @@
+contract FileB {
+    return @FileA(myf: FileInit(`myfile.txt`, `txt`, UnHex(`3256378833`)))
+}
+==== OKmyfile.txt3256378833
 contract FileA {
     data {
         file myf
     }
     file f1
-    return `OK` + FileName(myf) + Hex(FileBody(f1))
+    return `OK` + FileName(myf) + Hex(FileBody(f1)) + Hex(FileBody(myf))
 }
 ==== OK
 contract BytesE {
