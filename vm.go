@@ -1,12 +1,15 @@
 package simvolio
 
 import (
+	"encoding/hex"
 	"fmt"
 	"strconv"
+	"unsafe"
 
 	"github.com/AplaProject/apla-lang/compiler"
 	"github.com/AplaProject/apla-lang/parser"
 	"github.com/AplaProject/apla-lang/runtime"
+	"github.com/AplaProject/apla-lang/types"
 
 	"github.com/shopspring/decimal"
 )
@@ -198,16 +201,52 @@ func (vm *VM) Run(cnt *runtime.Contract, data runtime.IData) (string, int64, err
 			case parser.VStr:
 				rt.Strings = append(rt.Strings, vVal)
 				val = int64(len(rt.Strings) - 1)
+			case parser.VFloat:
+				var f float64
+				f, err = strconv.ParseFloat(vVal, 64)
+				if err == nil {
+					val = *(*int64)(unsafe.Pointer(&f))
+				}
+			case parser.VBool:
+				if vVal == `0` || len(vVal) == 0 || vVal == `false` {
+					val = 0
+				} else {
+					val = 1
+				}
 			case parser.VMoney:
-				d, err := decimal.NewFromString(vVal)
+				var d decimal.Decimal
+				d, err = decimal.NewFromString(vVal)
 				if err != nil {
 					return ``, 0, err
 				}
 				rt.Objects = append(rt.Objects, d.Floor())
 				val = int64(len(rt.Objects) - 1)
+			case parser.VBytes:
+				var b []byte
+				b, err = hex.DecodeString(vVal)
+				if err == nil {
+					rt.Objects = append(rt.Objects, b)
+					val = int64(len(rt.Objects) - 1)
+				}
+			default:
+				return ``, 0, fmt.Errorf(`Unsupported type of parameter`)
 			}
 		case []byte:
-
+			switch vi.Type {
+			case parser.VBytes:
+				rt.Objects = append(rt.Objects, vVal)
+				val = int64(len(rt.Objects) - 1)
+			default:
+				return ``, 0, fmt.Errorf(`Unsupported type of parameter`)
+			}
+		case *types.File:
+			switch vi.Type {
+			case parser.VFile:
+				rt.Objects = append(rt.Objects, vVal)
+				val = int64(len(rt.Objects) - 1)
+			default:
+				return ``, 0, fmt.Errorf(`Unsupported type of parameter`)
+			}
 		default:
 			err = fmt.Errorf(`Params must have string or []bytes type`)
 		}

@@ -1,13 +1,24 @@
+contract Param2 {
+    data {
+        bytes bBytes
+        file  fFile
+    }
+    return Hex(bBytes) + FileName(fFile) + FileMime(fFile) + Hex(FileBody(fFile))
+}
+==== 21275b00myfile.txttext2d2f0020
 contract Param1 {
     data {
         int pInt
         str pStr
         int noInt
         money pMoney
+        bool pBool
+        float pFloat
+        bytes pBytes
     }
-    return str(pInt) + `+` + pStr + `=` + str(noInt) + str(pMoney)
+    return str(pInt) + `+` + pStr + `=` + str(noInt) + str(pMoney) + str(pBool) + str(pFloat) + Hex(pBytes)
 }
-==== 123+OK=032562365237623
+==== 123+OK=032562365237623false23.83431325f
 contract FileB {
     return @FileA(myf: FileInit(`myfile.txt`, `txt`, UnHex(`3256378833`)))
 }

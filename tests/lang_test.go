@@ -132,6 +132,11 @@ func testFile(filename string) error {
 			`pInt`:   "123",
 			`pStr`:   `OK`,
 			`pMoney`: `32562365237623`,
+			`pBool`:  `false`,
+			`pFloat`: `23.834`,
+			`pBytes`: `31325f`,
+			`bBytes`: []byte{33, 39, 0x5b, 0},
+			`fFile`:  types.FileInit(`myfile.txt`, `text`, []byte{45, 47, 00, 32}),
 		},
 	}
 	for i := int64(len(contracts)) - 1; i >= 0; i-- {

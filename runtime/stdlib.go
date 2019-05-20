@@ -34,6 +34,7 @@ var (
 		{5, StrMoney, 1, `str`, []uint32{parser.VMoney}, parser.VStr},       // str(money) str
 		{5, IntStr, 1, `int`, []uint32{parser.VStr}, parser.VInt},           // int(str) int
 		{5, FloatInt, 1, `float`, []uint32{parser.VInt}, parser.VFloat},     // float(int) float
+		{5, StrFloat, 1, `str`, []uint32{parser.VFloat}, parser.VStr},       // str(float) str
 		{5, IntFloat, 1, `int`, []uint32{parser.VFloat}, parser.VInt},       // int(float) int
 		{7, MoneyInt, 1, `money`, []uint32{parser.VInt}, parser.VMoney},     // money(int) money
 		{7, MoneyFloat, 1, `money`, []uint32{parser.VFloat}, parser.VMoney}, // money(float) money
@@ -135,6 +136,12 @@ func IntStr(rt *Runtime, i int64) (int64, error) {
 // StrInt converts the integer number to the string
 func StrInt(rt *Runtime, i int64) int64 {
 	rt.Strings = append(rt.Strings, fmt.Sprint(i))
+	return int64(len(rt.Strings) - 1)
+}
+
+// StrFloat converts the float number to the string
+func StrFloat(rt *Runtime, i int64) int64 {
+	rt.Strings = append(rt.Strings, fmt.Sprint(*(*float64)(unsafe.Pointer(&i))))
 	return int64(len(rt.Strings) - 1)
 }
 
