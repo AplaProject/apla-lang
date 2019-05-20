@@ -2,9 +2,13 @@ package simvolio
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/AplaProject/apla-lang/compiler"
+	"github.com/AplaProject/apla-lang/parser"
 	"github.com/AplaProject/apla-lang/runtime"
+
+	"github.com/shopspring/decimal"
 )
 
 const (
@@ -176,7 +180,44 @@ func (vm *VM) Run(cnt *runtime.Contract, data runtime.IData) (string, int64, err
 	rt.Env = env
 	rt.Data = data
 	rt.Funcs = vm.Custom.Funcs
-	return rt.Run(cnt.Code, nil, vm.Settings.GasLimit)
+	params := make([]int64, 0)
+	for key, vi := range cnt.Params {
+		var (
+			err error
+			val int64
+			v   interface{}
+		)
+		if v = data.GetParam(key); v == nil {
+			continue
+		}
+		switch vVal := v.(type) {
+		case string:
+			switch vi.Type {
+			case parser.VInt:
+				val, err = strconv.ParseInt(vVal, 10, 64)
+			case parser.VStr:
+				rt.Strings = append(rt.Strings, vVal)
+				val = int64(len(rt.Strings) - 1)
+			case parser.VMoney:
+				d, err := decimal.NewFromString(vVal)
+				if err != nil {
+					return ``, 0, err
+				}
+				rt.Objects = append(rt.Objects, d.Floor())
+				val = int64(len(rt.Objects) - 1)
+			}
+		case []byte:
+
+		default:
+			err = fmt.Errorf(`Params must have string or []bytes type`)
+		}
+		if err != nil {
+			return ``, 0, err
+		}
+		params = append(params, int64(vi.Index))
+		params = append(params, val)
+	}
+	return rt.Run(cnt.Code, params, vm.Settings.GasLimit)
 }
 
 // RunByName executes the contract

@@ -96,11 +96,16 @@ func objFunc(data runtime.IData, obj *types.Map) (string, int64, error) {
 }
 
 type myData struct {
-	Env []interface{}
+	Env    []interface{}
+	Params map[string]interface{}
 }
 
 func (data myData) GetEnv() []interface{} {
 	return data.Env
+}
+
+func (data myData) GetParam(name string) interface{} {
+	return data.Params[name]
 }
 
 func testFile(filename string) error {
@@ -123,6 +128,11 @@ func testFile(filename string) error {
 	}
 	data := myData{
 		Env: []interface{}{7, 1, `0122afcd34`},
+		Params: map[string]interface{}{
+			`pInt`:   "123",
+			`pStr`:   `OK`,
+			`pMoney`: `32562365237623`,
+		},
 	}
 	for i := int64(len(contracts)) - 1; i >= 0; i-- {
 		cnt := contracts[i]

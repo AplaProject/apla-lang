@@ -1,3 +1,13 @@
+contract Param1 {
+    data {
+        int pInt
+        str pStr
+        int noInt
+        money pMoney
+    }
+    return str(pInt) + `+` + pStr + `=` + str(noInt) + str(pMoney)
+}
+==== 123+OK=032562365237623
 contract FileB {
     return @FileA(myf: FileInit(`myfile.txt`, `txt`, UnHex(`3256378833`)))
 }

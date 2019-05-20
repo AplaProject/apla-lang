@@ -158,6 +158,7 @@ type EnvVal struct {
 // Data is an interface for runtime customizing
 type IData interface {
 	GetEnv() []interface{}
+	GetParam(string) interface{}
 }
 
 // Runtime is a runtime structure

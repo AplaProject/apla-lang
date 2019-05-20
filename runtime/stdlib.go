@@ -31,6 +31,7 @@ var (
 		{5, LenBytes, 1, `Len`, []uint32{parser.VBytes}, parser.VInt},       // Len(bytes) int
 		{5, StrInt, 1, `str`, []uint32{parser.VInt}, parser.VStr},           // str(int) str
 		{5, StrBool, 1, `str`, []uint32{parser.VBool}, parser.VStr},         // str(bool) str
+		{5, StrMoney, 1, `str`, []uint32{parser.VMoney}, parser.VStr},       // str(money) str
 		{5, IntStr, 1, `int`, []uint32{parser.VStr}, parser.VInt},           // int(str) int
 		{5, FloatInt, 1, `float`, []uint32{parser.VInt}, parser.VFloat},     // float(int) float
 		{5, IntFloat, 1, `int`, []uint32{parser.VFloat}, parser.VInt},       // int(float) int
@@ -134,6 +135,12 @@ func IntStr(rt *Runtime, i int64) (int64, error) {
 // StrInt converts the integer number to the string
 func StrInt(rt *Runtime, i int64) int64 {
 	rt.Strings = append(rt.Strings, fmt.Sprint(i))
+	return int64(len(rt.Strings) - 1)
+}
+
+// StrMoney converts the money to the string
+func StrMoney(rt *Runtime, i int64) int64 {
+	rt.Strings = append(rt.Strings, fmt.Sprint(rt.Objects[i]))
 	return int64(len(rt.Strings) - 1)
 }
 
