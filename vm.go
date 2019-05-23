@@ -42,6 +42,7 @@ type FuncItem struct {
 	Name   string
 	Params []uint32
 	Result uint32
+	Read   bool
 	Func   interface{}
 }
 
@@ -82,6 +83,7 @@ func NewVM(settings VMSettings) *VM {
 			Result: val.Result,
 			Params: val.Params,
 			Name:   val.Name,
+			Read:   val.Read,
 			Func:   val.Func,
 		}
 	}

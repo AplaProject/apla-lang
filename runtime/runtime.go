@@ -126,6 +126,7 @@ type FuncInfo struct {
 type Contract struct {
 	ID     int64 // External id
 	Name   string
+	Read   bool
 	Code   []Bcode
 	Vars   map[string]VarInfo
 	Funcs  []*FuncInfo
@@ -141,6 +142,7 @@ type FuncItem struct {
 	Name   string
 	Result uint32
 	Params []uint32
+	Read   bool
 	Func   interface{}
 }
 

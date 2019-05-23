@@ -96,6 +96,7 @@ for				return l.char(FOR)
 in				return l.char(IN)
 switch  		return l.char(SWITCH)
 case  	    	return l.char(CASE)
+read    		return l.char(READ)
 default  		return l.char(DEFAULT)
 
 bool			return l.char(T_BOOL)

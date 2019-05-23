@@ -2,6 +2,7 @@ package test
 
 import (
 	"fmt"
+	"github.com/shopspring/decimal"
 	"io/ioutil"
 	"regexp"
 	"strconv"
@@ -95,6 +96,14 @@ func objFunc(data runtime.IData, obj *types.Map) (string, int64, error) {
 	return fmt.Sprint(obj), 20, nil
 }
 
+func readFunc(data runtime.IData, s string, i int64) (string, int64, error) {
+	return s + `=` + fmt.Sprint(i), 50, nil
+}
+
+func fbmFunc(data runtime.IData, f float64, b bool, m decimal.Decimal) (string, int64, error) {
+	return fmt.Sprintf("%v*%v*%v", f, b, m), 100, nil
+}
+
 type myData struct {
 	Env    []interface{}
 	Params map[string]interface{}
@@ -117,7 +126,10 @@ func testFile(filename string) error {
 			{Name: `key`, Type: simvolio.Str},
 		},
 		Funcs: []simvolio.FuncItem{
+			{Func: readFunc, Name: `readFunc`, Read: true, Params: []uint32{simvolio.Str}},
 			{Func: testFunc, Name: `testFunc`, Params: []uint32{simvolio.Str, simvolio.Int}, Result: simvolio.Str},
+			{Func: fbmFunc, Name: `fbmFunc`, Params: []uint32{simvolio.Float, simvolio.Bool, simvolio.Money},
+				Result: simvolio.Str},
 			{Func: voidFunc, Name: `voidFunc`, Params: []uint32{simvolio.Str}},
 			{Func: objFunc, Name: `objFunc`, Params: []uint32{simvolio.Object}, Result: simvolio.Str},
 		},

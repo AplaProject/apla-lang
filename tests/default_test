@@ -1,3 +1,15 @@
+contract testFBM {
+    return fbmFunc(91.345, true, money(`67643348098766`))
+}
+==== 91.345*true*67643348098766
+contract testF {
+    return testFunc(`qqq`, 222)
+}
+==== qqq222
+contract sha {
+    return Hex(Sha256(bytes(`test`)))
+}
+==== 9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08
 contract Param2 {
     data {
         bytes bBytes

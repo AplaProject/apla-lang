@@ -1,6 +1,7 @@
 package runtime
 
 import (
+	"crypto/sha256"
 	"fmt"
 	"sort"
 	"strconv"
@@ -87,6 +88,7 @@ var (
 		{5, FileBody, 1, `FileBody`, []uint32{parser.VFile}, parser.VBytes}, // FileBody(file) bytes
 		{5, FileInit, 3, `FileInit`, []uint32{parser.VStr, parser.VStr, parser.VBytes},
 			parser.VFile}, // FileInit(str str bytes) file
+		{7, Sha256, 1, `Sha256`, []uint32{parser.VBytes}, parser.VBytes}, // Sha256(bytes) bytes
 	}
 )
 
@@ -215,5 +217,12 @@ func FileBody(rt *Runtime, i int64) int64 {
 func FileInit(rt *Runtime, iname, imime, ibody int64) int64 {
 	rt.Objects = append(rt.Objects, types.FileInit(
 		rt.Strings[iname], rt.Strings[imime], rt.Objects[ibody].([]byte)))
+	return int64(len(rt.Objects) - 1)
+}
+
+// Sha256 returns SHA256 hash value
+func Sha256(rt *Runtime, i int64) int64 {
+	sum := sha256.Sum256(rt.Objects[i].([]byte))
+	rt.Objects = append(rt.Objects, []byte(sum[:]))
 	return int64(len(rt.Objects) - 1)
 }

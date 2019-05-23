@@ -86,6 +86,7 @@ func setResult(l yyLexer, v *Node) {
 %token IN      // in
 %token SWITCH  // switch
 %token CASE    // case
+%token READ    // read
 %token DEFAULT // default
 
 // Types
@@ -128,6 +129,7 @@ func setResult(l yyLexer, v *Node) {
 %type <n> exprobj
 %type <n> object
 %type <n> objlist
+%type <b> contract_read
 
 %left AND 
 %left OR
@@ -350,9 +352,14 @@ contract_body
     }
     ;
 
+contract_read
+    : /*empty*/ { $$ = false }
+    | READ { $$ = true }
+    ;
+
 contract_declaration 
-    : CONTRACT IDENT LBRACE NEWLINE contract_body RBRACE { 
-        $$ = newContract($2, $5, yylex)
+    : CONTRACT IDENT contract_read LBRACE NEWLINE contract_body RBRACE { 
+        $$ = newContract($2, $3, $6, yylex)
         setResult(yylex, $$)
         }
     | contract_declaration NEWLINE

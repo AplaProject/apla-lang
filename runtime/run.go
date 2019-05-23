@@ -264,13 +264,22 @@ main:
 			top -= parCount
 			parsFunc[0] = reflect.ValueOf(rt.Data)
 			for k := int64(0); k < parCount; k++ {
+				val := stack[top+k+1]
 				switch eFunc.Params[k] {
 				case parser.VStr:
-					parsFunc[k+1] = reflect.ValueOf(rt.Strings[stack[top+k+1]])
-				case parser.VObject:
-					parsFunc[k+1] = reflect.ValueOf(rt.Objects[stack[top+k+1]])
+					parsFunc[k+1] = reflect.ValueOf(rt.Strings[val])
+				case parser.VObject, parser.VMoney:
+					parsFunc[k+1] = reflect.ValueOf(rt.Objects[val])
+				case parser.VFloat:
+					parsFunc[k+1] = reflect.ValueOf(*(*float64)(unsafe.Pointer(&val)))
+				case parser.VBool:
+					var b bool
+					if val != 0 {
+						b = true
+					}
+					parsFunc[k+1] = reflect.ValueOf(b)
 				default:
-					parsFunc[k+1] = reflect.ValueOf(stack[top+k+1])
+					parsFunc[k+1] = reflect.ValueOf(val)
 				}
 			}
 			var result []reflect.Value

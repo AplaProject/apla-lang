@@ -250,6 +250,7 @@ type NReturn struct {
 // NContract is a root node
 type NContract struct {
 	Name  string // the name of the contract
+	Read  bool
 	Block *Node
 }
 
@@ -295,11 +296,12 @@ func newContinue(l yyLexer) *Node {
 	}, l)
 }
 
-func newContract(name string, block *Node, l yyLexer) *Node {
+func newContract(name string, read bool, block *Node, l yyLexer) *Node {
 	return setPos(&Node{
 		Type: TContract,
 		Value: &NContract{
 			Name:  name,
+			Read:  read,
 			Block: block,
 		},
 	}, l)

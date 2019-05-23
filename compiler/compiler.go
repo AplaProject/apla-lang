@@ -129,6 +129,7 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 		}
 	case parser.TContract:
 		cmpl.Contract.Name = node.Value.(*parser.NContract).Name
+		cmpl.Contract.Read = node.Value.(*parser.NContract).Read
 		if err = nodeToCode(node.Value.(*parser.NContract).Block, cmpl); err != nil {
 			return err
 		}
