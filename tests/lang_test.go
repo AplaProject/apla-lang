@@ -126,7 +126,8 @@ func testFile(filename string) error {
 			{Name: `key`, Type: simvolio.Str},
 		},
 		Funcs: []simvolio.FuncItem{
-			{Func: readFunc, Name: `readFunc`, Read: true, Params: []uint32{simvolio.Str}},
+			{Func: readFunc, Name: `readFunc`, Read: true,
+				Params: []uint32{simvolio.Str, simvolio.Int}, Result: simvolio.Str},
 			{Func: testFunc, Name: `testFunc`, Params: []uint32{simvolio.Str, simvolio.Int}, Result: simvolio.Str},
 			{Func: fbmFunc, Name: `fbmFunc`, Params: []uint32{simvolio.Float, simvolio.Bool, simvolio.Money},
 				Result: simvolio.Str},

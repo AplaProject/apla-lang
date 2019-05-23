@@ -462,6 +462,10 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 				return cmpl.ErrorParam(node, errRetType, nFunc.Name)
 			}
 			cmpl.Append(rt.CUSTOMFUNC, code-CUSTOM)
+
+			if cmpl.Contract.Read && !cmpl.Custom.Funcs[code-CUSTOM].Read {
+				return cmpl.Error(node, errReadContract)
+			}
 		} else if code >= EMBEDDED {
 			cmpl.Append(rt.EMBEDFUNC, code-EMBEDDED)
 		} else {
@@ -479,6 +483,9 @@ func nodeToCode(node *parser.Node, cmpl *compiler) error {
 			return cmpl.ErrorParam(node, errContractNotExists, nCallContract.Name)
 		}
 		cnt := (*cmpl.Contracts)[ind]
+		if cmpl.Contract.Read && !cnt.Read {
+			return cmpl.Error(node, errReadContract)
+		}
 		if len(nCallContract.Params) > 0 {
 			if cnt.Params == nil {
 				return cmpl.ErrorParam(node, errContractNoParams, nCallContract.Name)

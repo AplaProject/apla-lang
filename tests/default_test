@@ -1,3 +1,25 @@
+contract testRead read {
+    return @testReadOK(b:bytes(`123`)) + readFunc(`=`, 313233)
+}
+==== 313233==313233
+contract testReadOK read {
+    data {
+        bytes  b
+    }
+    if Len(b) == 0 {
+        b = bytes(`765`)
+    }
+    return Hex(b)
+}
+==== 373635
+contract testRead read {
+    return testFunc(`qqq`, 222)
+}
+==== testRead 2:31: Calling mutable function or contract from the read contract
+contract testRead read {
+    return @testFBM()
+}
+==== testRead 2:21: Calling mutable function or contract from the read contract
 contract testFBM {
     return fbmFunc(91.345, true, money(`67643348098766`))
 }

@@ -37,6 +37,7 @@ const (
 	errRetType           = `unsupported type of result value in %s`
 	errSwitchType        = `switch doesn't support %s type`
 	errCaseType          = `Unexpected type %s of expression; expecting %s`
+	errReadContract      = `Calling mutable function or contract from the read contract`
 )
 
 func (cmpl *compiler) Error(node *parser.Node, text string) error {
