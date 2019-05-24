@@ -96,6 +96,7 @@ type NObjList struct {
 type NVar struct {
 	Type *Node
 	Name string
+	Exp  *Node
 }
 
 // NType contains the type
@@ -428,6 +429,18 @@ func newVars(vtype *Node, vars []string) []NVar {
 			Type: vtype,
 			Name: name,
 		}
+	}
+	return va
+}
+
+func newVarExp(vtype *Node, name string, exp *Node, l yyLexer) []NVar {
+	va := make([]NVar, 1)
+	va = []NVar{
+		{
+			Type: vtype,
+			Name: name,
+			Exp:  newBinary(newVarValue(name, l), exp, ASSIGN, l),
+		},
 	}
 	return va
 }

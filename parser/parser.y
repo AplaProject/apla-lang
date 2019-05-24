@@ -334,6 +334,7 @@ par_declarations
 
 var_declaration
     : type ident_list { $$ = newVars($1, $2) }
+    | type IDENT ASSIGN expr { $$ = newVarExp($1, $2, $4, yylex) }
     ;
 
 var_declarations

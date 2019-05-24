@@ -1,3 +1,44 @@
+contract testDefS {
+    data {
+        str s1 = `ABC`
+        str s2 = "123"
+    }
+    return s1 + s2
+}
+==== ABC123
+contract testDefZed {
+    return @testDefZo(j:4) + `*` + @testDefZo(i: 7,j:5)
+}
+==== 64*26
+contract testDefZo {
+    data {
+        int j = 1
+        int i = 20/j
+    }
+    return i*3 + j
+}
+==== 61
+contract testDefZ {
+    data {
+        int j 
+        int i = 20/j
+    }
+    return i*3 + j
+}
+==== dividing by zero
+contract testDef {
+    data {
+        int i = qqq(20)
+    }
+}
+==== testDef 3:23: Function qqq(int) hasn't been defined
+contract testDef {
+    data {
+        int i = 20
+    }
+    return i*3
+}
+==== 60
 contract testRead read {
     return @testReadOK(b:bytes(`123`)) + readFunc(`=`, 313233)
 }

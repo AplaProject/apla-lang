@@ -74,6 +74,13 @@ func (cmpl *compiler) InitVars(node *parser.Node, vars []parser.NVar) error {
 	}
 	cmpl.Append(rt.INITVARS, rt.Bcode(len(types)))
 	cmpl.Append(types...)
+	for _, v := range vars {
+		if v.Exp != nil {
+			if err := nodeToCode(v.Exp, cmpl); err != nil {
+				return err
+			}
+		}
+	}
 	return nil
 }
 

@@ -24,17 +24,17 @@ state 2
 
 
 state 3
-	contract_declaration:  contract_declaration NEWLINE.    (130)
+	contract_declaration:  contract_declaration NEWLINE.    (131)
 
-	.  reduce 130 (src line 365)
+	.  reduce 131 (src line 366)
 
 
 state 4
 	contract_declaration:  CONTRACT IDENT.contract_read LBRACE NEWLINE contract_body RBRACE 
-	contract_read: .    (127)
+	contract_read: .    (128)
 
 	READ  shift 6
-	.  reduce 127 (src line 355)
+	.  reduce 128 (src line 356)
 
 	contract_read  goto 5
 
@@ -46,9 +46,9 @@ state 5
 
 
 state 6
-	contract_read:  READ.    (128)
+	contract_read:  READ.    (129)
 
-	.  reduce 128 (src line 357)
+	.  reduce 129 (src line 358)
 
 
 state 7
@@ -60,10 +60,10 @@ state 7
 
 state 8
 	contract_declaration:  CONTRACT IDENT contract_read LBRACE NEWLINE.contract_body RBRACE 
-	contract_data: .    (124)
+	contract_data: .    (125)
 
 	DATA  shift 11
-	.  reduce 124 (src line 344)
+	.  reduce 125 (src line 345)
 
 	contract_data  goto 10
 	contract_body  goto 9
@@ -91,16 +91,16 @@ state 11
 
 
 state 12
-	contract_declaration:  CONTRACT IDENT contract_read LBRACE NEWLINE contract_body RBRACE.    (129)
+	contract_declaration:  CONTRACT IDENT contract_read LBRACE NEWLINE contract_body RBRACE.    (130)
 
-	.  reduce 129 (src line 360)
+	.  reduce 130 (src line 361)
 
 
 state 13
 	statements:  statements.NEWLINE 
 	statements:  statements.switch 
 	statements:  statements.statement NEWLINE 
-	contract_body:  contract_data statements.    (126)
+	contract_body:  contract_data statements.    (127)
 
 	IDENT  shift 31
 	CALL  shift 28
@@ -125,7 +125,7 @@ state 13
 	T_OBJECT  shift 41
 	T_BYTES  shift 42
 	T_FILE  shift 43
-	.  reduce 126 (src line 349)
+	.  reduce 127 (src line 350)
 
 	ordinaltype  goto 33
 	type  goto 21
@@ -1190,14 +1190,15 @@ state 85
 
 
 state 86
-	var_declarations:  var_declaration.    (122)
+	var_declarations:  var_declaration.    (123)
 
-	.  reduce 122 (src line 339)
+	.  reduce 123 (src line 340)
 
 
 state 87
 	type:  type.DOT ordinaltype 
 	var_declaration:  type.ident_list 
+	var_declaration:  type.IDENT ASSIGN expr 
 
 	IDENT  shift 141
 	DOT  shift 72
@@ -2064,7 +2065,7 @@ state 130
 	type:  type.DOT ordinaltype 
 	par_declaration:  type.ident_list 
 
-	IDENT  shift 141
+	IDENT  shift 176
 	DOT  shift 72
 	.  error
 
@@ -2092,7 +2093,7 @@ state 131
 	NOT  shift 63
 	.  error
 
-	expr  goto 176
+	expr  goto 177
 	index  goto 56
 
 state 132
@@ -2104,7 +2105,7 @@ state 132
 state 133
 	cntparams:  cntparams COMMA.IDENT COLON expr 
 
-	IDENT  shift 177
+	IDENT  shift 178
 	.  error
 
 
@@ -2136,7 +2137,7 @@ state 135
 	NOT  shift 63
 	.  error
 
-	expr  goto 178
+	expr  goto 179
 	index  goto 56
 
 state 136
@@ -2162,13 +2163,13 @@ state 136
 	NOT  shift 63
 	.  error
 
-	expr  goto 179
+	expr  goto 180
 	index  goto 56
 
 state 137
 	statement:  FOR IDENT COMMA.IDENT IN expr LBRACE statements RBRACE 
 
-	IDENT  shift 180
+	IDENT  shift 181
 	.  error
 
 
@@ -2182,7 +2183,7 @@ state 139
 	var_declarations:  var_declarations NEWLINE.var_declaration 
 	contract_data:  DATA LBRACE NEWLINE var_declarations NEWLINE.RBRACE NEWLINE 
 
-	RBRACE  shift 182
+	RBRACE  shift 183
 	T_INT  shift 35
 	T_BOOL  shift 34
 	T_STR  shift 36
@@ -2197,7 +2198,7 @@ state 139
 
 	ordinaltype  goto 33
 	type  goto 87
-	var_declaration  goto 181
+	var_declaration  goto 182
 
 state 140
 	ident_list:  ident_list.IDENT 
@@ -2209,7 +2210,9 @@ state 140
 
 state 141
 	ident_list:  IDENT.    (115)
+	var_declaration:  type IDENT.ASSIGN expr 
 
+	ASSIGN  shift 184
 	.  reduce 115 (src line 320)
 
 
@@ -2218,11 +2221,11 @@ state 142
 	switch:  SWITCH expr NEWLINE case.default 
 	default: .    (34)
 
-	CASE  shift 183
-	DEFAULT  shift 185
+	CASE  shift 185
+	DEFAULT  shift 187
 	.  reduce 34 (src line 209)
 
-	default  goto 184
+	default  goto 186
 
 state 143
 	expr:  expr.MUL expr 
@@ -2552,8 +2555,8 @@ state 159
 	object:  object COMMA.STRING COLON exprobj 
 	object:  object COMMA.IDENT COLON exprobj 
 
-	IDENT  shift 187
-	STRING  shift 186
+	IDENT  shift 189
+	STRING  shift 188
 	.  error
 
 
@@ -2566,46 +2569,46 @@ state 160
 state 161
 	object:  STRING COLON.exprobj 
 
-	IDENT  shift 200
-	ENV  shift 199
-	CALL  shift 196
-	CALLCONTRACT  shift 197
+	IDENT  shift 202
+	ENV  shift 201
+	CALL  shift 198
+	CALLCONTRACT  shift 199
 	INDEX  shift 32
-	INT  shift 190
-	FLOAT  shift 191
-	STRING  shift 192
-	QSTRING  shift 193
-	TRUE  shift 194
-	FALSE  shift 195
-	LPAREN  shift 189
-	LBRACE  shift 201
-	LBRACKET  shift 202
+	INT  shift 192
+	FLOAT  shift 193
+	STRING  shift 194
+	QSTRING  shift 195
+	TRUE  shift 196
+	FALSE  shift 197
+	LPAREN  shift 191
+	LBRACE  shift 203
+	LBRACKET  shift 204
 	.  error
 
-	index  goto 198
-	exprobj  goto 188
+	index  goto 200
+	exprobj  goto 190
 
 state 162
 	object:  IDENT COLON.exprobj 
 
-	IDENT  shift 200
-	ENV  shift 199
-	CALL  shift 196
-	CALLCONTRACT  shift 197
+	IDENT  shift 202
+	ENV  shift 201
+	CALL  shift 198
+	CALLCONTRACT  shift 199
 	INDEX  shift 32
-	INT  shift 190
-	FLOAT  shift 191
-	STRING  shift 192
-	QSTRING  shift 193
-	TRUE  shift 194
-	FALSE  shift 195
-	LPAREN  shift 189
-	LBRACE  shift 201
-	LBRACKET  shift 202
+	INT  shift 192
+	FLOAT  shift 193
+	STRING  shift 194
+	QSTRING  shift 195
+	TRUE  shift 196
+	FALSE  shift 197
+	LPAREN  shift 191
+	LBRACE  shift 203
+	LBRACKET  shift 204
 	.  error
 
-	index  goto 198
-	exprobj  goto 203
+	index  goto 200
+	exprobj  goto 205
 
 state 163
 	exprlist:  exprlist COMMA.expr 
@@ -2629,7 +2632,7 @@ state 163
 	NOT  shift 63
 	.  error
 
-	expr  goto 204
+	expr  goto 206
 	index  goto 56
 
 state 164
@@ -2642,7 +2645,7 @@ state 165
 	exprmaplist:  exprmaplist COMMA.STRING COLON NEWLINE expr 
 	exprmaplist:  exprmaplist COMMA.STRING COLON expr 
 
-	STRING  shift 205
+	STRING  shift 207
 	.  error
 
 
@@ -2674,7 +2677,7 @@ state 167
 	NOT  shift 63
 	.  error
 
-	expr  goto 206
+	expr  goto 208
 	index  goto 56
 
 state 168
@@ -2693,7 +2696,7 @@ state 168
 	expr:  expr.LT expr 
 	expr:  expr.GT expr 
 
-	COMMA  shift 207
+	COMMA  shift 209
 	ADD  shift 91
 	SUB  shift 92
 	MUL  shift 89
@@ -2759,7 +2762,7 @@ state 171
 	CALLCONTRACT  shift 29
 	INDEX  shift 32
 	NEWLINE  shift 15
-	RBRACE  shift 208
+	RBRACE  shift 210
 	BREAK  shift 23
 	CONTINUE  shift 24
 	IF  shift 22
@@ -2798,7 +2801,7 @@ state 172
 	CALLCONTRACT  shift 29
 	INDEX  shift 32
 	NEWLINE  shift 15
-	RBRACE  shift 209
+	RBRACE  shift 211
 	BREAK  shift 23
 	CONTINUE  shift 24
 	IF  shift 22
@@ -2843,8 +2846,8 @@ state 173
 	.  reduce 13 (src line 163)
 
 	ordinaltype  goto 33
-	type  goto 211
-	rettype  goto 210
+	type  goto 213
+	rettype  goto 212
 
 state 174
 	par_declarations:  par_declarations COMMA.par_declaration 
@@ -2863,7 +2866,7 @@ state 174
 
 	ordinaltype  goto 33
 	type  goto 130
-	par_declaration  goto 212
+	par_declaration  goto 214
 
 state 175
 	ident_list:  ident_list.IDENT 
@@ -2874,6 +2877,12 @@ state 175
 
 
 state 176
+	ident_list:  IDENT.    (115)
+
+	.  reduce 115 (src line 320)
+
+
+state 177
 	params:  params COMMA expr.    (21)
 	expr:  expr.MUL expr 
 	expr:  expr.DIV expr 
@@ -2905,14 +2914,14 @@ state 176
 	.  reduce 21 (src line 178)
 
 
-state 177
+state 178
 	cntparams:  cntparams COMMA IDENT.COLON expr 
 
-	COLON  shift 213
+	COLON  shift 215
 	.  error
 
 
-state 178
+state 179
 	cntparams:  IDENT COLON expr.    (23)
 	expr:  expr.MUL expr 
 	expr:  expr.DIV expr 
@@ -2944,7 +2953,7 @@ state 178
 	.  reduce 23 (src line 183)
 
 
-state 179
+state 180
 	statement:  FOR IDENT IN expr.LBRACE statements RBRACE 
 	statement:  FOR IDENT IN expr.DOUBLEDOT expr LBRACE statements RBRACE 
 	expr:  expr.MUL expr 
@@ -2961,8 +2970,8 @@ state 179
 	expr:  expr.LT expr 
 	expr:  expr.GT expr 
 
-	LBRACE  shift 214
-	DOUBLEDOT  shift 215
+	LBRACE  shift 216
+	DOUBLEDOT  shift 217
 	ADD  shift 91
 	SUB  shift 92
 	MUL  shift 89
@@ -2979,27 +2988,52 @@ state 179
 	.  error
 
 
-state 180
+state 181
 	statement:  FOR IDENT COMMA IDENT.IN expr LBRACE statements RBRACE 
 
-	IN  shift 216
+	IN  shift 218
 	.  error
-
-
-state 181
-	var_declarations:  var_declarations NEWLINE var_declaration.    (123)
-
-	.  reduce 123 (src line 341)
 
 
 state 182
-	contract_data:  DATA LBRACE NEWLINE var_declarations NEWLINE RBRACE.NEWLINE 
+	var_declarations:  var_declarations NEWLINE var_declaration.    (124)
 
-	NEWLINE  shift 217
-	.  error
+	.  reduce 124 (src line 342)
 
 
 state 183
+	contract_data:  DATA LBRACE NEWLINE var_declarations NEWLINE RBRACE.NEWLINE 
+
+	NEWLINE  shift 219
+	.  error
+
+
+state 184
+	var_declaration:  type IDENT ASSIGN.expr 
+
+	IDENT  shift 58
+	ENV  shift 57
+	CALL  shift 54
+	CALLCONTRACT  shift 55
+	INDEX  shift 32
+	INT  shift 48
+	FLOAT  shift 49
+	STRING  shift 50
+	QSTRING  shift 51
+	TRUE  shift 52
+	FALSE  shift 53
+	LPAREN  shift 47
+	OBJ  shift 59
+	LBRACE  shift 60
+	QUESTION  shift 61
+	SUB  shift 62
+	NOT  shift 63
+	.  error
+
+	expr  goto 220
+	index  goto 56
+
+state 185
 	case:  case CASE.exprlist LBRACE statements RBRACE NEWLINE 
 
 	IDENT  shift 58
@@ -3023,42 +3057,42 @@ state 183
 
 	expr  goto 110
 	index  goto 56
-	exprlist  goto 218
+	exprlist  goto 221
 
-state 184
+state 186
 	switch:  SWITCH expr NEWLINE case default.    (36)
 
 	.  reduce 36 (src line 214)
 
 
-state 185
+state 187
 	default:  DEFAULT.LBRACE statements RBRACE 
 
-	LBRACE  shift 219
-	.  error
-
-
-state 186
-	object:  object COMMA STRING.COLON exprobj 
-
-	COLON  shift 220
-	.  error
-
-
-state 187
-	object:  object COMMA IDENT.COLON exprobj 
-
-	COLON  shift 221
+	LBRACE  shift 222
 	.  error
 
 
 state 188
+	object:  object COMMA STRING.COLON exprobj 
+
+	COLON  shift 223
+	.  error
+
+
+state 189
+	object:  object COMMA IDENT.COLON exprobj 
+
+	COLON  shift 224
+	.  error
+
+
+state 190
 	object:  STRING COLON exprobj.    (63)
 
 	.  reduce 63 (src line 255)
 
 
-state 189
+state 191
 	exprobj:  LPAREN.expr RPAREN 
 
 	IDENT  shift 58
@@ -3080,46 +3114,46 @@ state 189
 	NOT  shift 63
 	.  error
 
-	expr  goto 222
+	expr  goto 225
 	index  goto 56
 
-state 190
+state 192
 	exprobj:  INT.    (70)
 
 	.  reduce 70 (src line 269)
 
 
-state 191
+state 193
 	exprobj:  FLOAT.    (71)
 
 	.  reduce 71 (src line 270)
 
 
-state 192
+state 194
 	exprobj:  STRING.    (72)
 
 	.  reduce 72 (src line 271)
 
 
-state 193
+state 195
 	exprobj:  QSTRING.    (73)
 
 	.  reduce 73 (src line 272)
 
 
-state 194
+state 196
 	exprobj:  TRUE.    (74)
 
 	.  reduce 74 (src line 273)
 
 
-state 195
+state 197
 	exprobj:  FALSE.    (75)
 
 	.  reduce 75 (src line 274)
 
 
-state 196
+state 198
 	exprobj:  CALL.params RPAREN 
 	params: .    (19)
 
@@ -3142,20 +3176,20 @@ state 196
 	NOT  shift 63
 	.  reduce 19 (src line 175)
 
-	params  goto 223
+	params  goto 226
 	expr  goto 80
 	index  goto 56
 
-state 197
+state 199
 	exprobj:  CALLCONTRACT.cntparams RPAREN 
 	cntparams: .    (22)
 
 	IDENT  shift 82
 	.  reduce 22 (src line 181)
 
-	cntparams  goto 224
+	cntparams  goto 227
 
-state 198
+state 200
 	index:  index.LBRACKET expr RBRACKET 
 	exprobj:  index.    (78)
 
@@ -3163,59 +3197,59 @@ state 198
 	.  reduce 78 (src line 277)
 
 
-state 199
+state 201
 	exprobj:  ENV.    (79)
 
 	.  reduce 79 (src line 278)
 
 
-state 200
+state 202
 	exprobj:  IDENT.    (80)
 
 	.  reduce 80 (src line 279)
 
 
-state 201
+state 203
 	exprobj:  LBRACE.object RBRACE 
 
 	IDENT  shift 107
 	STRING  shift 106
 	.  error
 
-	object  goto 225
+	object  goto 228
 
-state 202
+state 204
 	exprobj:  LBRACKET.objlist RBRACKET 
 	exprobj:  LBRACKET.object RBRACKET 
 
-	IDENT  shift 230
-	ENV  shift 199
-	CALL  shift 196
-	CALLCONTRACT  shift 197
+	IDENT  shift 233
+	ENV  shift 201
+	CALL  shift 198
+	CALLCONTRACT  shift 199
 	INDEX  shift 32
-	INT  shift 190
-	FLOAT  shift 191
-	STRING  shift 229
-	QSTRING  shift 193
-	TRUE  shift 194
-	FALSE  shift 195
-	LPAREN  shift 189
-	LBRACE  shift 201
-	LBRACKET  shift 202
+	INT  shift 192
+	FLOAT  shift 193
+	STRING  shift 232
+	QSTRING  shift 195
+	TRUE  shift 196
+	FALSE  shift 197
+	LPAREN  shift 191
+	LBRACE  shift 203
+	LBRACKET  shift 204
 	.  error
 
-	index  goto 198
-	exprobj  goto 228
-	object  goto 227
-	objlist  goto 226
+	index  goto 200
+	exprobj  goto 231
+	object  goto 230
+	objlist  goto 229
 
-state 203
+state 205
 	object:  IDENT COLON exprobj.    (64)
 
 	.  reduce 64 (src line 257)
 
 
-state 204
+state 206
 	exprlist:  exprlist COMMA expr.    (59)
 	expr:  expr.MUL expr 
 	expr:  expr.DIV expr 
@@ -3247,15 +3281,15 @@ state 204
 	.  reduce 59 (src line 246)
 
 
-state 205
+state 207
 	exprmaplist:  exprmaplist COMMA STRING.COLON NEWLINE expr 
 	exprmaplist:  exprmaplist COMMA STRING.COLON expr 
 
-	COLON  shift 231
+	COLON  shift 234
 	.  error
 
 
-state 206
+state 208
 	exprmaplist:  STRING COLON expr.    (60)
 	expr:  expr.MUL expr 
 	expr:  expr.DIV expr 
@@ -3287,68 +3321,8 @@ state 206
 	.  reduce 60 (src line 249)
 
 
-state 207
-	expr:  QUESTION LPAREN expr COMMA.expr COMMA expr RPAREN 
-
-	IDENT  shift 58
-	ENV  shift 57
-	CALL  shift 54
-	CALLCONTRACT  shift 55
-	INDEX  shift 32
-	INT  shift 48
-	FLOAT  shift 49
-	STRING  shift 50
-	QSTRING  shift 51
-	TRUE  shift 52
-	FALSE  shift 53
-	LPAREN  shift 47
-	OBJ  shift 59
-	LBRACE  shift 60
-	QUESTION  shift 61
-	SUB  shift 62
-	NOT  shift 63
-	.  error
-
-	expr  goto 232
-	index  goto 56
-
-state 208
-	statement:  IF expr LBRACE statements RBRACE.elif else 
-	elif: .    (30)
-
-	.  reduce 30 (src line 199)
-
-	elif  goto 233
-
 state 209
-	statement:  WHILE expr LBRACE statements RBRACE.    (51)
-
-	.  reduce 51 (src line 233)
-
-
-state 210
-	statement:  FUNC CALL par_declarations RPAREN rettype.LBRACE statements RBRACE 
-
-	LBRACE  shift 234
-	.  error
-
-
-state 211
-	type:  type.DOT ordinaltype 
-	rettype:  type.    (14)
-
-	DOT  shift 72
-	.  reduce 14 (src line 165)
-
-
-state 212
-	par_declarations:  par_declarations COMMA par_declaration.    (120)
-
-	.  reduce 120 (src line 332)
-
-
-state 213
-	cntparams:  cntparams COMMA IDENT COLON.expr 
+	expr:  QUESTION LPAREN expr COMMA.expr COMMA expr RPAREN 
 
 	IDENT  shift 58
 	ENV  shift 57
@@ -3372,41 +3346,43 @@ state 213
 	expr  goto 235
 	index  goto 56
 
-state 214
-	statement:  FOR IDENT IN expr LBRACE.statements RBRACE 
-	statements: .    (15)
+state 210
+	statement:  IF expr LBRACE statements RBRACE.elif else 
+	elif: .    (30)
 
-	.  reduce 15 (src line 168)
+	.  reduce 30 (src line 199)
 
-	statements  goto 236
+	elif  goto 236
 
-state 215
-	statement:  FOR IDENT IN expr DOUBLEDOT.expr LBRACE statements RBRACE 
+state 211
+	statement:  WHILE expr LBRACE statements RBRACE.    (51)
 
-	IDENT  shift 58
-	ENV  shift 57
-	CALL  shift 54
-	CALLCONTRACT  shift 55
-	INDEX  shift 32
-	INT  shift 48
-	FLOAT  shift 49
-	STRING  shift 50
-	QSTRING  shift 51
-	TRUE  shift 52
-	FALSE  shift 53
-	LPAREN  shift 47
-	OBJ  shift 59
-	LBRACE  shift 60
-	QUESTION  shift 61
-	SUB  shift 62
-	NOT  shift 63
+	.  reduce 51 (src line 233)
+
+
+state 212
+	statement:  FUNC CALL par_declarations RPAREN rettype.LBRACE statements RBRACE 
+
+	LBRACE  shift 237
 	.  error
 
-	expr  goto 237
-	index  goto 56
 
-state 216
-	statement:  FOR IDENT COMMA IDENT IN.expr LBRACE statements RBRACE 
+state 213
+	type:  type.DOT ordinaltype 
+	rettype:  type.    (14)
+
+	DOT  shift 72
+	.  reduce 14 (src line 165)
+
+
+state 214
+	par_declarations:  par_declarations COMMA par_declaration.    (120)
+
+	.  reduce 120 (src line 332)
+
+
+state 215
+	cntparams:  cntparams COMMA IDENT COLON.expr 
 
 	IDENT  shift 58
 	ENV  shift 57
@@ -3430,74 +3406,164 @@ state 216
 	expr  goto 238
 	index  goto 56
 
+state 216
+	statement:  FOR IDENT IN expr LBRACE.statements RBRACE 
+	statements: .    (15)
+
+	.  reduce 15 (src line 168)
+
+	statements  goto 239
+
 state 217
-	contract_data:  DATA LBRACE NEWLINE var_declarations NEWLINE RBRACE NEWLINE.    (125)
+	statement:  FOR IDENT IN expr DOUBLEDOT.expr LBRACE statements RBRACE 
 
-	.  reduce 125 (src line 346)
+	IDENT  shift 58
+	ENV  shift 57
+	CALL  shift 54
+	CALLCONTRACT  shift 55
+	INDEX  shift 32
+	INT  shift 48
+	FLOAT  shift 49
+	STRING  shift 50
+	QSTRING  shift 51
+	TRUE  shift 52
+	FALSE  shift 53
+	LPAREN  shift 47
+	OBJ  shift 59
+	LBRACE  shift 60
+	QUESTION  shift 61
+	SUB  shift 62
+	NOT  shift 63
+	.  error
 
+	expr  goto 240
+	index  goto 56
 
 state 218
+	statement:  FOR IDENT COMMA IDENT IN.expr LBRACE statements RBRACE 
+
+	IDENT  shift 58
+	ENV  shift 57
+	CALL  shift 54
+	CALLCONTRACT  shift 55
+	INDEX  shift 32
+	INT  shift 48
+	FLOAT  shift 49
+	STRING  shift 50
+	QSTRING  shift 51
+	TRUE  shift 52
+	FALSE  shift 53
+	LPAREN  shift 47
+	OBJ  shift 59
+	LBRACE  shift 60
+	QUESTION  shift 61
+	SUB  shift 62
+	NOT  shift 63
+	.  error
+
+	expr  goto 241
+	index  goto 56
+
+state 219
+	contract_data:  DATA LBRACE NEWLINE var_declarations NEWLINE RBRACE NEWLINE.    (126)
+
+	.  reduce 126 (src line 347)
+
+
+state 220
+	expr:  expr.MUL expr 
+	expr:  expr.DIV expr 
+	expr:  expr.ADD expr 
+	expr:  expr.SUB expr 
+	expr:  expr.MOD expr 
+	expr:  expr.AND expr 
+	expr:  expr.OR expr 
+	expr:  expr.EQ expr 
+	expr:  expr.NOT_EQ expr 
+	expr:  expr.LTE expr 
+	expr:  expr.GTE expr 
+	expr:  expr.LT expr 
+	expr:  expr.GT expr 
+	var_declaration:  type IDENT ASSIGN expr.    (122)
+
+	ADD  shift 91
+	SUB  shift 92
+	MUL  shift 89
+	DIV  shift 90
+	MOD  shift 93
+	AND  shift 94
+	OR  shift 95
+	EQ  shift 96
+	NOT_EQ  shift 97
+	LT  shift 100
+	GT  shift 101
+	LTE  shift 98
+	GTE  shift 99
+	.  reduce 122 (src line 337)
+
+
+state 221
 	case:  case CASE exprlist.LBRACE statements RBRACE NEWLINE 
 	exprlist:  exprlist.COMMA expr 
 
 	COMMA  shift 163
-	LBRACE  shift 239
+	LBRACE  shift 242
 	.  error
 
 
-state 219
+state 222
 	default:  DEFAULT LBRACE.statements RBRACE 
 	statements: .    (15)
 
 	.  reduce 15 (src line 168)
 
-	statements  goto 240
+	statements  goto 243
 
-state 220
+state 223
 	object:  object COMMA STRING COLON.exprobj 
 
-	IDENT  shift 200
-	ENV  shift 199
-	CALL  shift 196
-	CALLCONTRACT  shift 197
+	IDENT  shift 202
+	ENV  shift 201
+	CALL  shift 198
+	CALLCONTRACT  shift 199
 	INDEX  shift 32
-	INT  shift 190
-	FLOAT  shift 191
-	STRING  shift 192
-	QSTRING  shift 193
-	TRUE  shift 194
-	FALSE  shift 195
-	LPAREN  shift 189
-	LBRACE  shift 201
-	LBRACKET  shift 202
+	INT  shift 192
+	FLOAT  shift 193
+	STRING  shift 194
+	QSTRING  shift 195
+	TRUE  shift 196
+	FALSE  shift 197
+	LPAREN  shift 191
+	LBRACE  shift 203
+	LBRACKET  shift 204
 	.  error
 
-	index  goto 198
-	exprobj  goto 241
+	index  goto 200
+	exprobj  goto 244
 
-state 221
+state 224
 	object:  object COMMA IDENT COLON.exprobj 
 
-	IDENT  shift 200
-	ENV  shift 199
-	CALL  shift 196
-	CALLCONTRACT  shift 197
+	IDENT  shift 202
+	ENV  shift 201
+	CALL  shift 198
+	CALLCONTRACT  shift 199
 	INDEX  shift 32
-	INT  shift 190
-	FLOAT  shift 191
-	STRING  shift 192
-	QSTRING  shift 193
-	TRUE  shift 194
-	FALSE  shift 195
-	LPAREN  shift 189
-	LBRACE  shift 201
-	LBRACKET  shift 202
+	INT  shift 192
+	FLOAT  shift 193
+	STRING  shift 194
+	QSTRING  shift 195
+	TRUE  shift 196
+	FALSE  shift 197
+	LPAREN  shift 191
+	LBRACE  shift 203
+	LBRACKET  shift 204
 	.  error
 
-	index  goto 198
-	exprobj  goto 242
+	index  goto 200
+	exprobj  goto 245
 
-state 222
+state 225
 	exprobj:  LPAREN expr.RPAREN 
 	expr:  expr.MUL expr 
 	expr:  expr.DIV expr 
@@ -3513,7 +3579,7 @@ state 222
 	expr:  expr.LT expr 
 	expr:  expr.GT expr 
 
-	RPAREN  shift 243
+	RPAREN  shift 246
 	ADD  shift 91
 	SUB  shift 92
 	MUL  shift 89
@@ -3530,60 +3596,60 @@ state 222
 	.  error
 
 
-state 223
+state 226
 	params:  params.COMMA expr 
 	exprobj:  CALL params.RPAREN 
 
 	COMMA  shift 131
-	RPAREN  shift 244
+	RPAREN  shift 247
 	.  error
 
 
-state 224
+state 227
 	cntparams:  cntparams.COMMA IDENT COLON expr 
 	exprobj:  CALLCONTRACT cntparams.RPAREN 
 
 	COMMA  shift 133
-	RPAREN  shift 245
+	RPAREN  shift 248
 	.  error
 
 
-state 225
+state 228
 	object:  object.COMMA STRING COLON exprobj 
 	object:  object.COMMA IDENT COLON exprobj 
 	exprobj:  LBRACE object.RBRACE 
 
 	COMMA  shift 159
-	RBRACE  shift 246
+	RBRACE  shift 249
 	.  error
 
 
-state 226
+state 229
 	objlist:  objlist.COMMA exprobj 
 	exprobj:  LBRACKET objlist.RBRACKET 
 
-	COMMA  shift 247
-	RBRACKET  shift 248
+	COMMA  shift 250
+	RBRACKET  shift 251
 	.  error
 
 
-state 227
+state 230
 	object:  object.COMMA STRING COLON exprobj 
 	object:  object.COMMA IDENT COLON exprobj 
 	exprobj:  LBRACKET object.RBRACKET 
 
 	COMMA  shift 159
-	RBRACKET  shift 249
+	RBRACKET  shift 252
 	.  error
 
 
-state 228
+state 231
 	objlist:  exprobj.    (67)
 
 	.  reduce 67 (src line 262)
 
 
-state 229
+state 232
 	object:  STRING.COLON exprobj 
 	exprobj:  STRING.    (72)
 
@@ -3591,7 +3657,7 @@ state 229
 	.  reduce 72 (src line 271)
 
 
-state 230
+state 233
 	object:  IDENT.COLON exprobj 
 	exprobj:  IDENT.    (80)
 
@@ -3599,7 +3665,7 @@ state 230
 	.  reduce 80 (src line 279)
 
 
-state 231
+state 234
 	exprmaplist:  exprmaplist COMMA STRING COLON.NEWLINE expr 
 	exprmaplist:  exprmaplist COMMA STRING COLON.expr 
 
@@ -3614,7 +3680,7 @@ state 231
 	QSTRING  shift 51
 	TRUE  shift 52
 	FALSE  shift 53
-	NEWLINE  shift 250
+	NEWLINE  shift 253
 	LPAREN  shift 47
 	OBJ  shift 59
 	LBRACE  shift 60
@@ -3623,10 +3689,10 @@ state 231
 	NOT  shift 63
 	.  error
 
-	expr  goto 251
+	expr  goto 254
 	index  goto 56
 
-state 232
+state 235
 	expr:  QUESTION LPAREN expr COMMA expr.COMMA expr RPAREN 
 	expr:  expr.MUL expr 
 	expr:  expr.DIV expr 
@@ -3642,7 +3708,7 @@ state 232
 	expr:  expr.LT expr 
 	expr:  expr.GT expr 
 
-	COMMA  shift 252
+	COMMA  shift 255
 	ADD  shift 91
 	SUB  shift 92
 	MUL  shift 89
@@ -3659,26 +3725,26 @@ state 232
 	.  error
 
 
-state 233
+state 236
 	elif:  elif.ELIF expr LBRACE statements RBRACE 
 	statement:  IF expr LBRACE statements RBRACE elif.else 
 	else: .    (28)
 
-	ELIF  shift 253
-	ELSE  shift 255
+	ELIF  shift 256
+	ELSE  shift 258
 	.  reduce 28 (src line 194)
 
-	else  goto 254
+	else  goto 257
 
-state 234
+state 237
 	statement:  FUNC CALL par_declarations RPAREN rettype LBRACE.statements RBRACE 
 	statements: .    (15)
 
 	.  reduce 15 (src line 168)
 
-	statements  goto 256
+	statements  goto 259
 
-state 235
+state 238
 	cntparams:  cntparams COMMA IDENT COLON expr.    (24)
 	expr:  expr.MUL expr 
 	expr:  expr.DIV expr 
@@ -3710,7 +3776,7 @@ state 235
 	.  reduce 24 (src line 184)
 
 
-state 236
+state 239
 	statements:  statements.NEWLINE 
 	statements:  statements.switch 
 	statements:  statements.statement NEWLINE 
@@ -3721,7 +3787,7 @@ state 236
 	CALLCONTRACT  shift 29
 	INDEX  shift 32
 	NEWLINE  shift 15
-	RBRACE  shift 257
+	RBRACE  shift 260
 	BREAK  shift 23
 	CONTINUE  shift 24
 	IF  shift 22
@@ -3749,7 +3815,7 @@ state 236
 	statement  goto 17
 	index  goto 20
 
-state 237
+state 240
 	statement:  FOR IDENT IN expr DOUBLEDOT expr.LBRACE statements RBRACE 
 	expr:  expr.MUL expr 
 	expr:  expr.DIV expr 
@@ -3765,7 +3831,7 @@ state 237
 	expr:  expr.LT expr 
 	expr:  expr.GT expr 
 
-	LBRACE  shift 258
+	LBRACE  shift 261
 	ADD  shift 91
 	SUB  shift 92
 	MUL  shift 89
@@ -3782,7 +3848,7 @@ state 237
 	.  error
 
 
-state 238
+state 241
 	statement:  FOR IDENT COMMA IDENT IN expr.LBRACE statements RBRACE 
 	expr:  expr.MUL expr 
 	expr:  expr.DIV expr 
@@ -3798,7 +3864,7 @@ state 238
 	expr:  expr.LT expr 
 	expr:  expr.GT expr 
 
-	LBRACE  shift 259
+	LBRACE  shift 262
 	ADD  shift 91
 	SUB  shift 92
 	MUL  shift 89
@@ -3815,15 +3881,15 @@ state 238
 	.  error
 
 
-state 239
+state 242
 	case:  case CASE exprlist LBRACE.statements RBRACE NEWLINE 
 	statements: .    (15)
 
 	.  reduce 15 (src line 168)
 
-	statements  goto 260
+	statements  goto 263
 
-state 240
+state 243
 	statements:  statements.NEWLINE 
 	statements:  statements.switch 
 	statements:  statements.statement NEWLINE 
@@ -3834,7 +3900,7 @@ state 240
 	CALLCONTRACT  shift 29
 	INDEX  shift 32
 	NEWLINE  shift 15
-	RBRACE  shift 261
+	RBRACE  shift 264
 	BREAK  shift 23
 	CONTINUE  shift 24
 	IF  shift 22
@@ -3862,77 +3928,77 @@ state 240
 	statement  goto 17
 	index  goto 20
 
-state 241
+state 244
 	object:  object COMMA STRING COLON exprobj.    (65)
 
 	.  reduce 65 (src line 258)
 
 
-state 242
+state 245
 	object:  object COMMA IDENT COLON exprobj.    (66)
 
 	.  reduce 66 (src line 259)
 
 
-state 243
+state 246
 	exprobj:  LPAREN expr RPAREN.    (69)
 
 	.  reduce 69 (src line 267)
 
 
-state 244
+state 247
 	exprobj:  CALL params RPAREN.    (76)
 
 	.  reduce 76 (src line 275)
 
 
-state 245
+state 248
 	exprobj:  CALLCONTRACT cntparams RPAREN.    (77)
 
 	.  reduce 77 (src line 276)
 
 
-state 246
+state 249
 	exprobj:  LBRACE object RBRACE.    (81)
 
 	.  reduce 81 (src line 280)
 
 
-state 247
+state 250
 	objlist:  objlist COMMA.exprobj 
 
-	IDENT  shift 200
-	ENV  shift 199
-	CALL  shift 196
-	CALLCONTRACT  shift 197
+	IDENT  shift 202
+	ENV  shift 201
+	CALL  shift 198
+	CALLCONTRACT  shift 199
 	INDEX  shift 32
-	INT  shift 190
-	FLOAT  shift 191
-	STRING  shift 192
-	QSTRING  shift 193
-	TRUE  shift 194
-	FALSE  shift 195
-	LPAREN  shift 189
-	LBRACE  shift 201
-	LBRACKET  shift 202
+	INT  shift 192
+	FLOAT  shift 193
+	STRING  shift 194
+	QSTRING  shift 195
+	TRUE  shift 196
+	FALSE  shift 197
+	LPAREN  shift 191
+	LBRACE  shift 203
+	LBRACKET  shift 204
 	.  error
 
-	index  goto 198
-	exprobj  goto 262
+	index  goto 200
+	exprobj  goto 265
 
-state 248
+state 251
 	exprobj:  LBRACKET objlist RBRACKET.    (82)
 
 	.  reduce 82 (src line 281)
 
 
-state 249
+state 252
 	exprobj:  LBRACKET object RBRACKET.    (83)
 
 	.  reduce 83 (src line 282)
 
 
-state 250
+state 253
 	exprmaplist:  exprmaplist COMMA STRING COLON NEWLINE.expr 
 
 	IDENT  shift 58
@@ -3954,10 +4020,10 @@ state 250
 	NOT  shift 63
 	.  error
 
-	expr  goto 263
+	expr  goto 266
 	index  goto 56
 
-state 251
+state 254
 	exprmaplist:  exprmaplist COMMA STRING COLON expr.    (62)
 	expr:  expr.MUL expr 
 	expr:  expr.DIV expr 
@@ -3989,7 +4055,7 @@ state 251
 	.  reduce 62 (src line 252)
 
 
-state 252
+state 255
 	expr:  QUESTION LPAREN expr COMMA expr COMMA.expr RPAREN 
 
 	IDENT  shift 58
@@ -4011,10 +4077,10 @@ state 252
 	NOT  shift 63
 	.  error
 
-	expr  goto 264
+	expr  goto 267
 	index  goto 56
 
-state 253
+state 256
 	elif:  elif ELIF.expr LBRACE statements RBRACE 
 
 	IDENT  shift 58
@@ -4036,88 +4102,27 @@ state 253
 	NOT  shift 63
 	.  error
 
-	expr  goto 265
+	expr  goto 268
 	index  goto 56
 
-state 254
+state 257
 	statement:  IF expr LBRACE statements RBRACE elif else.    (46)
 
 	.  reduce 46 (src line 228)
 
 
-state 255
+state 258
 	else:  ELSE.LBRACE statements RBRACE 
 
-	LBRACE  shift 266
+	LBRACE  shift 269
 	.  error
 
 
-state 256
+state 259
 	statements:  statements.NEWLINE 
 	statements:  statements.switch 
 	statements:  statements.statement NEWLINE 
 	statement:  FUNC CALL par_declarations RPAREN rettype LBRACE statements.RBRACE 
-
-	IDENT  shift 31
-	CALL  shift 28
-	CALLCONTRACT  shift 29
-	INDEX  shift 32
-	NEWLINE  shift 15
-	RBRACE  shift 267
-	BREAK  shift 23
-	CONTINUE  shift 24
-	IF  shift 22
-	RETURN  shift 25
-	WHILE  shift 26
-	FUNC  shift 27
-	FOR  shift 30
-	SWITCH  shift 18
-	T_INT  shift 35
-	T_BOOL  shift 34
-	T_STR  shift 36
-	T_ARR  shift 37
-	T_MAP  shift 38
-	T_FLOAT  shift 39
-	T_MONEY  shift 40
-	T_OBJECT  shift 41
-	T_BYTES  shift 42
-	T_FILE  shift 43
-	.  error
-
-	ordinaltype  goto 33
-	type  goto 21
-	var  goto 19
-	switch  goto 16
-	statement  goto 17
-	index  goto 20
-
-state 257
-	statement:  FOR IDENT IN expr LBRACE statements RBRACE.    (55)
-
-	.  reduce 55 (src line 239)
-
-
-state 258
-	statement:  FOR IDENT IN expr DOUBLEDOT expr LBRACE.statements RBRACE 
-	statements: .    (15)
-
-	.  reduce 15 (src line 168)
-
-	statements  goto 268
-
-state 259
-	statement:  FOR IDENT COMMA IDENT IN expr LBRACE.statements RBRACE 
-	statements: .    (15)
-
-	.  reduce 15 (src line 168)
-
-	statements  goto 269
-
-state 260
-	statements:  statements.NEWLINE 
-	statements:  statements.switch 
-	statements:  statements.statement NEWLINE 
-	case:  case CASE exprlist LBRACE statements.RBRACE NEWLINE 
 
 	IDENT  shift 31
 	CALL  shift 28
@@ -4152,19 +4157,80 @@ state 260
 	statement  goto 17
 	index  goto 20
 
+state 260
+	statement:  FOR IDENT IN expr LBRACE statements RBRACE.    (55)
+
+	.  reduce 55 (src line 239)
+
+
 state 261
+	statement:  FOR IDENT IN expr DOUBLEDOT expr LBRACE.statements RBRACE 
+	statements: .    (15)
+
+	.  reduce 15 (src line 168)
+
+	statements  goto 271
+
+state 262
+	statement:  FOR IDENT COMMA IDENT IN expr LBRACE.statements RBRACE 
+	statements: .    (15)
+
+	.  reduce 15 (src line 168)
+
+	statements  goto 272
+
+state 263
+	statements:  statements.NEWLINE 
+	statements:  statements.switch 
+	statements:  statements.statement NEWLINE 
+	case:  case CASE exprlist LBRACE statements.RBRACE NEWLINE 
+
+	IDENT  shift 31
+	CALL  shift 28
+	CALLCONTRACT  shift 29
+	INDEX  shift 32
+	NEWLINE  shift 15
+	RBRACE  shift 273
+	BREAK  shift 23
+	CONTINUE  shift 24
+	IF  shift 22
+	RETURN  shift 25
+	WHILE  shift 26
+	FUNC  shift 27
+	FOR  shift 30
+	SWITCH  shift 18
+	T_INT  shift 35
+	T_BOOL  shift 34
+	T_STR  shift 36
+	T_ARR  shift 37
+	T_MAP  shift 38
+	T_FLOAT  shift 39
+	T_MONEY  shift 40
+	T_OBJECT  shift 41
+	T_BYTES  shift 42
+	T_FILE  shift 43
+	.  error
+
+	ordinaltype  goto 33
+	type  goto 21
+	var  goto 19
+	switch  goto 16
+	statement  goto 17
+	index  goto 20
+
+state 264
 	default:  DEFAULT LBRACE statements RBRACE.    (35)
 
 	.  reduce 35 (src line 211)
 
 
-state 262
+state 265
 	objlist:  objlist COMMA exprobj.    (68)
 
 	.  reduce 68 (src line 264)
 
 
-state 263
+state 266
 	exprmaplist:  exprmaplist COMMA STRING COLON NEWLINE expr.    (61)
 	expr:  expr.MUL expr 
 	expr:  expr.DIV expr 
@@ -4196,7 +4262,7 @@ state 263
 	.  reduce 61 (src line 251)
 
 
-state 264
+state 267
 	expr:  QUESTION LPAREN expr COMMA expr COMMA expr.RPAREN 
 	expr:  expr.MUL expr 
 	expr:  expr.DIV expr 
@@ -4212,7 +4278,7 @@ state 264
 	expr:  expr.LT expr 
 	expr:  expr.GT expr 
 
-	RPAREN  shift 271
+	RPAREN  shift 274
 	ADD  shift 91
 	SUB  shift 92
 	MUL  shift 89
@@ -4229,7 +4295,7 @@ state 264
 	.  error
 
 
-state 265
+state 268
 	elif:  elif ELIF expr.LBRACE statements RBRACE 
 	expr:  expr.MUL expr 
 	expr:  expr.DIV expr 
@@ -4245,7 +4311,7 @@ state 265
 	expr:  expr.LT expr 
 	expr:  expr.GT expr 
 
-	LBRACE  shift 272
+	LBRACE  shift 275
 	ADD  shift 91
 	SUB  shift 92
 	MUL  shift 89
@@ -4262,21 +4328,21 @@ state 265
 	.  error
 
 
-state 266
+state 269
 	else:  ELSE LBRACE.statements RBRACE 
 	statements: .    (15)
 
 	.  reduce 15 (src line 168)
 
-	statements  goto 273
+	statements  goto 276
 
-state 267
+state 270
 	statement:  FUNC CALL par_declarations RPAREN rettype LBRACE statements RBRACE.    (52)
 
 	.  reduce 52 (src line 234)
 
 
-state 268
+state 271
 	statements:  statements.NEWLINE 
 	statements:  statements.switch 
 	statements:  statements.statement NEWLINE 
@@ -4287,7 +4353,7 @@ state 268
 	CALLCONTRACT  shift 29
 	INDEX  shift 32
 	NEWLINE  shift 15
-	RBRACE  shift 274
+	RBRACE  shift 277
 	BREAK  shift 23
 	CONTINUE  shift 24
 	IF  shift 22
@@ -4315,71 +4381,11 @@ state 268
 	statement  goto 17
 	index  goto 20
 
-state 269
+state 272
 	statements:  statements.NEWLINE 
 	statements:  statements.switch 
 	statements:  statements.statement NEWLINE 
 	statement:  FOR IDENT COMMA IDENT IN expr LBRACE statements.RBRACE 
-
-	IDENT  shift 31
-	CALL  shift 28
-	CALLCONTRACT  shift 29
-	INDEX  shift 32
-	NEWLINE  shift 15
-	RBRACE  shift 275
-	BREAK  shift 23
-	CONTINUE  shift 24
-	IF  shift 22
-	RETURN  shift 25
-	WHILE  shift 26
-	FUNC  shift 27
-	FOR  shift 30
-	SWITCH  shift 18
-	T_INT  shift 35
-	T_BOOL  shift 34
-	T_STR  shift 36
-	T_ARR  shift 37
-	T_MAP  shift 38
-	T_FLOAT  shift 39
-	T_MONEY  shift 40
-	T_OBJECT  shift 41
-	T_BYTES  shift 42
-	T_FILE  shift 43
-	.  error
-
-	ordinaltype  goto 33
-	type  goto 21
-	var  goto 19
-	switch  goto 16
-	statement  goto 17
-	index  goto 20
-
-state 270
-	case:  case CASE exprlist LBRACE statements RBRACE.NEWLINE 
-
-	NEWLINE  shift 276
-	.  error
-
-
-state 271
-	expr:  QUESTION LPAREN expr COMMA expr COMMA expr RPAREN.    (99)
-
-	.  reduce 99 (src line 301)
-
-
-state 272
-	elif:  elif ELIF expr LBRACE.statements RBRACE 
-	statements: .    (15)
-
-	.  reduce 15 (src line 168)
-
-	statements  goto 277
-
-state 273
-	statements:  statements.NEWLINE 
-	statements:  statements.switch 
-	statements:  statements.statement NEWLINE 
-	else:  ELSE LBRACE statements.RBRACE 
 
 	IDENT  shift 31
 	CALL  shift 28
@@ -4414,36 +4420,39 @@ state 273
 	statement  goto 17
 	index  goto 20
 
-state 274
-	statement:  FOR IDENT IN expr DOUBLEDOT expr LBRACE statements RBRACE.    (57)
+state 273
+	case:  case CASE exprlist LBRACE statements RBRACE.NEWLINE 
 
-	.  reduce 57 (src line 241)
+	NEWLINE  shift 279
+	.  error
+
+
+state 274
+	expr:  QUESTION LPAREN expr COMMA expr COMMA expr RPAREN.    (99)
+
+	.  reduce 99 (src line 301)
 
 
 state 275
-	statement:  FOR IDENT COMMA IDENT IN expr LBRACE statements RBRACE.    (56)
+	elif:  elif ELIF expr LBRACE.statements RBRACE 
+	statements: .    (15)
 
-	.  reduce 56 (src line 240)
+	.  reduce 15 (src line 168)
 
+	statements  goto 280
 
 state 276
-	case:  case CASE exprlist LBRACE statements RBRACE NEWLINE.    (33)
-
-	.  reduce 33 (src line 206)
-
-
-state 277
 	statements:  statements.NEWLINE 
 	statements:  statements.switch 
 	statements:  statements.statement NEWLINE 
-	elif:  elif ELIF expr LBRACE statements.RBRACE 
+	else:  ELSE LBRACE statements.RBRACE 
 
 	IDENT  shift 31
 	CALL  shift 28
 	CALLCONTRACT  shift 29
 	INDEX  shift 32
 	NEWLINE  shift 15
-	RBRACE  shift 279
+	RBRACE  shift 281
 	BREAK  shift 23
 	CONTINUE  shift 24
 	IF  shift 22
@@ -4471,27 +4480,84 @@ state 277
 	statement  goto 17
 	index  goto 20
 
+state 277
+	statement:  FOR IDENT IN expr DOUBLEDOT expr LBRACE statements RBRACE.    (57)
+
+	.  reduce 57 (src line 241)
+
+
 state 278
+	statement:  FOR IDENT COMMA IDENT IN expr LBRACE statements RBRACE.    (56)
+
+	.  reduce 56 (src line 240)
+
+
+state 279
+	case:  case CASE exprlist LBRACE statements RBRACE NEWLINE.    (33)
+
+	.  reduce 33 (src line 206)
+
+
+state 280
+	statements:  statements.NEWLINE 
+	statements:  statements.switch 
+	statements:  statements.statement NEWLINE 
+	elif:  elif ELIF expr LBRACE statements.RBRACE 
+
+	IDENT  shift 31
+	CALL  shift 28
+	CALLCONTRACT  shift 29
+	INDEX  shift 32
+	NEWLINE  shift 15
+	RBRACE  shift 282
+	BREAK  shift 23
+	CONTINUE  shift 24
+	IF  shift 22
+	RETURN  shift 25
+	WHILE  shift 26
+	FUNC  shift 27
+	FOR  shift 30
+	SWITCH  shift 18
+	T_INT  shift 35
+	T_BOOL  shift 34
+	T_STR  shift 36
+	T_ARR  shift 37
+	T_MAP  shift 38
+	T_FLOAT  shift 39
+	T_MONEY  shift 40
+	T_OBJECT  shift 41
+	T_BYTES  shift 42
+	T_FILE  shift 43
+	.  error
+
+	ordinaltype  goto 33
+	type  goto 21
+	var  goto 19
+	switch  goto 16
+	statement  goto 17
+	index  goto 20
+
+state 281
 	else:  ELSE LBRACE statements RBRACE.    (29)
 
 	.  reduce 29 (src line 196)
 
 
-state 279
+state 282
 	elif:  elif ELIF expr LBRACE statements RBRACE.    (31)
 
 	.  reduce 31 (src line 201)
 
 
 75 terminals, 30 nonterminals
-131 grammar rules, 280/8000 states
+132 grammar rules, 283/8000 states
 0 shift/reduce, 0 reduce/reduce conflicts reported
 79 working sets used
-memory: parser 174/120000
+memory: parser 176/120000
 124 extra closures
-1847 shift entries, 1 exceptions
-125 goto entries
-106 entries saved by goto default
-Optimizer space used: output 1120/120000
-1120 table entries, 303 zero
-maximum spread: 73, maximum offset: 277
+1878 shift entries, 1 exceptions
+126 goto entries
+107 entries saved by goto default
+Optimizer space used: output 1123/120000
+1123 table entries, 302 zero
+maximum spread: 73, maximum offset: 280
